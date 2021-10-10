@@ -3,7 +3,7 @@
 ### Autoři
 Jméno | E-mail
 ------------ | -------------
-David Kocman | xkocma28@stud.fit.vutbr.cz
+David Kocman | xkocma08@stud.fit.vutbr.cz
 Radomír Bábek | xbabek02@stud.fit.vutbr.cz
 Martin Ohnút | xohnut01@stud.fit.vutbr.cz
 Přemek Janda | xjanda28@stud.fit.vutbr.cz
