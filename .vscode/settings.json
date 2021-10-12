@@ -1,0 +1,15 @@
+{
+    "makefile.launchConfigurations": [
+
+        {
+            "cwd": "/home/koci/Projekty/IFJ",
+            "binaryPath": "/home/koci/Projekty/IFJ/lexikon",
+            "binaryArgs": []
+        },
+        {
+            "cwd": "/home/koci/Projekty/IFJ",
+            "binaryPath": "/home/koci/Projekty/IFJ/lexikon",
+            "binaryArgs": ["<", "test.tl"]
+        }
+    ]
+}
