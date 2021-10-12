@@ -5,27 +5,28 @@
 #include<ctype.h>
 
 typedef struct Token{
-    int type;
-    char attribute[100];
+    char *type;
+    char *attribute;
     int line;
 }tToken;
 
-enum Type {id, integer, keyword, add, sub, mul, divide, string, _double, assignment}type;
 char keywords[15][10] = {"do", "else", "end", "function", "global", "if", "integer", "local", "nil", "number", "require", "return", "string", "then", "while"};
 
 void printToken(tToken *token){
     printf("token attribute: %s\n", token->attribute);
-    printf("token type: %d\n", token->type);
+    printf("token type: %s\n", token->type);
     printf("token line: %d\n", token->line);
     printf("\n");   
 }
 
 void initToken(tToken *token){
     token->line = 1;
-    token->type = -1;
+    token->type = " ";
 }
 
 void deleteToken(tToken *token){
+    free(token->attribute);
+    free(token->type);
     free(token);
 }
 
@@ -40,59 +41,49 @@ bool IsKeyWord(tToken *token){
     return false;
 }
 
-//smazat????
-bool IsNumber(tToken *token){
-    int length = strlen(token->attribute);
-    for (int i = 0; i < length; i++)
-    {
-        if (!(token->attribute[i] >= 48 && token->attribute[i] <= 57))
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
-//smazat???
-void Finish(tToken *token, bool KeyWord, bool Number){
-    KeyWord = IsKeyWord(token);
-    Number = IsNumber(token);
-    if (KeyWord){
-        type = keyword;
-        token->type = type;
-        KeyWord = false;
-    }
-    else if(Number){
-        type = integer;
-        token->type = type;
-        Number = false;
-    }
-    else{
-        if ((token->attribute[0] >= 48 && token->attribute[0] <= 57) || token->attribute[0] == '_')
-        {
-            fprintf(stderr, "line %d: ERROR: Wrong format od an ID\n", token->line);
-        }
-        type = id;
-        token->type = type;
-    }
-}
-
 int main(int argc, char const *argv[])
 {   
     char c = ' ';
     int i = 0;
     tToken *token = malloc(sizeof(struct Token));
+    if(token == NULL){
+        fprintf(stderr, "ERROR: Failed malloc");
+        return 1;
+    }
+    token->attribute = malloc(100);
+
+    token->type = malloc(11);
+    if(token->type == NULL){
+        fprintf(stderr, "ERROR: Failed malloc");
+        return 1;
+    }
     initToken(token); 
 
     bool KeyWord = false;
-    //bool Number = false;
+    bool DoubleNumber = false;
+    bool Comment = false;
     //přidat, oddělat states
-    char states[11] = {'s', '1', '2', '3', '4', '5', '6', '7', '8', 'c', 'q'};
+    //DODĚLAT BLOKOVÉ KOMENTÁŘE
+    //PŘEPSAT NA DYNAMICKOU PAMĚŤ
+    //
+
+    /**
+     * s = startovní stav
+     * 1 = ID
+     * 2 = Integer
+     * 3 = Rovná se
+     * 4 = string
+     * 5 = comment
+     * 6 = LET
+     * 7 = MET
+     * 8 = NE
+     */
+    char states[9] = {'s', '1', '2', '3', '4', '5', '6', '7', '8'};
     char state = states[0];
 
     //switch: stavy
     //zkusit popřemýšlet
-    while (c != '\n' && c != EOF)
+    while ( c != EOF)
     {
         c = getc(stdin);
         switch (state){
@@ -104,33 +95,91 @@ int main(int argc, char const *argv[])
                 token->attribute[i] = c;
                 i++;
             }
+            //Integer and Double
             else if((c >= 48 && c <= 57)){
                 state = states[2];
                 token->attribute[i] = c;
                 i++;
             }
+            //assign operator
             else if(c == ':'){
-                state = states[10];
                 token->attribute[i] = c;
-                i++;
+                ++i;
+                token->attribute[i] = '\0';
+                token->type = "DataAssign";
+                i = 0;
+                
+                state = states[0];
+                printToken(token);
 
             }
+            //Add operator
             else if(c == '+'){
-                //addition
+                token->attribute[i] = c;
+                ++i;
+                token->attribute[i] = '\0';
+                token->type = "add";
+                i = 0;
+                printToken(token);
+
+            }
+            else if(c == '='){
+                state = states[3];
+                token->attribute[i] = c;
+                i++;
             }
             else if(c == '-'){
-                //sub
+                token->attribute[i] = c;
+                ++i;
+                state = states[5];
             }
             else if(c == '/'){
-                //div
+                token->attribute[i] = c;
+                ++i;
+                token->attribute[i] = '\0';
+                token->type = "divide";
+                i = 0;
+                printToken(token);
             }
             else if(c == '*'){
-                //mul
+                token->attribute[i] = c;
+                ++i;
+                token->attribute[i] = '\0';
+                token->type = "mul";
+                i = 0;
+                printToken(token);
             }
-            else{
-                
+            else if(c == '"'){
+                token->attribute[i] = c;
+                state = states[4];
+                i++;
             }
             //cases na <,>,<=,>=,~=
+            else if(c == '<'){
+                state = states[6];
+                token->attribute[i] = c;
+                i++;
+            }
+            else if(c == '>'){
+                state = states[7];
+                token->attribute[i] = c;
+                i++;
+            }
+            else if(c == '~'){
+                state = states[8];
+                token->attribute[i] = c;
+                i++;
+            }
+            else if(c == '\n'){
+                token->line++;
+            }
+            else if(c == ' '){
+                continue;
+            }
+            else{
+                fprintf(stderr, "ERROR: Invalid character \"%c\" on line %d\n",c ,token->line);
+                return 1;
+            }
             break;
 
         case '1':
@@ -144,20 +193,17 @@ int main(int argc, char const *argv[])
                 KeyWord = IsKeyWord(token);
                 if (KeyWord)
                 {
-                    type = keyword;
-                    token->type = type;
+                    token->type = "keyword";
                     KeyWord = false;
                     i = 0;
                 }
                 else{
-                    type = id;
-                    token->type = type;
+                    token->type = "id";
                     i = 0;
                 }
                 
                 state = states[0];
                 printToken(token);
-                continue;
             }
         break;
 
@@ -166,41 +212,163 @@ int main(int argc, char const *argv[])
                 token->attribute[i] = c;
                 i++;
             }
+            else if(c == 'E' || c == 'e' || c == '+' || c == '-' || c == '.'){
+                token->attribute[i] = c;
+                i++;
+                DoubleNumber = true;
+            }
             else{
                 ungetc(c, stdin);
                 token->attribute[i] = '\0';
-                type = integer;
-                token->type = type;
+                if (DoubleNumber){
+                    token->type = "double";
+                    DoubleNumber = false;
+                }
+                else{
+                    token->type = "integer";
+                }
+                
+                
                 i = 0;
                 
                 state = states[0];
                 printToken(token);
             }
-            continue;
         break;
         
-        case 'q':
-            token->attribute[i] = c;
-            ++i;
-            token->attribute[i] = '\0';
-            //PŘIŘAZENÍ:type = integer;
-            token->type = type;
-            i = 0;
+        case '3':
+            if (c == '='){
+                token->attribute[i] = c;
+                ++i;
+                token->attribute[i] = '\0';
+                token->type = "equals";
+                i = 0;
                 
-            state = states[0];
-        break;
-        //CASES PRO <,>,<=,>=,<>
-        
-        //asi blbost 
-        //  |
-        //  v
-        case 'p':
-            if(c == '}'){
                 state = states[0];
+                printToken(token);
             }
+            else{
+                ungetc(c, stdin);
+                token->attribute[i] = '\0';
+                token->type = "assign";
+                i = 0;
+                
+                state = states[0];
+                printToken(token);
+            }
+            
+            
+        break;
+        
+        case '4':
+            token->attribute[i] = c;
+            i++;
+            if (c == '"')
+            {
+                token->attribute[i] = '\0';
+                token->type = "string";
+                i = 0;
+                
+                state = states[0];
+                printToken(token);
+            }
+            
+        break;
+        //KONTROVERZNÍ->PRAVDĚPODOBNĚ SMAZAT
+        case '5':
+            if(c == '-'){
+                //type = comment;
+                //token->type = type;
+                token->attribute[i] = c;
+                Comment = true;
+                i++;
+            }
+            else if(Comment){
+                
+                if(c == '\n'){
+                    ungetc(c, stdin);
+                    token->attribute[i] = '\0';
+                    i = 0;
+                    state = states[0];
+                    printToken(token);
+                    Comment = false;
+                }
+                token->attribute[i] = c;
+                i++;
+            }
+            else{
+                ungetc(c, stdin);
+                token->attribute[i] = '\0';
+                token->type = "sub";
+                i = 0;
+                state = states[0];
+                printToken(token);
+            }
+            
+        break;
+
+        case '6':
+            if(c == '='){
+                token->attribute[i] = c;
+                ++i;
+                token->attribute[i] = '\0';
+                token->type = "LEQT";
+                i = 0;
+                
+                state = states[0];
+                printToken(token);
+            }
+            else{
+                ungetc(c, stdin);
+                token->attribute[i] = '\0';
+                token->type = "LT";
+                i = 0;
+                
+                state = states[0];
+                printToken(token);
+            }
+        break;
+        case '7':
+            if(c == '='){
+                token->attribute[i] = c;
+                ++i;
+                token->attribute[i] = '\0';
+                token->type = "MEQT";
+                i = 0;
+                
+                state = states[0];
+                printToken(token);
+            }
+            else{
+                ungetc(c, stdin);
+                token->attribute[i] = '\0';
+                token->type = "MT";
+                i = 0;
+                
+                state = states[0];
+                printToken(token);
+            }
+        break;
+        case '8':
+            if(c == '='){
+                token->attribute[i] = c;
+                ++i;
+                token->attribute[i] = '\0';
+                token->type = "NEQ";
+                i = 0;
+                
+                state = states[0];
+                printToken(token);
+            }
+            else{
+                fprintf(stderr, "ERROR: Missing \'=\' on %d\n", token->line);
+                return 1;
+            }
+
         break;
 
         default:
+            
             break;
         }
         
