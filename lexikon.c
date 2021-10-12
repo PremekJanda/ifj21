@@ -10,6 +10,8 @@ typedef struct Token{
     int line;
 }tToken;
 
+#define TOKEN_LENGTH 100
+#define REALL_TOKEN_LEN 100
 char keywords[15][10] = {"do", "else", "end", "function", "global", "if", "integer", "local", "nil", "number", "require", "return", "string", "then", "while"};
 
 void printToken(tToken *token){
@@ -21,7 +23,7 @@ void printToken(tToken *token){
 
 void initToken(tToken *token){
     token->line = 1;
-    token->type = " ";
+    //token->type = " ";
 }
 
 void deleteToken(tToken *token){
@@ -50,9 +52,14 @@ int main(int argc, char const *argv[])
         fprintf(stderr, "ERROR: Failed malloc");
         return 1;
     }
-    token->attribute = malloc(100);
+    int length = TOKEN_LENGTH;
+    token->attribute = malloc(TOKEN_LENGTH * sizeof(char));
+    if(token->attribute == NULL){
+        fprintf(stderr, "ERROR: Failed malloc");
+        return 1;
+    }
 
-    token->type = malloc(11);
+    token->type = malloc(12 * sizeof(char));
     if(token->type == NULL){
         fprintf(stderr, "ERROR: Failed malloc");
         return 1;
@@ -62,10 +69,28 @@ int main(int argc, char const *argv[])
     bool KeyWord = false;
     bool DoubleNumber = false;
     bool Comment = false;
-    //přidat, oddělat states
-    //DODĚLAT BLOKOVÉ KOMENTÁŘE
-    //PŘEPSAT NA DYNAMICKOU PAMĚŤ
-    //
+    
+    //KOMENTÁŘE
+
+    /**SEZNAM TYPŮ:
+     * id
+     * integer
+     * double
+     * DataAssign
+     * add
+     * divide
+     * mul
+     * keyword
+     * equals
+     * assign
+     * string
+     * sub
+     * LEQT
+     * LT
+     * MEQT
+     * MT
+     * NEQ
+     */
 
     /**
      * s = startovní stav
@@ -81,8 +106,6 @@ int main(int argc, char const *argv[])
     char states[9] = {'s', '1', '2', '3', '4', '5', '6', '7', '8'};
     char state = states[0];
 
-    //switch: stavy
-    //zkusit popřemýšlet
     while ( c != EOF)
     {
         c = getc(stdin);
@@ -106,7 +129,7 @@ int main(int argc, char const *argv[])
                 token->attribute[i] = c;
                 ++i;
                 token->attribute[i] = '\0';
-                token->type = "DataAssign";
+                strcpy(token->type, "DataAssign");
                 i = 0;
                 
                 state = states[0];
@@ -118,7 +141,7 @@ int main(int argc, char const *argv[])
                 token->attribute[i] = c;
                 ++i;
                 token->attribute[i] = '\0';
-                token->type = "add";
+                strcpy(token->type, "add");
                 i = 0;
                 printToken(token);
 
@@ -137,7 +160,7 @@ int main(int argc, char const *argv[])
                 token->attribute[i] = c;
                 ++i;
                 token->attribute[i] = '\0';
-                token->type = "divide";
+                strcpy(token->type, "divide");
                 i = 0;
                 printToken(token);
             }
@@ -145,7 +168,7 @@ int main(int argc, char const *argv[])
                 token->attribute[i] = c;
                 ++i;
                 token->attribute[i] = '\0';
-                token->type = "mul";
+                strcpy(token->type, "mul");
                 i = 0;
                 printToken(token);
             }
@@ -177,8 +200,11 @@ int main(int argc, char const *argv[])
                 continue;
             }
             else{
-                fprintf(stderr, "ERROR: Invalid character \"%c\" on line %d\n",c ,token->line);
-                return 1;
+                if(c!=EOF){
+                    fprintf(stderr, "ERROR: Invalid character \"%c\" on line %d\n",c ,token->line);
+                    return 1;
+                }
+                
             }
             break;
 
@@ -186,6 +212,13 @@ int main(int argc, char const *argv[])
             if ((c >= 97 && c <= 122) || c == '_' || (c >= 48 && c <= 57)|| (c >= 65 && c <= 90)){
                 token->attribute[i] = c;
                 i++;
+                
+                if (i > (length - 1))
+                {
+                    length += REALL_TOKEN_LEN;
+                    token->attribute = realloc(token->attribute, length * sizeof(char));
+                }
+                
             }
             else{
                 ungetc(c, stdin);
@@ -193,12 +226,12 @@ int main(int argc, char const *argv[])
                 KeyWord = IsKeyWord(token);
                 if (KeyWord)
                 {
-                    token->type = "keyword";
+                    strcpy(token->type, "keyword");
                     KeyWord = false;
                     i = 0;
                 }
                 else{
-                    token->type = "id";
+                    strcpy(token->type, "id");
                     i = 0;
                 }
                 
@@ -211,21 +244,31 @@ int main(int argc, char const *argv[])
             if ((c >= 48 && c <= 57)){
                 token->attribute[i] = c;
                 i++;
+                if (i > (length - 1))
+                {
+                    length += REALL_TOKEN_LEN;
+                    token->attribute = realloc(token->attribute, length * sizeof(char));
+                }
             }
             else if(c == 'E' || c == 'e' || c == '+' || c == '-' || c == '.'){
                 token->attribute[i] = c;
                 i++;
+                if (i > (length - 1))
+                {
+                    length += REALL_TOKEN_LEN;
+                    token->attribute = realloc(token->attribute, length * sizeof(char));
+                }
                 DoubleNumber = true;
             }
             else{
                 ungetc(c, stdin);
                 token->attribute[i] = '\0';
                 if (DoubleNumber){
-                    token->type = "double";
+                    strcpy(token->type, "double");
                     DoubleNumber = false;
                 }
                 else{
-                    token->type = "integer";
+                    strcpy(token->type, "integer");
                 }
                 
                 
@@ -241,7 +284,7 @@ int main(int argc, char const *argv[])
                 token->attribute[i] = c;
                 ++i;
                 token->attribute[i] = '\0';
-                token->type = "equals";
+                strcpy(token->type, "equals");
                 i = 0;
                 
                 state = states[0];
@@ -250,7 +293,7 @@ int main(int argc, char const *argv[])
             else{
                 ungetc(c, stdin);
                 token->attribute[i] = '\0';
-                token->type = "assign";
+                strcpy(token->type, "assign");
                 i = 0;
                 
                 state = states[0];
@@ -263,10 +306,24 @@ int main(int argc, char const *argv[])
         case '4':
             token->attribute[i] = c;
             i++;
+            if (i > (length - 1))
+            {
+                length += REALL_TOKEN_LEN;
+                token->attribute = realloc(token->attribute, length * sizeof(char));
+            }
             if (c == '"')
             {
                 token->attribute[i] = '\0';
-                token->type = "string";
+                strcpy(token->type, "string");
+                i = 0;
+                
+                state = states[0];
+                printToken(token);
+            }
+            else if(c == '\n'){
+                --i;
+                token->attribute[i] = '\0';
+                strcpy(token->type, "string");
                 i = 0;
                 
                 state = states[0];
@@ -279,27 +336,11 @@ int main(int argc, char const *argv[])
             if(c == '-'){
                 //type = comment;
                 //token->type = type;
-                token->attribute[i] = c;
-                Comment = true;
-                i++;
-            }
-            else if(Comment){
-                
-                if(c == '\n'){
-                    ungetc(c, stdin);
-                    token->attribute[i] = '\0';
-                    i = 0;
-                    state = states[0];
-                    printToken(token);
-                    Comment = false;
-                }
-                token->attribute[i] = c;
-                i++;
             }
             else{
                 ungetc(c, stdin);
                 token->attribute[i] = '\0';
-                token->type = "sub";
+                strcpy(token->type, "sub");
                 i = 0;
                 state = states[0];
                 printToken(token);
@@ -312,7 +353,7 @@ int main(int argc, char const *argv[])
                 token->attribute[i] = c;
                 ++i;
                 token->attribute[i] = '\0';
-                token->type = "LEQT";
+                strcpy(token->type, "LEQT");
                 i = 0;
                 
                 state = states[0];
@@ -321,7 +362,7 @@ int main(int argc, char const *argv[])
             else{
                 ungetc(c, stdin);
                 token->attribute[i] = '\0';
-                token->type = "LT";
+                strcpy(token->type, "LT");
                 i = 0;
                 
                 state = states[0];
@@ -333,7 +374,7 @@ int main(int argc, char const *argv[])
                 token->attribute[i] = c;
                 ++i;
                 token->attribute[i] = '\0';
-                token->type = "MEQT";
+                strcpy(token->type, "MEQT");
                 i = 0;
                 
                 state = states[0];
@@ -342,7 +383,7 @@ int main(int argc, char const *argv[])
             else{
                 ungetc(c, stdin);
                 token->attribute[i] = '\0';
-                token->type = "MT";
+                strcpy(token->type, "MT");
                 i = 0;
                 
                 state = states[0];
@@ -354,7 +395,7 @@ int main(int argc, char const *argv[])
                 token->attribute[i] = c;
                 ++i;
                 token->attribute[i] = '\0';
-                token->type = "NEQ";
+                strcpy(token->type, "NEQ");
                 i = 0;
                 
                 state = states[0];

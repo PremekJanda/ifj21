@@ -1,0 +1,35 @@
+{
+    "makefile.configurations": [
+        {
+            "name": "Koci"
+        },
+        {
+            "name": "Přemek"
+        }
+    ],
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/koci/Projekty/IFJ",
+            "binaryPath": "/home/koci/Projekty/IFJ/lexikon",
+            "binaryArgs": []
+        },
+        {
+            "cwd": "/home/koci/Projekty/IFJ",
+            "binaryPath": "/home/koci/Projekty/IFJ/lexikon",
+            "binaryArgs": [
+                "<",
+                "test.tl"
+            ]
+        },
+        {
+            "cwd": "/home/premekjanda/School/2BIT_1/IFj/ifj21",
+            "binaryPath": "/home/premekjanda/School/2BIT_1/IFj/ifj21/lexikon",
+            "binaryArgs": [
+                "<",
+                "test.tl"
+            ],
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/"
+        }
+    ]
+}
