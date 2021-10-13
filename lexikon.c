@@ -23,7 +23,6 @@ void printToken(tToken *token){
 
 void initToken(tToken *token){
     token->line = 1;
-    //token->type = " ";
 }
 
 void deleteToken(tToken *token){
@@ -90,6 +89,15 @@ int main(int argc, char const *argv[])
      * MEQT
      * MT
      * NEQ
+     * dot 
+     * IntegerDiv
+     * concatenate
+     * LeftBracket
+     * RightBracket
+     * LeftCurBr
+     * RightCurBr
+     * length
+     * comma
      */
 
     /**
@@ -102,8 +110,10 @@ int main(int argc, char const *argv[])
      * 6 = LET
      * 7 = MET
      * 8 = NE
+     * 9 = konkatenace
+     * d = dělení
      */
-    char states[9] = {'s', '1', '2', '3', '4', '5', '6', '7', '8'};
+    char states[11] = {'s', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'd'};
     char state = states[0];
 
     while ( c != EOF)
@@ -112,14 +122,14 @@ int main(int argc, char const *argv[])
         switch (state){
         case 's':
             // ID/KeyWord
-            if ((c >= 97 && c <= 122) || c == '_' || (c >= 65 && c <= 90))
+            if ((c >= 'a' && c <= 'z') || c == '_' || (c >= 'A' && c <= 'Z'))
             {
                 state = states[1];
                 token->attribute[i] = c;
                 i++;
             }
             //Integer and Double
-            else if((c >= 48 && c <= 57)){
+            else if((c >= '0' && c <= '9')){
                 state = states[2];
                 token->attribute[i] = c;
                 i++;
@@ -159,10 +169,7 @@ int main(int argc, char const *argv[])
             else if(c == '/'){
                 token->attribute[i] = c;
                 ++i;
-                token->attribute[i] = '\0';
-                strcpy(token->type, "divide");
-                i = 0;
-                printToken(token);
+                state = states[10];
             }
             else if(c == '*'){
                 token->attribute[i] = c;
@@ -173,9 +180,7 @@ int main(int argc, char const *argv[])
                 printToken(token);
             }
             else if(c == '"'){
-                token->attribute[i] = c;
                 state = states[4];
-                i++;
             }
             //cases na <,>,<=,>=,~=
             else if(c == '<'){
@@ -193,6 +198,59 @@ int main(int argc, char const *argv[])
                 token->attribute[i] = c;
                 i++;
             }
+            else if(c == '('){
+                token->attribute[i] = c;
+                ++i;
+                token->attribute[i] = '\0';
+                strcpy(token->type, "LeftBracket");
+                i = 0;
+                printToken(token);
+            }
+            else if(c == ')'){
+                token->attribute[i] = c;
+                ++i;
+                token->attribute[i] = '\0';
+                strcpy(token->type, "RightBracket");
+                i = 0;
+                printToken(token);
+            }
+            else if(c == ','){
+                token->attribute[i] = c;
+                ++i;
+                token->attribute[i] = '\0';
+                strcpy(token->type, "comma");
+                i = 0;
+                printToken(token);
+            }
+            else if(c == '.'){//dalsi faze
+                state = states[9];
+                token->attribute[i] = c;
+                i++;
+            }
+            else if(c == '{'){
+                token->attribute[i] = c;
+                ++i;
+                token->attribute[i] = '\0';
+                strcpy(token->type, "LeftCurBr");
+                i = 0;
+                printToken(token);
+            }
+            else if(c == '}'){
+                token->attribute[i] = c;
+                ++i;
+                token->attribute[i] = '\0';
+                strcpy(token->type, "RightCurBr");
+                i = 0;
+                printToken(token);
+            }
+            else if(c == '#'){
+                token->attribute[i] = c;
+                ++i;
+                token->attribute[i] = '\0';
+                strcpy(token->type, "length");
+                i = 0;
+                printToken(token);
+            }
             else if(c == '\n'){
                 token->line++;
             }
@@ -204,12 +262,11 @@ int main(int argc, char const *argv[])
                     fprintf(stderr, "ERROR: Invalid character \"%c\" on line %d\n",c ,token->line);
                     return 1;
                 }
-                
             }
-            break;
+        break;
 
         case '1':
-            if ((c >= 97 && c <= 122) || c == '_' || (c >= 48 && c <= 57)|| (c >= 65 && c <= 90)){
+            if ((c >= 'a' && c <= 'z') || c == '_' || (c >= '0' && c <= '9')|| (c >= 'A' && c <= 'Z')){
                 token->attribute[i] = c;
                 i++;
                 
@@ -241,7 +298,7 @@ int main(int argc, char const *argv[])
         break;
 
         case '2':
-            if ((c >= 48 && c <= 57)){
+            if ((c >= '0' && c <= '9')){
                 token->attribute[i] = c;
                 i++;
                 if (i > (length - 1))
@@ -311,8 +368,63 @@ int main(int argc, char const *argv[])
                 length += REALL_TOKEN_LEN;
                 token->attribute = realloc(token->attribute, length * sizeof(char));
             }
-            if (c == '"')
+            if(c == '\\'){
+                c = getc(stdin);
+                --i;
+                if(c == '"'){
+                    token->attribute[i] = c;
+                    i++;
+                }
+                else if(c == 't'){
+                    token->attribute[i] = '\t';
+                    i++;
+                }
+                else if(c == 'n'){
+                    token->attribute[i] = '\n';
+                    i++;
+                }
+                else if(c == '\\'){
+                    token->attribute[i] = '\\';
+                    i++;
+                }
+                else if(c >= '0' && c <='2'){
+                    char escaped[4];
+                    escaped[0] = c;
+                    c = getc(stdin);
+                    if (c >= '0' && c <='9'){
+                        escaped[1] = c;
+                        c = getc(stdin);
+                        if (c >= '0' && c <='9'){
+                            escaped[2] = c;
+                            escaped[3] = '\0';
+                            int aux = atoi(escaped);
+                            if(aux >= 1 && aux <= 255){
+                                token->attribute[i] = aux;
+                                i++;
+                            }
+                            else{
+                                fprintf(stderr, "ERROR: Wrong format of escape expression on line %d!\n", token->line);
+                                return 1;
+                            }
+                        }
+                        else{
+                            fprintf(stderr, "ERROR: Wrong format of escape expression on line %d!\n", token->line);
+                            return 1;
+                        }
+                    }
+                    else{
+                        fprintf(stderr, "ERROR: Wrong format of escape expression on line %d!\n", token->line);
+                        return 1;
+                    }
+                }
+                else{
+                    fprintf(stderr, "ERROR: Wrong format of escape expression on line %d!\n", token->line);
+                    return 1;
+                }
+            }
+            else if (c == '"')
             {
+                i--;
                 token->attribute[i] = '\0';
                 strcpy(token->type, "string");
                 i = 0;
@@ -320,24 +432,49 @@ int main(int argc, char const *argv[])
                 state = states[0];
                 printToken(token);
             }
-            else if(c == '\n'){
-                --i;
-                token->attribute[i] = '\0';
-                strcpy(token->type, "string");
-                i = 0;
-                
-                state = states[0];
-                printToken(token);
+            else if(c == '\n' || c == EOF){
+                fprintf(stderr, "ERROR: Unexpected End of file on line %d!", token->line);
+                return 1;
             }
             
         break;
-        //KONTROVERZNÍ->PRAVDĚPODOBNĚ SMAZAT
+
         case '5':
             if(c == '-'){
-                //type = comment;
-                //token->type = type;
+                Comment = true;
+                i = 0;
             }
-            else{
+            else if (Comment && c == '\n' ){
+                state = states[0];
+                token->line++;
+                Comment = false;
+            }
+            
+            else if(c == '[' && (c = getc(stdin) == '[')){
+
+                do
+                {
+                    c = getc(stdin);
+                    if(c == EOF){
+                        fprintf(stderr, "ERROR: Unterminated comment on line %d!\n", token->line);
+                        return 1;
+                    }
+                    if(c == ']'){
+                        if ((c = getc(stdin) == ']'))
+                        {
+                            state = states[0];
+                            break;
+                        }
+                        ungetc(c, stdin);
+                    }
+                    if (c == '\n')
+                    {
+                        token->line++;
+                    }
+                }while (42); 
+                
+            }
+            else if(!Comment){
                 ungetc(c, stdin);
                 token->attribute[i] = '\0';
                 strcpy(token->type, "sub");
@@ -406,6 +543,50 @@ int main(int argc, char const *argv[])
                 return 1;
             }
 
+        break;
+
+        case '9':
+            if(c == '.'){
+                token->attribute[i] = c;
+                ++i;
+                token->attribute[i] = '\0';
+                strcpy(token->type, "concatenate");
+                i = 0;
+                
+                state = states[0];
+                printToken(token);
+            }
+            else{
+                ungetc(c, stdin);
+                token->attribute[i] = '\0';
+                strcpy(token->type, "dot");
+                i = 0;
+                
+                state = states[0];
+                printToken(token);
+            }
+        break;
+
+        case 'd':
+            if(c == '/'){
+                token->attribute[i] = c;
+                ++i;
+                token->attribute[i] = '\0';
+                strcpy(token->type, "IntegerDiv");
+                i = 0;
+                
+                state = states[0];
+                printToken(token);
+            }
+            else{
+                ungetc(c, stdin);
+                token->attribute[i] = '\0';
+                strcpy(token->type, "div");
+                i = 0;
+                
+                state = states[0];
+                printToken(token);
+            }
         break;
 
         default:
