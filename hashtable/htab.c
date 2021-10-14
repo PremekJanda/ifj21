@@ -2,7 +2,7 @@
  *  Soubor: htab.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	14. 10. 2021 02:23:16
+ *  Poslední změna:	14. 10. 2021 12:23:29
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -216,7 +216,6 @@ htab_pair_t * htab_find(htab_t * t, htab_key_t key) {
 }
 
 void htab_for_each(const htab_t * t, void (*f)(htab_pair_t *data)) {
-    
     // projde pole ukazatelů na svázané listy
     for (size_t i = 0; i < t->arr_size; i++) {
         // ukazatel na první prvek v seznamu
@@ -232,7 +231,6 @@ void htab_for_each(const htab_t * t, void (*f)(htab_pair_t *data)) {
 }
 
 void htab_free(htab_t * t) {
-    
     // volá funkci clear pro vymazání dat z tabulky
     htab_clear(t);
     
@@ -241,33 +239,10 @@ void htab_free(htab_t * t) {
 }
 
 size_t htab_hash_function(const char *str) {
-    #ifndef HASHTEST
     uint32_t hash = 0;     // 32 bitů
     const unsigned char *p;
     for(p = (const unsigned char *)str; *p != '\0'; p++)
         hash = (65599 * hash) + *p;
-
-    #else
-
-    typedef unsigned short int HashIndexType;
-    unsigned char Random8[256];
-
-    HashIndexType hash;
-    unsigned char h1, h2;
-
-    if (*str == 0) return 0;
-    h1 = *str; h2 = *str + 1;
-    str++;
-    while (*str) {
-        h1 = Random8[h1 ^ *str];
-        h2 = Random8[h2 ^ *str];
-        str++;
-    }
-  
-    // rozmezí indexu 0..65535 
-    hash = ((HashIndexType)h1 << 8)|(HashIndexType)h2;
-    
-    #endif /* HASHTEST */
 
     return hash;
 }
@@ -410,25 +385,69 @@ int main ()
     //     if (free_word) free(new_word);
     // }
 
-    #ifdef MOVETEST
-    
-        // přesunutí tabulky
-        htab_t *new_hash_table = htab_move(5, hash_table);
 
-        // vytisknutí dat 'new_hash_table'
-        print_htab_all(new_hash_table);
 
-        // uvolnění tabulky z paměti
-        htab_free(new_hash_table);
+    for (int i = 0; i < 20; i++)
+    {
+        char *new_word;
+        new_word = malloc(MAX_WORD_LEN);
+        sprintf(new_word, "%d", rand() % 5);
 
-    #else
+        bool free_word = false;
+        if(htab_find(hash_table, new_word) != NULL)
+            free_word = true;
 
-        // vytisknutí dat 'hash_table'
-        print_htab_all(hash_table);
+        if (htab_lookup_add(hash_table, new_word) == NULL)
+            return error_exit("Chyba při allokaci paměti pro slovo '%s'!\n", new_word);
+        
+        if (free_word) free(new_word);  
+    }
+        
 
-    #endif  /* MOVETEST */
 
-    // vytisknutí dat 'new_hash_table'
+
+    // char *new_word_2;
+    // new_word_2 = malloc(MAX_WORD_LEN);
+
+    // strcpy(new_word_2, "2");
+    // if (htab_lookup_add(hash_table, new_word_2) == NULL)
+    //     return error_exit("Chyba při allokaci paměti pro slovo '%s'!\n", new_word_2);
+
+    // char *new_word_3;
+    // new_word_3 = malloc(MAX_WORD_LEN);
+
+    // strcpy(new_word_3, "3");
+    // if (htab_lookup_add(hash_table, new_word_3) == NULL)
+    //     return error_exit("Chyba při allokaci paměti pro slovo '%s'!\n", new_word_3);
+
+    // char *new_word_4;
+    // new_word_4 = malloc(MAX_WORD_LEN);
+
+    // strcpy(new_word_4, "2");
+    // if (htab_lookup_add(hash_table, new_word_4) == NULL)
+    //     return error_exit("Chyba při allokaci paměti pro slovo '%s'!\n", new_word_4);
+
+
+
+
+
+    // strcpy(new_word, "2");
+    // if (htab_lookup_add(hash_table, new_word) == NULL)
+    //     return error_exit("Chyba při allokaci paměti pro slovo '%s'!\n", new_word);
+
+    // strcpy(new_word, "2");
+    // if (htab_lookup_add(hash_table, new_word) == NULL)
+    //     return error_exit("Chyba při allokaci paměti pro slovo '%s'!\n", new_word);
+
+    // strcpy(new_word, "4");
+    // if (htab_lookup_add(hash_table, new_word) == NULL)
+    //     return error_exit("Chyba při allokaci paměti pro slovo '%s'!\n", new_word);
+
+    // strcpy(new_word, "5");
+    // if (htab_lookup_add(hash_table, new_word) == NULL)
+    //     return error_exit("Chyba při allokaci paměti pro slovo '%s'!\n", new_word);
+
+    // vytisknutí dat 'hash_table'
     print_htab_all(hash_table);
 
     // uvolnění tabulky z paměti
