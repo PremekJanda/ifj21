@@ -2,7 +2,7 @@
  *  Soubor: htab.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	14. 10. 2021 02:18:02
+ *  Poslední změna:	14. 10. 2021 13:48:39
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -52,7 +52,7 @@ struct htab {
 };
 
 // Nastavitelný parametr počtu řádků tabulky
-#define HASH_TABLE_DIMENSION 2
+#define HASH_TABLE_DIMENSION 5
 #define MAX_WORD_LEN 127
 
 

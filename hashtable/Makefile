@@ -1,11 +1,9 @@
 # Soubor: Makefile
 #
 # Předmět: IJC - Projekt 2
-# Datum poslední změny:	14. 10. 2021 02:24:49
+# Datum poslední změny:	14. 10. 2021 13:58:13
 # Autor: Přemek Janda - xjanda28, VUT FIT
 # Popis: Program MAKEFILE pro překlad všech potřebných souborů
-
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.
 
 ##### proměnné #####
 CC = gcc
