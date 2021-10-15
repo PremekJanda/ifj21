@@ -1,18 +1,20 @@
+/**
+ *  Soubor: lexikon.c
+ * 
+ *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
+ *  Poslední změna:	15. 10. 2021 10:56:12
+ *  Autoři: David Kocman  - xkocma08, VUT FIT
+ *          Radomír Bábek - xbabek02, VUT FIT
+ *          Martin Ohnút  - xohnut01, VUT FIT
+ *          Přemek Janda  - xjanda28, VUT FIT
+ *  Popis: Obsahuje implementaci lexikální analýzy (scanner) překladače
+ */
 #include <stdio.h>
-#include<string.h>
-#include<stdlib.h>
-#include<stdbool.h>
-#include<ctype.h>
-
-typedef struct Token{
-    char *type;
-    char *attribute;
-    int line;
-}tToken;
-
-#define TOKEN_LENGTH 100
-#define REALL_TOKEN_LEN 100
-char keywords[15][10] = {"do", "else", "end", "function", "global", "if", "integer", "local", "nil", "number", "require", "return", "string", "then", "while"};
+#include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <ctype.h>
+#include "lexikon.h"
 
 void printToken(tToken *token){
     printf("token attribute: %s\n", token->attribute);
@@ -98,6 +100,8 @@ int main(int argc, char const *argv[])
      * RightCurBr
      * length
      * comma
+     * modulo
+     * power
      */
 
     /**
@@ -251,6 +255,23 @@ int main(int argc, char const *argv[])
                 i = 0;
                 printToken(token);
             }
+            //cases  na % a ^
+            else if(c == '%'){
+                token->attribute[i] = c;
+                ++i;
+                token->attribute[i] = '\0';
+                strcpy(token->type, "modulo");
+                i = 0;
+                printToken(token);
+            }
+            else if(c == '^'){
+                token->attribute[i] = c;
+                ++i;
+                token->attribute[i] = '\0';
+                strcpy(token->type, "power");
+                i = 0;
+                printToken(token);
+            }
             else if(c == '\n'){
                 token->line++;
             }
@@ -328,9 +349,7 @@ int main(int argc, char const *argv[])
                     strcpy(token->type, "integer");
                 }
                 
-                
                 i = 0;
-                
                 state = states[0];
                 printToken(token);
             }
