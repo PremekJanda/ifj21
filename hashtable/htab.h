@@ -2,7 +2,7 @@
  *  Soubor: htab.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	14. 10. 2021 13:48:39
+ *  Poslední změna:	20. 10. 2021 23:42:09
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -24,32 +24,42 @@
 // - - - - - - - - - - - - - - - - - - - - //
 // - - - - Datové typy a struktury - - - - //
 // - - - - - - - - - - - - - - - - - - - - //
-// Tabulka
-struct htab;                     // neúplná deklarace struktury - uživatel nevidí obsah
-typedef struct htab htab_t;      // typedef podle zadání
-
 // Typy
 typedef const char * htab_key_t; // typ klíče
 typedef int htab_value_t;        // typ hodnoty
 
+// Prvním prvekem vázaného seznamu je návratová hodnota
+// Další prvky jsou parametry funkce
+typedef struct htab_fce_item {
+    htab_key_t key;              // identifikátor
+    struct htab_fce_item *item;  // ukazatel na další
+} *htab_fce_item_ptr;
+
 // Dvojice dat v tabulce
 typedef struct htab_pair {
-    htab_key_t    key;           // klíč
-    htab_value_t  value;         // asociovaná hodnota
-} htab_pair_t;                   // typedef podle zadání
+    htab_key_t key;              // identifikátor
+    htab_value_t value;          // asociovaná hodnota
+    htab_fce_item_ptr ptr;       // ukazatel na strukturu funkce tabulky
+} htab_pair_t;
 
 // Položka seznamu
 typedef struct htab_item {
-    htab_pair_t * data;
-    struct htab_item * next;
+    htab_pair_t *data;
+    struct htab_item *next;
 } databox;
 
 // Struktura tabulky
-struct htab {
+typedef struct htab {
     size_t size;
     size_t arr_size;
-    databox * ptr_arr[];
-};
+    databox *ptr_arr[];
+} htab_t;
+
+// struktura zásobníku rámců tabulek symbolů
+typedef struct htab_stack {
+    size_t top;                  // ukazatel na vrchol zásobníku
+    htab_t htab_stack;
+} htab_stack_t;
 
 // Nastavitelný parametr počtu řádků tabulky
 #define HASH_TABLE_DIMENSION 5
