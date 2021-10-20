@@ -2,7 +2,7 @@
  *  Soubor: htab.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	14. 10. 2021 02:23:16
+ *  Poslední změna:	14. 10. 2021 13:58:26
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -21,7 +21,7 @@
  * @param data Pár dat (key,value) daného prvku
  */
 void print_htab (htab_pair_t *data) {
-    printf("%s\t%d\n", data->key, data->value);
+    printf("|%s:%d|->", data->key, data->value);
 }
 
 /**
@@ -115,81 +115,48 @@ void warning_msg(const char *fmt, ...) {
 // - - - - Funkce pro pro práci s tabulkou - - - - //
 // - - - - - - - - - - - - - - - - - - - - - - - - //
 
-size_t htab_bucket_count(const htab_t * t) {
-    return t->arr_size;
+size_t htab_hash_function(const char *str) {
+    uint32_t hash = 0;     // 32 bitů
+    const unsigned char *p;
+    for(p = (const unsigned char *)str; *p != '\0'; p++)
+        hash = (65599 * hash) + *p;
+
+    return hash;
 }
 
-void htab_clear(htab_t * t) {
+htab_t * htab_init(size_t n) {
+    // alokace paměti na hromadě
+    htab_t *hash_table = malloc(sizeof(htab_t) + (n * sizeof(databox)));
+    // v případě chyby alokace se ukončí program
+    if (hash_table == NULL) 
+        return NULL;
+
+    // inicializace vstupních hodnot tabulky
+    hash_table->arr_size = n;
+    hash_table->size = 0;
     
+    // nastavení kořenových ukazatelů na NULL
+    for (size_t i = 0; i < n; i++) 
+        hash_table->ptr_arr[i] = NULL;
+    
+    return hash_table;
+}
+
+void htab_for_each(const htab_t * t, void (*f)(htab_pair_t *data)) {
     // projde pole ukazatelů na svázané listy
     for (size_t i = 0; i < t->arr_size; i++) {
-        
-        databox * del_data = t->ptr_arr[i];          // ukazatel na první prvek v seznamu
-        char del_str[MAX_WORD_LEN + 1];              // buffer pro hledaný string
-        
-        // odstraňuje prvky dokud žádný v seznamu nezůstane
-        while(del_data != NULL) {
-            databox * new_del_data = del_data->next; // nastavení ukazatele na další prvek před vymazáním původního
-            strcpy(del_str, del_data->data->key);    // zkopírování hledaného textu do bufferu
-            htab_erase(t, del_str);                  // uvolnění prvku z paměti
-            del_data = new_del_data;                 // posun ukazatele na další prvek
+        // ukazatel na první prvek v seznamu
+        databox * data = t->ptr_arr[i];
+
+        printf("Line %ld: ", i + 1);
+        // projde postupně všechny prvky seznamu
+        while(data != NULL) {
+            // aplikace funkce
+            f(data->data);     
+            data = data->next;
         }
+        printf("NULL\n");
     }
-
-    t->size = 0;
-}
-
-bool htab_erase(htab_t * t, htab_key_t key) {
-    // získání indexu podle klíče 'key' v tabulce
-    size_t index_in_arr = htab_hash_function(key) % t->arr_size;
-    // inicializace dvou ukazaleů: prev_element bude ukazovat na element
-    databox * element, * prev_element;
-    element = prev_element = t->ptr_arr[index_in_arr];
-    
-    // I. | NULL |
-    // prázdný seznam
-    if (element == NULL) 
-        return false;
-
-    // II. | del | -> | NULL |
-    // prvek je první v seznamu, NEMÁ následníka
-    if (element->next == NULL) 
-        if (strcmp(element->data->key, key) == 0) {
-            FREE_DATA(element);
-            
-            t->ptr_arr[index_in_arr] = NULL;
-            return true;
-        }
-
-    // III. | del | -> | ptr | -> ...
-    // prvek je první v seznamu, MÁ následníka
-    if (element->next != NULL) 
-        if (strcmp(element->data->key, key) == 0) {
-            t->ptr_arr[index_in_arr] = element->next;
-
-            FREE_DATA(element);
-            
-            return true;
-        }    
-
-    // IV. ... -> | ptr | -> | del | -> | NULL |
-    //     ... -> | ptr | -> | del | -> | ptr  | -> ...
-    // prvek je uprostřed nebo poslední v seznamu
-    while (element->next != NULL) {
-        prev_element = element;
-        element = element->next;
-        
-        // kontrola, jestli se se 'key' vyskytuje v tabulce
-        if (strcmp(element->data->key, key) == 0) {
-            prev_element->next = element->next;
-            
-            FREE_DATA(element);
-            
-            return true;
-        }        
-    }
-
-    return false;
 }
 
 htab_pair_t * htab_find(htab_t * t, htab_key_t key) {
@@ -213,81 +180,6 @@ htab_pair_t * htab_find(htab_t * t, htab_key_t key) {
     
     // pro případ nenalezení prvku
     return NULL;    
-}
-
-void htab_for_each(const htab_t * t, void (*f)(htab_pair_t *data)) {
-    
-    // projde pole ukazatelů na svázané listy
-    for (size_t i = 0; i < t->arr_size; i++) {
-        // ukazatel na první prvek v seznamu
-        databox * data = t->ptr_arr[i];
-        
-        // projde postupně všechny prvky seznamu
-        while(data != NULL) {
-            // aplikace funkce
-            f(data->data);     
-            data = data->next;
-        }
-    }
-}
-
-void htab_free(htab_t * t) {
-    
-    // volá funkci clear pro vymazání dat z tabulky
-    htab_clear(t);
-    
-    // uvolní strukturu tabulky
-    free(t);
-}
-
-size_t htab_hash_function(const char *str) {
-    #ifndef HASHTEST
-    uint32_t hash = 0;     // 32 bitů
-    const unsigned char *p;
-    for(p = (const unsigned char *)str; *p != '\0'; p++)
-        hash = (65599 * hash) + *p;
-
-    #else
-
-    typedef unsigned short int HashIndexType;
-    unsigned char Random8[256];
-
-    HashIndexType hash;
-    unsigned char h1, h2;
-
-    if (*str == 0) return 0;
-    h1 = *str; h2 = *str + 1;
-    str++;
-    while (*str) {
-        h1 = Random8[h1 ^ *str];
-        h2 = Random8[h2 ^ *str];
-        str++;
-    }
-  
-    // rozmezí indexu 0..65535 
-    hash = ((HashIndexType)h1 << 8)|(HashIndexType)h2;
-    
-    #endif /* HASHTEST */
-
-    return hash;
-}
-
-htab_t * htab_init(size_t n) {
-    // alokace paměti na hromadě
-    htab_t *hash_table = malloc(sizeof(htab_t) + (n * sizeof(databox)));
-    // v případě chyby alokace se ukončí program
-    if (hash_table == NULL) 
-        return NULL;
-
-    // inicializace vstupních hodnot tabulky
-    hash_table->arr_size = n;
-    hash_table->size = 0;
-    
-    // nastavení kořenových ukazatelů na NULL
-    for (size_t i = 0; i < n; i++) 
-        hash_table->ptr_arr[i] = NULL;
-    
-    return hash_table;
 }
 
 htab_pair_t * htab_lookup_add(htab_t * t, htab_key_t key) {
@@ -366,69 +258,117 @@ size_t htab_size(const htab_t * t) {
     return t->size;
 }
 
+size_t htab_bucket_count(const htab_t * t) {
+    return t->arr_size;
+}
+
+void htab_clear(htab_t * t) {
+    
+    // projde pole ukazatelů na svázané listy
+    for (size_t i = 0; i < t->arr_size; i++) {
+        
+        databox * del_data = t->ptr_arr[i];          // ukazatel na první prvek v seznamu
+        char del_str[MAX_WORD_LEN + 1];              // buffer pro hledaný string
+        
+        // odstraňuje prvky dokud žádný v seznamu nezůstane
+        while(del_data != NULL) {
+            databox * new_del_data = del_data->next; // nastavení ukazatele na další prvek před vymazáním původního
+            strcpy(del_str, del_data->data->key);    // zkopírování hledaného textu do bufferu
+            htab_erase(t, del_str);                  // uvolnění prvku z paměti
+            del_data = new_del_data;                 // posun ukazatele na další prvek
+        }
+    }
+
+    t->size = 0;
+}
+
+bool htab_erase(htab_t * t, htab_key_t key) {
+    // získání indexu podle klíče 'key' v tabulce
+    size_t index_in_arr = htab_hash_function(key) % t->arr_size;
+    // inicializace dvou ukazaleů: prev_element bude ukazovat na element
+    databox * element, * prev_element;
+    element = prev_element = t->ptr_arr[index_in_arr];
+    
+    // I. | NULL |
+    // prázdný seznam
+    if (element == NULL) 
+        return false;
+
+    // II. | del | -> | NULL |
+    // prvek je první v seznamu, NEMÁ následníka
+    if (element->next == NULL) 
+        if (strcmp(element->data->key, key) == 0) {
+            FREE_DATA(element);
+            
+            t->ptr_arr[index_in_arr] = NULL;
+            return true;
+        }
+
+    // III. | del | -> | ptr | -> ...
+    // prvek je první v seznamu, MÁ následníka
+    if (element->next != NULL) 
+        if (strcmp(element->data->key, key) == 0) {
+            t->ptr_arr[index_in_arr] = element->next;
+
+            FREE_DATA(element);
+            
+            return true;
+        }    
+
+    // IV. ... -> | ptr | -> | del | -> | NULL |
+    //     ... -> | ptr | -> | del | -> | ptr  | -> ...
+    // prvek je uprostřed nebo poslední v seznamu
+    while (element->next != NULL) {
+        prev_element = element;
+        element = element->next;
+        
+        // kontrola, jestli se se 'key' vyskytuje v tabulce
+        if (strcmp(element->data->key, key) == 0) {
+            prev_element->next = element->next;
+            
+            FREE_DATA(element);
+            
+            return true;
+        }        
+    }
+
+    return false;
+}
+
+void htab_free(htab_t * t) {
+    // volá funkci clear pro vymazání dat z tabulky
+    htab_clear(t);
+    
+    // uvolní strukturu tabulky
+    free(t);
+}
 
 // - - - - - - - - - - - - - - - - - - - - //
 // - - - - - - - - M_A_I_N - - - - - - - - //
 // - - - - - - - - - - - - - - - - - - - - //
-int main ()
-{
+int main () {
     // zavolání funkce pro inicializaci tabulky    
     htab_t *hash_table = htab_init(HASH_TABLE_DIMENSION);
     if (hash_table == NULL)
         return error_exit("Nepovedlo se alokovat tabulku do paměti!\n");
-    
-    // char word[MAX_WORD_LEN + 1];
-    // int word_len = 0;
-    // FILE *file_input = stdin;
-    // bool warning = true;
-    
-    // // čte postupně všechna slova ze stdin
-    // while ((word_len = read_word(word, MAX_WORD_LEN, file_input)) != EOF) {
-    //     // prázdný řetězec bude přeskočen
-    //     if (word_len == 0) continue;
-    //     // vytisknutí chybové hlášky v případě delšího slova
-    //     if (warning && word_len > MAX_WORD_LEN) {
-    //         warning_msg("Bylo nalezeno příloš dlouhé slovo!\n");
-    //         warning = false;
-    //     }
 
-    //     // inicializace nového slova pro uložení do paměti
-    //     char *new_word;
-    //     new_word = malloc(MAX_WORD_LEN + 1);
-    //     strcpy(new_word, word);
+    // testování funkcionality tabulky na 200 číslech
+    for (int i = 0; i < 200; i++) {
+        char *new_word;
+        new_word = malloc(MAX_WORD_LEN);
+        sprintf(new_word, "%d", rand() % 50);
 
-    //     // pokud již zadané slovo existuje, vrátí se 
-    //     bool free_word = false;
-    //     if(htab_find(hash_table, new_word) != NULL)
-    //         free_word = true;
+        bool free_word = false;
+        if(htab_find(hash_table, new_word) != NULL)
+            free_word = true;
+
+        if (htab_lookup_add(hash_table, new_word) == NULL)
+            return error_exit("Chyba při allokaci paměti pro slovo '%s'!\n", new_word);
         
-    //     // vyhledá slovo a inkrementuje četnost výskytu nebo ho přidá do seznamu
-    //     if (htab_lookup_add(hash_table, new_word) == NULL)
-    //         return error_exit("Chyba při allokaci paměti pro slovo '%s'!\n", new_word);
+        if (free_word) free(new_word);  
+    }
 
-    //     // pokud slovo bylo nalezeno, vyjme se z paměti
-    //     if (free_word) free(new_word);
-    // }
-
-    #ifdef MOVETEST
-    
-        // přesunutí tabulky
-        htab_t *new_hash_table = htab_move(5, hash_table);
-
-        // vytisknutí dat 'new_hash_table'
-        print_htab_all(new_hash_table);
-
-        // uvolnění tabulky z paměti
-        htab_free(new_hash_table);
-
-    #else
-
-        // vytisknutí dat 'hash_table'
-        print_htab_all(hash_table);
-
-    #endif  /* MOVETEST */
-
-    // vytisknutí dat 'new_hash_table'
+    // vytisknutí dat 'hash_table'
     print_htab_all(hash_table);
 
     // uvolnění tabulky z paměti
