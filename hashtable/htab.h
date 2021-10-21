@@ -2,7 +2,7 @@
  *  Soubor: htab.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	20. 10. 2021 23:42:09
+ *  Poslední změna:	21. 10. 2021 11:59:35
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -21,6 +21,14 @@
 #include <stdint.h>     // uint32
 #include <stdarg.h>     // pro va_list
 
+
+// Nastavitelné parametry
+#define HASH_TABLE_DIMENSION 5   // počet řádků hashovací tabulky
+#define MAX_WORD_LEN 127         // maximální délka identifikátoru
+#define STACK_SIZE 50            // velikost zásobníku pro tabulky symbolů
+
+
+
 // - - - - - - - - - - - - - - - - - - - - //
 // - - - - Datové typy a struktury - - - - //
 // - - - - - - - - - - - - - - - - - - - - //
@@ -36,34 +44,84 @@ typedef struct htab_fce_item {
 } *htab_fce_item_ptr;
 
 // Dvojice dat v tabulce
+
+// ! vymazat
 typedef struct htab_pair {
     htab_key_t key;              // identifikátor
-    htab_value_t value;          // asociovaná hodnota
     htab_fce_item_ptr ptr;       // ukazatel na strukturu funkce tabulky
+    htab_value_t value;          // asociovaná hodnota
 } htab_pair_t;
 
 // Položka seznamu
 typedef struct htab_item {
+    // * přidat
+    // htab_key_t key;              // identifikátor
+    // htab_fce_item_ptr ptr;       // ukazatel na strukturu funkce tabulky
+    
+    // ! vymazat
     htab_pair_t *data;
+    
     struct htab_item *next;
 } databox;
 
 // Struktura tabulky
 typedef struct htab {
-    size_t size;
     size_t arr_size;
     databox *ptr_arr[];
 } htab_t;
 
-// struktura zásobníku rámců tabulek symbolů
-typedef struct htab_stack {
+// Struktura zásobníku rámců tabulek symbolů/identifikátorů
+typedef struct stack {
+    size_t size;                 // velikost zásobníku
     size_t top;                  // ukazatel na vrchol zásobníku
-    htab_t htab_stack;
-} htab_stack_t;
+    htab_t *stack[];             // pole hashovacích tabulek
+} stack_t;
 
-// Nastavitelný parametr počtu řádků tabulky
-#define HASH_TABLE_DIMENSION 5
-#define MAX_WORD_LEN 127
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+// - - - - Funkce pro zásobník hashovacích stránek - - - - //
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+/**
+ * @brief Inicializuje zásobník
+ * @param n Velikost zásobníku
+ * @return Inicializovaný zásobník na hromadě
+ */
+stack_t * stack_init(size_t n);
+
+/**
+ * @brief Rozšíří tabulku z původní velikosti na dvojnásobnou
+ * @param s Struktura zásobníku tabulek symbolů
+ * @param n Velikost zásobníku
+ * @return Nově rozšířený zásobník
+ */
+stack_t * stack_resize(stack_t * s, size_t n);
+
+/**
+ * @brief Vymaže všechny prvky zásobníku
+ * @param s Struktura zásobníku tabulek symbolů
+ */
+void stack_clear(stack_t * s);
+
+/**
+ * @brief Destruktor zásobníku
+ * @param s Struktura zásobníku tabulek symbolů
+ */
+void stack_free(stack_t * s);
+
+/**
+ * @brief Rozptylovací (hash) funkce
+ * @param s Struktura zásobníku tabulek symbolů
+ * @param t Hashovací tabulka
+ */
+void stack_push(stack_t * s, htab_t * t);
+
+/**
+ * @brief Rozptylovací (hash) funkce
+ * @param s Struktura zásobníku tabulek symbolů
+ */
+void stack_pop(stack_t * s);
+
 
 
 // - - - - - - - - - - - - - - - - - - - - - - //
@@ -89,21 +147,7 @@ htab_t *htab_init (size_t n);
  * @param from Odkaz na strukturu původní hashovací tabulky
  * @return Ukazatel na nově-přesunutou tabulku
  */
-htab_t *htab_move (size_t n, htab_t *from);    
-  
-/**
- * @brief Získá počet záznamů v tabulce t->size
- * @param t Struktura tabulka
- * @return Vrátí počet prvků tabulky
- */
-size_t htab_size (const htab_t * t);   
-          
-/**
- * @brief Získá ze struktury t->arr_size velikost pole
- * @param t Struktura hashovací tabulky
- * @return Vrátí velikost pole
- */
-size_t htab_bucket_count (const htab_t * t);     
+htab_t *htab_move (size_t n, htab_t *from);     
 
 /**
  * @brief Funkce pro vyhledání prvku v tabulce podle zadaného 'string' klíče

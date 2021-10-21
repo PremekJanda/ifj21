@@ -2,7 +2,7 @@
  *  Soubor: htab.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	14. 10. 2021 13:58:26
+ *  Poslední změna:	21. 10. 2021 12:07:14
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -89,7 +89,6 @@ void warning_msg(const char *fmt, ...) {
  */
 #define FREE_DATA(e) \
     free((void *)(e)->data->key); \
-    /* free((e)->data->value); */ \
     free((e)->data); \
     free((e));
 
@@ -105,16 +104,97 @@ void warning_msg(const char *fmt, ...) {
     /* inicializace dat */ \
     (e)->data->value = 1; \
     (e)->data->key = (k); \
-    (e)->next = NULL; \
-    (t)->size++;
+    (e)->next = NULL;
 
 
 
 
-// - - - - - - - - - - - - - - - - - - - - - - - - //
-// - - - - Funkce pro pro práci s tabulkou - - - - //
-// - - - - - - - - - - - - - - - - - - - - - - - - //
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+// - - - - Funkce pro zásobník hashovacích stránek - - - - //
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
+stack_t * stack_init(size_t n) {
+    // alokace paměti na hromadě
+    stack_t *stack = malloc(sizeof(stack_t) + (sizeof(htab_t) * n));
+    // v případě chyby alokace se ukončí program
+    if (stack == NULL) 
+        return NULL;
+
+    // inicializace vstupních hodnot tabulky
+    stack->size = n;
+    stack->top = -1;
+    
+    // nastavení kořenových ukazatelů na NULL
+    for (size_t i = 0; i < n; i++)
+        stack->stack[i] = NULL;
+    
+    return stack;
+}
+
+stack_t * stack_resize(stack_t * s, size_t new_size) {
+    // vytvoří nový 2x větší zásobník
+    stack_t * new_stack = stack_init(new_size);
+
+    // projde celý předešlý zásobník a nakopíruje ho do nového
+    for (size_t i = 0; i <= s->size; i++) 
+        new_stack->stack[i] = s->stack[i];
+    
+    // uvolní předešlý zásobník
+    stack_free(s);
+
+    return new_stack;
+}
+
+void stack_clear(stack_t * s) {
+    // projde všechny prvky a vymaže je
+    for (size_t i = 0; i < s->size; i++)
+        htab_free(s->stack[i]);
+    
+}
+
+void stack_free(stack_t * s) {
+    // vymaže všechna data ze stacku
+    stack_clear(s);
+    // uvolní paměť tabulky
+    free(s);
+}
+
+void stack_push(stack_t * s, htab_t * t) {
+    // chyba při plné tabulce
+    if (s->top == (s->size - 1)) {
+        warning_msg("Zásobník rámců tabulek symbolů je plný! Kapacita rozšířena z %ld na %ld.\n", s->size, s->size*2);
+        // rozšíří zásobník
+        stack_resize(s, s->size*2);
+        return;
+    }
+    
+    // zvýší ukazetel na vrchol zásobníku
+    s->top++;
+    // přidá hashtabulku do zásobníku rámců
+    s->stack[s->top] = t;
+}
+
+void stack_pop(stack_t * s) {
+    // chyba při prázdné tabulce
+    if (s->top == -1) {
+        warning_msg("Zásobník rámců tabulek symbolů je prázdný!\n");
+        return;
+    }
+
+    // vymaže daný rámec na zásobníku
+    htab_free(s->stack[s->top]);
+    // posune ukazatel níže
+    s->top--;
+}
+
+
+
+
+
+// - - - - - - - - - - - - - - - - - - - - - - //
+// - - - - Funkce pro práci s tabulkou - - - - //
+// - - - - - - - - - - - - - - - - - - - - - - //
+// ? askdnaslkdnalskdnalskdn
 size_t htab_hash_function(const char *str) {
     uint32_t hash = 0;     // 32 bitů
     const unsigned char *p;
@@ -131,9 +211,8 @@ htab_t * htab_init(size_t n) {
     if (hash_table == NULL) 
         return NULL;
 
-    // inicializace vstupních hodnot tabulky
+    // inicializace vstupních hodnot zásobníku
     hash_table->arr_size = n;
-    hash_table->size = 0;
     
     // nastavení kořenových ukazatelů na NULL
     for (size_t i = 0; i < n; i++) 
@@ -168,12 +247,9 @@ htab_pair_t * htab_find(htab_t * t, htab_key_t key) {
     // iterace, dokud se nenarazí na NULL ptr
     while (element != NULL) {
         // porovnání, pokud se záznam vyskytuje -> vráti se
-        if (strcmp(element->data->key, key) == 0) {
-            // printf("OK found: '%s' : '%s'\n", key, element->data->key);
+        if (strcmp(element->data->key, key) == 0)
             return element->data;
-        }
 
-        // printf("find: %s : %s\n", key, element->data->key);
         // printf("next\n");
         element = element->next;
     }
@@ -254,16 +330,7 @@ htab_t *htab_move(size_t n, htab_t *from) {
     return new_hash_table;
 }
 
-size_t htab_size(const htab_t * t) {
-    return t->size;
-}
-
-size_t htab_bucket_count(const htab_t * t) {
-    return t->arr_size;
-}
-
 void htab_clear(htab_t * t) {
-    
     // projde pole ukazatelů na svázané listy
     for (size_t i = 0; i < t->arr_size; i++) {
         
@@ -278,8 +345,6 @@ void htab_clear(htab_t * t) {
             del_data = new_del_data;                 // posun ukazatele na další prvek
         }
     }
-
-    t->size = 0;
 }
 
 bool htab_erase(htab_t * t, htab_key_t key) {
