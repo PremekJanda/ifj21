@@ -2,7 +2,7 @@
  *  Soubor: htab.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	21. 10. 2021 11:59:35
+ *  Poslední změna:	21. 10. 2021 21:23:40
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -14,18 +14,18 @@
 #ifndef __HTAB_H__
 #define __HTAB_H__
 
-#include <stdio.h>      // size_t
-#include <string.h>     // string fce
-#include <stdbool.h>    // bool
-#include <stdlib.h>     // malloc
-#include <stdint.h>     // uint32
-#include <stdarg.h>     // pro va_list
+#include <stdio.h>                  // size_t
+#include <string.h>                 // string fce
+#include <stdbool.h>                // bool
+#include <stdlib.h>                 // malloc
+#include <stdint.h>                 // uint32
+#include <stdarg.h>                 // pro va_list
 
 
 // Nastavitelné parametry
-#define HASH_TABLE_DIMENSION 5   // počet řádků hashovací tabulky
-#define MAX_WORD_LEN 127         // maximální délka identifikátoru
-#define STACK_SIZE 50            // velikost zásobníku pro tabulky symbolů
+#define HASH_TABLE_DIMENSION 5      // počet řádků hashovací tabulky
+#define MAX_WORD_LEN 127            // maximální délka identifikátoru
+#define STACK_SIZE 50               // velikost zásobníku pro tabulky symbolů
 
 
 
@@ -33,61 +33,54 @@
 // - - - - Datové typy a struktury - - - - //
 // - - - - - - - - - - - - - - - - - - - - //
 // Typy
-typedef const char * htab_key_t; // typ klíče
-typedef int htab_value_t;        // typ hodnoty
+typedef const char * key_t;         // typ klíče
+typedef int top_t;                  // typ hodnoty
 
 // Prvním prvekem vázaného seznamu je návratová hodnota
 // Další prvky jsou parametry funkce
-typedef struct htab_fce_item {
-    htab_key_t key;              // identifikátor
-    struct htab_fce_item *item;  // ukazatel na další
-} *htab_fce_item_ptr;
-
-// Dvojice dat v tabulce
-
-// ! vymazat
-typedef struct htab_pair {
-    htab_key_t key;              // identifikátor
-    htab_fce_item_ptr ptr;       // ukazatel na strukturu funkce tabulky
-    htab_value_t value;          // asociovaná hodnota
-} htab_pair_t;
+typedef struct fce_item {
+    key_t key;                      // parametry a datové typy
+    struct fce_item *next_f_item;   // ukazatel na další prvek (parametr / dat. typ)
+} fce_item_t;
 
 // Položka seznamu
 typedef struct htab_item {
-    // * přidat
-    // htab_key_t key;              // identifikátor
-    // htab_fce_item_ptr ptr;       // ukazatel na strukturu funkce tabulky
-    
-    // ! vymazat
-    htab_pair_t *data;
-    
-    struct htab_item *next;
-} databox;
+    key_t key;                      // identifikátor
+    fce_item_t * fce;               // ukazatel na strukturu funkce tabulky    
+    struct htab_item *next_h_item;  // ukazatel na další prvek
+} htab_item_t;
 
 // Struktura tabulky
 typedef struct htab {
-    size_t arr_size;
-    databox *ptr_arr[];
+    size_t arr_size;                // počet úvodních uzlů (řádků) tabulky
+    htab_item_t *ptr_arr[];         // pole ukazatelů na úvodní prvky (uzly) v řadě
 } htab_t;
 
 // Struktura zásobníku rámců tabulek symbolů/identifikátorů
 typedef struct stack {
-    size_t size;                 // velikost zásobníku
-    size_t top;                  // ukazatel na vrchol zásobníku
-    htab_t *stack[];             // pole hashovacích tabulek
+    size_t size;                    // velikost zásobníku
+    top_t top;                      // ukazatel na vrchol zásobníku
+    htab_t *stack[];                // pole hashovacích tabulek
 } stack_t;
 
 
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - //
+// - - - - Funkce pro operace nad rámci funkcí - - - - //
+// - - - - - - - - - - - - - - - - - - - - - - - - - - //
+// TODO
+
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
-// - - - - Funkce pro zásobník hashovacích stránek - - - - //
+// - - - - Funkce pro zásobník hashovacích tabulek - - - - //
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
 /**
  * @brief Inicializuje zásobník
  * @param n Velikost zásobníku
  * @return Inicializovaný zásobník na hromadě
  */
-stack_t * stack_init(size_t n);
+stack_t * stack_init (size_t n);
 
 /**
  * @brief Rozšíří tabulku z původní velikosti na dvojnásobnou
@@ -95,59 +88,60 @@ stack_t * stack_init(size_t n);
  * @param n Velikost zásobníku
  * @return Nově rozšířený zásobník
  */
-stack_t * stack_resize(stack_t * s, size_t n);
+stack_t * stack_resize (stack_t *s, size_t n);
 
 /**
  * @brief Vymaže všechny prvky zásobníku
  * @param s Struktura zásobníku tabulek symbolů
  */
-void stack_clear(stack_t * s);
+void stack_clear (stack_t *s);
 
 /**
  * @brief Destruktor zásobníku
  * @param s Struktura zásobníku tabulek symbolů
  */
-void stack_free(stack_t * s);
+void stack_free (stack_t *s);
 
 /**
  * @brief Rozptylovací (hash) funkce
  * @param s Struktura zásobníku tabulek symbolů
  * @param t Hashovací tabulka
  */
-void stack_push(stack_t * s, htab_t * t);
+void stack_push (stack_t *s, htab_t *t);
 
 /**
  * @brief Rozptylovací (hash) funkce
  * @param s Struktura zásobníku tabulek symbolů
  */
-void stack_pop(stack_t * s);
+void stack_pop (stack_t *s);
 
 
 
 // - - - - - - - - - - - - - - - - - - - - - - //
 // - - - - Funkce pro práci s tabulkou - - - - //
 // - - - - - - - - - - - - - - - - - - - - - - //
+
 /**
  * @brief Rozptylovací (hash) funkce
  * @param str Řetěrec, pro který se hledá index
  * @return Index prvku v tabulce
  */
-size_t htab_hash_function(htab_key_t str);
+size_t htab_hash_function(key_t str);
 
 /**
  * @brief Konstruktor tabulky
  * @param n Velikost 'arr_size' tabulky
  * @return Ukazatel na nově-vytvořenou tabulku
  */
-htab_t *htab_init (size_t n);      
+htab_t * htab_init (size_t n);      
               
 /**
  * @brief Přesun dat do nově-přesunuté tabulky
- * @param n Velikost'arr_size' přesunuté tabulky
+ * @param n Velikost 'arr_size' přesunuté tabulky
  * @param from Odkaz na strukturu původní hashovací tabulky
  * @return Ukazatel na nově-přesunutou tabulku
  */
-htab_t *htab_move (size_t n, htab_t *from);     
+htab_t * htab_resize (size_t n, htab_t *from);     
 
 /**
  * @brief Funkce pro vyhledání prvku v tabulce podle zadaného 'string' klíče
@@ -155,7 +149,7 @@ htab_t *htab_move (size_t n, htab_t *from);
  * @param key Řetězec, podle kterého se hledá
  * @return V případě nalezení ukazatel na datový pár (key,value), v opačném NULL
  */
-htab_pair_t * htab_find (htab_t * t, htab_key_t key);  
+htab_item_t * htab_find (htab_t *t, key_t key);  
 
 /**
  * @brief Funkce vyhledá v hashovací tabulce dané slovo a inkrementuje jeho četnost výskytu, pokud nenajde založí nový záznam
@@ -163,7 +157,7 @@ htab_pair_t * htab_find (htab_t * t, htab_key_t key);
  * @param key Řetězec, podle kterého se hledá
  * @return Ukazatel na datový pár (key,value)
  */
-htab_pair_t * htab_lookup_add (htab_t * t, htab_key_t key);
+htab_item_t * htab_lookup_add (htab_t *t, key_t key);
 
 /**
  * @brief Ruší zadaný záznam
@@ -171,25 +165,42 @@ htab_pair_t * htab_lookup_add (htab_t * t, htab_key_t key);
  * @param key Řetězec, podle kterého se hledá prvek na odstranění
  * @return Úspěch->true, Neúspěch->false
  */
-bool htab_erase (htab_t * t, htab_key_t key);
-
-/**
- * @brief Projde všechny záznamy a zavolá na ně funkci f
- * @param t Struktura hashovací tabulky
- * @param f ukazatel na funkci s parameterm páru dat (key,value)
- */
-void htab_for_each (const htab_t * t, void (*f)(htab_pair_t *data));
+bool htab_erase_item (htab_t *t, key_t key);
 
 /**
  * @brief Ruší všechny záznamy
  * @param t Struktura hashovací tabulky
  */
-void htab_clear (htab_t * t);
+void htab_clear (htab_t *t);
     
 /**
  * @brief Destruktor tabulky
  * @param t Struktura hashovací tabulky
  */
-void htab_free (htab_t * t);     
+void htab_free (htab_t *t);
+
+
+
+// - - - - - - - - - - - - - - - - //
+// - - - -  Pomocné funkce - - - - //
+// - - - - - - - - - - - - - - - - //
+
+/**
+ * @brief Projde všechny záznamy a zavolá na ně funkci f
+ * @param t Struktura hashovací tabulky
+ */
+void htab_print (const htab_t *t);
+
+/**
+ * @brief Funkce vypíše chybovou hlášku na stderr
+ * @param fmt Text chybové hlášky
+ */
+int error_exit(const char *fmt, ...);
+
+/**
+ * @brief Funkce vypíše upozornění na stderr
+ * @param fmt Text zprávy upozornění
+ */
+void warning_msg(const char *fmt, ...);
 
 #endif // __HTAB_H__
