@@ -2,7 +2,7 @@
  *  Soubor: lexicon.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	14. 10. 2021 00:45:24
+ *  Poslední změna:	22. 10. 2021 11:42:03
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -34,8 +34,8 @@ typedef struct Token {
     int line;
 } tToken;
 
-#define TOKEN_LENGTH 100
-#define REALL_TOKEN_LEN 100
+#define TOKEN_LENGTH 30
+#define REALL_TOKEN_LEN 30
 char keywords[15][10] = {"do", "else", "end", "function", "global", "if", "integer", "local", "nil", "number", "require", "return", "string", "then", "while"};
 
 
@@ -68,5 +68,21 @@ void printToken(tToken *token);
  * @return Vrací TRUE, pokud je keyword, else FALSE
  */
 bool IsKeyWord(tToken *token);
+
+/**
+ * @brief funkce pro dokončení tokenů ve start fázi
+ * @param token struktura Token
+ * @param i ukazatel na index atributu
+ * @param string řetězec, který slouží na určení typu tokenu
+ * @param c čtený charakter
+ */
+void STokenFinish(tToken *token, int *i, char *string, char c);
+
+/**
+ * @brief funkce pro tvorbu tokenů
+ * @param token struktura Token
+ * @return Vrací 0 pokud nenastane chyba, jiank 1
+ */
+int scanner(tToken *token);
 
 #endif // __LEXIKON__
