@@ -2,7 +2,7 @@
  *  Soubor: htab.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	21. 10. 2021 21:21:29
+ *  Poslední změna:	31. 10. 2021 20:12:56
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -12,6 +12,65 @@
 
 #include "htab.h"
 
+#define CREATE_HTAB(hash_table) \
+    htab_t *hash_table = htab_init(HASH_TABLE_DIMENSION); \
+    if (hash_table == NULL) \
+        return error_exit("Nepovedlo se alokovat tabulku do paměti!\n"); \
+    /* testování funkcionality tabulky na 200 číslech*/ \
+    for (int i = 0; i < 200; i++) { \
+        char *new_word; \
+        new_word = malloc(MAX_WORD_LEN); \
+        sprintf(new_word, "%d", rand() % 50); \
+        bool free_word = false; \
+        /* pokud bude identifikátor nalezen, bude později odstraněn*/ \
+        if(htab_find(hash_table, new_word) != NULL) { \
+            free_word = true; \
+        } else { \
+            /* vytvoří nový záznam v tabulce*/ \
+            if (htab_lookup_add(hash_table, new_word) == NULL) \
+                return error_exit("Chyba při allokaci paměti pro slovo '%s'!\n", new_word); \
+        } \
+        /* alokovaný identifikátor již existuje v tabulce a může být odstraněn*/ \
+        if (free_word)  \
+            free(new_word);   \
+    }
+
+
+
+
+// - - - - - - - - - - - - - - - - - - - - //
+// - - - - - - - - M_A_I_N - - - - - - - - //
+// - - - - - - - - - - - - - - - - - - - - //
+
+int main() {
+    
+    stack_t *stack = stack_init(STACK_SIZE);
+    if (stack == NULL)
+        return error_exit("Nepovedlo se alokovat zásobník do paměti!\n");
+
+    // vytvoření hashovacích tabulek
+    CREATE_HTAB(hash_table0)
+
+    stack_push(&stack, hash_table0);
+
+    fce_item_push(&htab_find(hash_table0, "2")->fce, "f_return");
+    fce_item_push(&htab_find(hash_table0, "2")->fce, "f_val_type");
+    fce_item_push(&htab_find(hash_table0, "2")->fce, "f_val");
+    
+    fce_item_push(&hash_table0->ptr_arr[1]->next_h_item->fce, "f_return");
+    fce_item_push(&hash_table0->ptr_arr[1]->next_h_item->fce, "f_val_type");
+    fce_item_push(&hash_table0->ptr_arr[1]->next_h_item->fce, "f_va");
+
+    stack_print(stack);
+
+    // uvolnění zásobníku z paměti
+    stack_free(stack);  
+    
+    return 0;
+}
+
+
+
 // - - - - - - - - - - - - - - - - - //
 // - - - - - - - Makra - - - - - - - //
 // - - - - - - - - - - - - - - - - - //
@@ -19,27 +78,38 @@
  * @brief Uvolní data z paměti
  * @param e element/item Prvek k uvolnění z paměti
  */
-#define FREE_DATA(e) \
-    free((void *)(e)->fce->key);  \
+#define FREE_ELEMENT(e) \
     free((void *)(e)->key); \
-    free((e)->fce); \
     free((e));
+
+#define FREE_FCE(e) \
+    free((void *)(e)->fce->key);  \
+    free((e)->fce);
 
 /**
  * @brief Alokování dat na hromadě a prvotní inincializace dat
  * @param e element/item 
  * @param k key Řetězec podle kterého se hledá
  */
-#define INIT_ELEMENT(e, k, t) \
+#define INIT_ELEMENT(e, k) \
     /* alokování bloků na hromadě */ \
     (e) = (htab_item_t *)malloc(sizeof(htab_item_t));       if ((e) == NULL) return NULL; \
-    (e)->fce = (fce_item_t *)malloc(sizeof(fce_item_t));    if ((e->fce) == NULL) return NULL; \
     /* inicializace dat */ \
     (e)->key = (k); \
     (e)->next_h_item = NULL; \
-    (e)->fce->key = NULL; \
-    (e)->fce->next_f_item = NULL; \
+    (e)->fce = NULL;
 
+
+/**
+ * @brief Alokování dat na hromadě a prvotní inincializace dat
+ * @param e element/item 
+ * @param k key Řetězec podle kterého se hledá
+ */
+#define INIT_FCE(e, k) \
+    (e) = (fce_item_t *)malloc(sizeof(fce_item_t)); \
+    if ((e) == NULL) error_exit("Nepovedlo se alokovat položku vázaného seznamu parametrů funkce!\n"); \
+    (e)->key = (k); \
+    (e)->next_f_item = NULL;
 
 
 
@@ -65,25 +135,28 @@ stack_t * stack_init(size_t n) {
     return stack;
 }
 
-stack_t * stack_resize(stack_t *s, size_t new_size) {
-    // vytvoří nový 2x větší zásobník
-    stack_t * new_stack = stack_init(new_size);
+void stack_expand(stack_t **s, size_t new_size) {
+    if (((*s)->top + 1) > (int)new_size) {
+        warning_msg("Kapacita zásobníku rámců tabulek symbolů nelze snížit z důvodu odstranění dat!\n");
+        return;
+    }
+
+    // realokuje se prostor pro přidání dalších hashovacích tabulek
+    *s = realloc(*s, sizeof(stack_t) + (sizeof(htab_t) * new_size));
 
     // projde celý předešlý zásobník a nakopíruje ho do nového
-    for (size_t i = 0; i <= s->size; i++) 
-        new_stack->stack[i] = s->stack[i];
+    for (size_t i = (*s)->size; i < new_size; i++) 
+        (*s)->stack[i] = NULL;
     
-    // uvolní předešlý zásobník
-    stack_free(s);
-
-    return new_stack;
+    // aktualizuje se velikost zásobníku
+    (*s)->size = new_size;
 }
 
 void stack_clear(stack_t *s) {
     // projde všechny prvky a vymaže je
     for (size_t i = 0; i < s->size; i++)
-        htab_free(s->stack[i]);
-    
+        if (s->stack[i] != NULL) 
+            htab_free(s->stack[i]);
 }
 
 void stack_free(stack_t *s) {
@@ -93,19 +166,18 @@ void stack_free(stack_t *s) {
     free(s);
 }
 
-void stack_push(stack_t *s, htab_t *t) {
+void stack_push(stack_t **s, htab_t *t) {
     // chyba při plné tabulce
-    if (s->top == (int)(s->size - 1)) {
-        warning_msg("Zásobník rámců tabulek symbolů je plný! Kapacita rozšířena z %ld na %ld.\n", s->size, s->size*2);
+    if ((*s)->top == (int)((*s)->size - 1)) {
+        warning_msg("Zásobník rámců tabulek symbolů je plný! Kapacita rozšířena z %ld na %ld.\n", (*s)->size, (*s)->size*2);
         // rozšíří zásobník
-        stack_resize(s, s->size*2);
-        return;
+        stack_expand(&(*s), (*s)->size*2);
     }
     
     // zvýší ukazetel na vrchol zásobníku
-    s->top++;
+    (*s)->top++;
     // přidá hashtabulku do zásobníku rámců
-    s->stack[s->top] = t;
+    (*s)->stack[(*s)->top] = t;
 }
 
 void stack_pop(stack_t *s) {
@@ -117,10 +189,10 @@ void stack_pop(stack_t *s) {
 
     // vymaže daný rámec na zásobníku
     htab_free(s->stack[s->top]);
+    s->stack[s->top] = NULL;
     // posune ukazatel níže
     s->top--;
 }
-
 
 
 
@@ -184,7 +256,7 @@ htab_item_t * htab_lookup_add(htab_t *t, key_t key) {
     // v případě prvního elementu v řadě
     if (element == NULL) {
         // alokace a inicializace dat
-        INIT_ELEMENT(element, key, t);
+        INIT_ELEMENT(element, key);
         t->ptr_arr[index_in_arr] = element;
         
         return element;
@@ -203,7 +275,7 @@ htab_item_t * htab_lookup_add(htab_t *t, key_t key) {
     } while (element != NULL);
     
     // prvek nebyl nalezen -> je vytvořen nový
-    INIT_ELEMENT(element, key, t);    
+    INIT_ELEMENT(element, key);    
     prev_element->next_h_item = element;
 
     return element;
@@ -244,7 +316,7 @@ htab_t * htab_resize(size_t n, htab_t *from) {
     return new_hash_table;
 }
 
-bool htab_erase_item(htab_t * t, key_t key) {
+bool htab_erase_item(htab_t *t, key_t key) {
     // získání indexu podle klíče 'key' v tabulce
     size_t index_in_arr = htab_hash_function(key) % t->arr_size;
     // inicializace dvou ukazaleů: prev_element bude ukazovat na element
@@ -260,7 +332,9 @@ bool htab_erase_item(htab_t * t, key_t key) {
     // prvek je první v seznamu, NEMÁ následníka
     if (element->next_h_item == NULL) 
         if (strcmp(element->key, key) == 0) {
-            FREE_DATA(element);
+            
+            fce_free(element->fce);
+            FREE_ELEMENT(element);
             
             t->ptr_arr[index_in_arr] = NULL;
             return true;
@@ -271,8 +345,9 @@ bool htab_erase_item(htab_t * t, key_t key) {
     if (element->next_h_item != NULL) 
         if (strcmp(element->key, key) == 0) {
             t->ptr_arr[index_in_arr] = element->next_h_item;
-
-            FREE_DATA(element);
+            
+            fce_free(element->fce);
+            FREE_ELEMENT(element);
             
             return true;
         }    
@@ -288,7 +363,8 @@ bool htab_erase_item(htab_t * t, key_t key) {
         if (strcmp(element->key, key) == 0) {
             prev_element->next_h_item = element->next_h_item;
             
-            FREE_DATA(element);
+            fce_free(element->fce);
+            FREE_ELEMENT(element);
             
             return true;
         }        
@@ -297,7 +373,9 @@ bool htab_erase_item(htab_t * t, key_t key) {
     return false;
 }
 
-void htab_clear(htab_t * t) {
+void htab_clear(htab_t *t) {  
+    if (t == NULL)
+        return;
     // projde pole ukazatelů na svázané listy
     for (size_t i = 0; i < t->arr_size; i++) {
         
@@ -314,74 +392,130 @@ void htab_clear(htab_t * t) {
     }
 }
 
-void htab_free(htab_t * t) {
+void htab_free(htab_t *t) {
+    if (t == NULL)
+        return;
+        
     // volá funkci clear pro vymazání dat z tabulky
     htab_clear(t);
-    
     // uvolní strukturu tabulky
     free(t);
 }
 
 
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - //
+// - - - - Funkce pro operace nad rámci funkcí - - - - //
+// - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
-// - - - - - - - - - - - - - - - - - - - - //
-// - - - - - - - - M_A_I_N - - - - - - - - //
-// - - - - - - - - - - - - - - - - - - - - //
-int main () {
-    // zavolání funkce pro inicializaci tabulky    
-    htab_t *hash_table = htab_init(HASH_TABLE_DIMENSION);
-    if (hash_table == NULL)
-        return error_exit("Nepovedlo se alokovat tabulku do paměti!\n");
-
-    // testování funkcionality tabulky na 200 číslech
-    for (int i = 0; i < 200; i++) {
-        char *new_word;
-        new_word = malloc(MAX_WORD_LEN);
-        sprintf(new_word, "%d", rand() % 50);
-
-        bool free_word = false;
-        // pokud bude identifikátor nalezen, bude později odstraněn
-        if(htab_find(hash_table, new_word) != NULL) {
-            free_word = true;        
-        } else {
-            // vytvoří nový záznam v tabulce
-            if (htab_lookup_add(hash_table, new_word) == NULL)
-                return error_exit("Chyba při allokaci paměti pro slovo '%s'!\n", new_word);
-        }
-        
-        // alokovaný identifikátor již existuje v tabulce a může být odstraněn
-        if (free_word) 
-            free(new_word);  
+void fce_item_push(fce_item_t **i, key_t key) {
+    // pokud se jedná o první prvek
+    if ((*i) == NULL) {
+        INIT_FCE((*i), key)
+        return;
     }
-
-    // vytisknutí dat 'hash_table'
-    htab_print(hash_table);
-
-    // uvolnění tabulky z paměti
-    htab_free(hash_table);  
     
-    return 0;
+    // posun na poslední prvek
+    fce_item_t *prev_item, *next_item;
+    prev_item = next_item = *i;
+    
+    // postup na konec seznamu
+    while ((next_item = next_item->next_f_item) != NULL) 
+        prev_item = next_item;
+    
+    // inicializace dalšího prvku
+    INIT_FCE(next_item, key)
+
+    // nastavení ukazatele na další prvek
+    prev_item->next_f_item = next_item;
 }
+
+void fce_free(fce_item_t *i) {
+    fce_item_t *next_item, *item = i;
+    
+    // první prvek je NULL
+    if (item == NULL)
+        return;
+    
+    do {
+        // posun na další prvek,, aby nedošlo ke smazání ukazatele
+        next_item = item->next_f_item;
+        // uvolnění paměti
+        free(item);
+    } while ((item = next_item) != NULL);
+}
+
 
 
 // - - - - - - - - - - - - - - - - //
 // - - - -  Pomocné funkce - - - - //
 // - - - - - - - - - - - - - - - - //
 
-void htab_print (const htab_t * t) {
+void stack_print (const stack_t *s) {
+    printf("\nSTACK   size: %ld\n", s->size);
+    for (top_t i = s->size - 1; i >= 0; i--) {
+        printf("[%d]->%s\n", i, (s->stack[i] == NULL) ? "" : "h");
+    }
+
+    bool stack_empty = true;
+    for (top_t i = s->size - 1; i >= 0; i--) {
+        if (s->stack[i] == NULL) 
+            continue;
+
+        stack_empty = false;
+        printf("\nHASHTABLE: stack[%d]\n", i);
+        htab_print(s->stack[i]);
+    }
+
+    if (stack_empty)
+        printf("\nStack is empty ¯\\_(ツ)_/¯\n");
+}
+
+void htab_print(const htab_t *t) {
     for (size_t i = 0; i < t->arr_size; i++) {
         // ukazatel na první prvek v seznamu
         htab_item_t * element = t->ptr_arr[i];
 
-        printf("Line %ld: ", i + 1);
+        printf("\tLine %ld\n", i + 1);
+        
         // projde postupně všechny prvky seznamu
-        while(element != NULL) {
-            printf("|%s|->", element->key); 
+        while(element != NULL) { 
+            item_print(element);
+
             element = element->next_h_item;
         }
-        printf("NULL\n");
+        printf("\n");
     }
+}
+
+void item_print(const htab_item_t *i) {
+    printf("\t\t%-3s ",i->key);
+    
+    if (i->fce == NULL) 
+        printf("není fce\n");
+    else
+        fce_print(i->fce);
+}
+
+void fce_print(const fce_item_t *i) {
+    // 
+    size_t counter = 0;
+    while(i != NULL) {
+        if (counter == 0) {
+            printf("Návratový typ: [%s] ", i->key);
+            
+        } else {
+            if ((counter % 2) == 1) 
+                printf("|typ:[%s],", i->key);
+            else
+                printf("hodnota:[%s]| -> ", i->key);
+        }
+
+        i = i->next_f_item;
+        counter++;
+    } 
+
+    printf("-|\n");
 }
 
 int error_exit(const char *fmt, ...) {

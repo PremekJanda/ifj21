@@ -2,7 +2,7 @@
  *  Soubor: htab.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	21. 10. 2021 21:23:40
+ *  Poslední změna:	31. 10. 2021 17:50:01
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -25,7 +25,7 @@
 // Nastavitelné parametry
 #define HASH_TABLE_DIMENSION 5      // počet řádků hashovací tabulky
 #define MAX_WORD_LEN 127            // maximální délka identifikátoru
-#define STACK_SIZE 50               // velikost zásobníku pro tabulky symbolů
+#define STACK_SIZE 5                // velikost zásobníku pro tabulky symbolů
 
 
 
@@ -65,12 +65,6 @@ typedef struct stack {
 
 
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - //
-// - - - - Funkce pro operace nad rámci funkcí - - - - //
-// - - - - - - - - - - - - - - - - - - - - - - - - - - //
-// TODO
-
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 // - - - - Funkce pro zásobník hashovacích tabulek - - - - //
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
@@ -88,7 +82,7 @@ stack_t * stack_init (size_t n);
  * @param n Velikost zásobníku
  * @return Nově rozšířený zásobník
  */
-stack_t * stack_resize (stack_t *s, size_t n);
+void stack_expand (stack_t **s, size_t n);
 
 /**
  * @brief Vymaže všechny prvky zásobníku
@@ -107,7 +101,7 @@ void stack_free (stack_t *s);
  * @param s Struktura zásobníku tabulek symbolů
  * @param t Hashovací tabulka
  */
-void stack_push (stack_t *s, htab_t *t);
+void stack_push (stack_t **s, htab_t *t);
 
 /**
  * @brief Rozptylovací (hash) funkce
@@ -181,6 +175,25 @@ void htab_free (htab_t *t);
 
 
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - //
+// - - - - Funkce pro operace nad rámci funkcí - - - - //
+// - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
+/**
+ * @brief Přidá nový prvek do seznamu
+ * @param i Struktura prvku seznamu
+ * @param key Řetězec, který se vloží do paměti
+ */
+void fce_item_push(fce_item_t **i, key_t key);
+
+/**
+ * @brief Vmaže celý vázaný seznam
+ * @param i Struktura prvku seznamu
+ */
+void fce_free(fce_item_t *i);
+
+
+
 // - - - - - - - - - - - - - - - - //
 // - - - -  Pomocné funkce - - - - //
 // - - - - - - - - - - - - - - - - //
@@ -189,7 +202,25 @@ void htab_free (htab_t *t);
  * @brief Projde všechny záznamy a zavolá na ně funkci f
  * @param t Struktura hashovací tabulky
  */
+void stack_print (const stack_t *t);
+
+/**
+ * @brief Projde všechny záznamy a zavolá na ně funkci f
+ * @param t Struktura hashovací tabulky
+ */
 void htab_print (const htab_t *t);
+
+/**
+ * @brief Projde všechny záznamy a zavolá na ně funkci f
+ * @param t Struktura hashovací tabulky
+ */
+void item_print (const htab_item_t *i);
+
+/**
+ * @brief Projde všechny záznamy a zavolá na ně funkci f
+ * @param t Struktura hashovací tabulky
+ */
+void fce_print (const fce_item_t *i);
 
 /**
  * @brief Funkce vypíše chybovou hlášku na stderr
