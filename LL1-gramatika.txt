@@ -1,50 +1,90 @@
-<prog> -> require "ifj21" <start>
-<start> -> <declare-list><function-list><statement-list><start>
-<start> -> eps
-<declare-list> -> <declare><declare-list>
-<declare-list> -> eps 
-<declare> -> local <id>:<type>
-<declare> -> global <id>:<type>
-
-<function-list> -> <function><end><function-list>
-<function-list> -> eps
-<function> -> function <id> (<func-assign_list>) : <type> 
-<func-assign-list> -> <func-assign>,<func-assign-list>
-<func-assign-list> -> eps
-<func-assign> -> <id>:<type>
-
-<if-list> -> <if-statement><else-statement><end><if-list>
-<if-list> -> eps
-<if-statement>-> if(<expression>) then <statement-list>
-<else-statement>-> else <statement-list>
-<else-statement> -> eps
-
-<while> -> <while_statement><end>
-<while-statement> -> while (<statement>) do <statement-list>
+<prog> -> require "ifj21" <statement-list>
 
 <statement-list> -> <statement><statement-list>
 <statement-list> -> eps
-<statement> -> <assign><declare-list><expression><while><if-list><function-list><statement-list>
+<statement> -> <assign> 
+<statement> -> <declare>
+<statement> -> <function-declare>
+<statement> -> <while>
+<statement> -> <if>
+<statement> -> <built-in-func-write>
+<statement> -> <function-call>
+<statement> -> <return>
 
-<assign> -> <id>=<id>
-<expression> -> <id><operator><id>
+<assign> -> <id-list> = <expr-list>
 
-<end> -> end
+<id-list> = id<id-another>
+<id-another> = ,id<id-another>
+<id-another> = eps
+
+<expr> -> <function-call>
+<expr> -> <built-in-func-call>
+<expr> -> id
+<expr> -> integer_expr
+<expr> -> string_expr
+<expr> -> number_expr
+<expr> -> nil
+
+<return> -> return <expr-list>
+<expr-list> -> <expr> <expr-another>
+<expr-list> -> eps
+<expr-another> -> , <expr><expr-another>
+<expr-another> -> eps
+
+<declare> -> local id:<type><declare-assign>
+<declare> -> global id:<type><declare-assign>
+<declare-assign> -> =<expr> 
+<declare-assign> ->eps
+
+<function-call> -> id(<expr-list>)
+<function-declare> -> function id (<func-assign_list>)  <return-types> <statement-list>  end
+<func-assign-list> -> <func-assign>  <func-assign-another>
+<func-assign-list> -> eps
+<func-assign-another> , <func-assign><func-assign-another>
+<func-assign-another> -> eps
+<func-assign> -> id:<type> 
+
+<return-types> -> eps
+<return-types> -> : <type><type-list>
+<type-list> -> ,<type><type-list>
+<type-list> -> eps
+
+<if> -> <if-statement><else-statement> end
+<if-statement>-> if <if-while-expression> then <statement-list>
+<else-statement>-> else <statement-list>
+<else-statement> -> eps
+
+<while> -> while <if-while-expression> do <statement-list> end
+
+<if-while-expression> -> <expr><if-while-operator><expr>
+
+<built-in-func-write> -> write(<write-args-list>)
+<write-args-list> -> <expr> <write-args-another>
+<write-args-another> -> , <expr> <write-args-another>
+<write-args-another> -> eps
+
+<built-in-func-call> -> <built-func-read>
+<built-in-func-call> -> <built-func-int>
+<built-in-func-call> -> <built-func-substr>
+<built-in-func-call> -> <built-func-ord>
+<built-in-func-call> -> <built-func-chr>
+
+<built-func-read> -> <reads>()
+<reads> -> reads
+<reads> -> readi
+<reads> -> readn
+<built-func-int> -> tointeger(<expr>)
+<built-func-substr> -> substr(<expr>,<expr>,<expr>)
+<built-func-ord> -> ord(<expr>,<expr>)
+<built-func-chr> -> chr(<expr>)
+
 <type> -> integer
 <type> -> string
 <type> -> number
-<operator> -> <
-<operator> -> >
-<operator> -> ==
-<operator> -> ~=
-<operator> -> <=
-<operator> -> >=
-<operator> -> +
-<operator> -> -
-<operator> -> /
-<operator> -> //
-<operator> -> *
-<operator> -> ..
-<operator> -> #
-<operator> -> %
-<operator> -> ^
+
+<if-while-operator> -> <
+<if-while-operator> -> >
+<if-while-operator> -> ==
+<if-while-operator> -> ~=
+<if-while-operator> -> <=
+<if-while-operator> -> >=
