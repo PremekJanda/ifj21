@@ -12,6 +12,8 @@
 <statement> -> <return>
 
 <assign> -> <id-list> = <expr-list>
+<assign> -> <id-list> = <function-call>
+<assign> -> <id-list> = <built-in-func-call>
 
 <id-list> = id<id-another>
 <id-another> = ,id<id-another>
