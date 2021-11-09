@@ -19,8 +19,6 @@
 <id-another> = ,id<id-another>
 <id-another> = eps
 
-<expr> -> <function-call>
-<expr> -> <built-in-func-call>
 <expr> -> id
 <expr> -> integer_expr
 <expr> -> string_expr
