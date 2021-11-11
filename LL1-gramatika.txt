@@ -2,22 +2,31 @@
 
 <statement-list> -> <statement><statement-list>
 <statement-list> -> eps
-<statement> -> <assign> 
+<statement> -> <assign-or-fc-call> 
 <statement> -> <declare>
 <statement> -> <function-declare>
 <statement> -> <while>
 <statement> -> <if>
 <statement> -> <built-in-func-write>
-<statement> -> <function-call>
 <statement> -> <return>
 
-<assign> -> <id-list> = <expr-list>
-<assign> -> <id-list> = <function-call>
-<assign> -> <id-list> = <built-in-func-call>
+<assign-or-fc-call> -> id<assign-or-fc-call’> 
+<assign-or-fc-call’> -> (<expr-list>)
+<assign-or-fc-call’> -> = <expr-list>
+<assign-or-fc-call’> -> <id-list> = <function-or-expr-list>
+<function-or-expr-list> -> <expr’><expr-another>
+<function-or-expr-list> -> id<expr-list-or-fc-call>
+<expr-list-or-fc-call> -> (<expr-list>)
+<expr-list-or-fc-call> -> <expr-another>
+<function-or-expr-list> -> <built-in-func-call>
+<id-list> -> ,id<id-another>
+<id-another> -> ,id<id-another>
+<id-another> -> eps
 
-<id-list> = id<id-another>
-<id-another> = ,id<id-another>
-<id-another> = eps
+<expr’> -> integer_expr
+<expr’> -> string_expr
+<expr’> -> number_expr
+<expr’> -> nil
 
 <expr> -> id
 <expr> -> integer_expr
@@ -36,11 +45,10 @@
 <declare-assign> -> =<expr> 
 <declare-assign> ->eps
 
-<function-call> -> id(<expr-list>)
 <function-declare> -> function id (<func-assign_list>)  <return-types> <statement-list>  end
 <func-assign-list> -> <func-assign>  <func-assign-another>
 <func-assign-list> -> eps
-<func-assign-another> , <func-assign><func-assign-another>
+<func-assign-another> -> , <func-assign><func-assign-another>
 <func-assign-another> -> eps
 <func-assign> -> id:<type> 
 
@@ -49,13 +57,9 @@
 <type-list> -> ,<type><type-list>
 <type-list> -> eps
 
-<if> -> <if-statement><else-statement> end
-<if-statement>-> if <if-while-expression> then <statement-list>
-<else-statement>-> else <statement-list>
-<else-statement> -> eps
+<if> ->  if <if-while-expression> then <statement-list> else <statement-list> end
 
 <while> -> while <if-while-expression> do <statement-list> end
-
 <if-while-expression> -> <expr><if-while-operator><expr>
 
 <built-in-func-write> -> write(<write-args-list>)
