@@ -1,5 +1,0 @@
-error
-<stat-list>
-<stat>:<stat-list>
-stat
-end
