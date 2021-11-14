@@ -2,76 +2,44 @@
  *  Soubor: lexikon.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	15. 10. 2021 10:56:12
+ *  Poslední změna:	13. 11. 2021 22:53:58
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
  *          Přemek Janda  - xjanda28, VUT FIT
  *  Popis: Obsahuje implementaci lexikální analýzy (scanner) překladače
  */
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <ctype.h>
 #include "lexikon.h"
 
-void printToken(tToken *token){
-    printf("token attribute: %s\n", token->attribute);
-    printf("token type: %s\n", token->type);
-    printf("token line: %d\n", token->line);
-    printf("\n");   
-}
+/**
+* s = startovní stav
+* 1 = ID
+* 2 = Integer
+* 3 = Rovná se
+* 4 = string
+* 5 = comment
+* 6 = LET
+* 7 = MET
+* 8 = NE
+* 9 = konkatenace
+* d = dělení
+*/
+char states[11] = {'s', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'd'};
 
-void initToken(tToken *token){
-    token->line = 1;
-}
+char c;
+int i;
 
-void deleteToken(tToken *token){
-    free(token->attribute);
-    free(token->type);
-    free(token);
-}
+bool KeyWord;
+bool DoubleNumber;
+bool Comment;
 
-bool IsKeyWord(tToken *token){
-    for (int i = 0; i < 15; i++)
-    {
-        if (strcmp(keywords[i], token->attribute) == 0)
-        {
-            return true;
-        }
-    }
-    return false;
-}
+int scanner(tToken *token){
+    c = ' ';
+    i = 0;
 
-int main(int argc, char const *argv[])
-{   
-    char c = ' ';
-    int i = 0;
-    tToken *token = malloc(sizeof(struct Token));
-    if(token == NULL){
-        fprintf(stderr, "ERROR: Failed malloc");
-        return 1;
-    }
-    int length = TOKEN_LENGTH;
-    token->attribute = malloc(TOKEN_LENGTH * sizeof(char));
-    if(token->attribute == NULL){
-        fprintf(stderr, "ERROR: Failed malloc");
-        return 1;
-    }
-
-    token->type = malloc(12 * sizeof(char));
-    if(token->type == NULL){
-        fprintf(stderr, "ERROR: Failed malloc");
-        return 1;
-    }
-    initToken(token); 
-
-    bool KeyWord = false;
-    bool DoubleNumber = false;
-    bool Comment = false;
-    
-    //KOMENTÁŘE
+    KeyWord = false;
+    DoubleNumber = false;
+    Comment = false;
 
     /**SEZNAM TYPŮ:
      * id
@@ -103,26 +71,12 @@ int main(int argc, char const *argv[])
      * modulo
      * power
      */
-
-    /**
-     * s = startovní stav
-     * 1 = ID
-     * 2 = Integer
-     * 3 = Rovná se
-     * 4 = string
-     * 5 = comment
-     * 6 = LET
-     * 7 = MET
-     * 8 = NE
-     * 9 = konkatenace
-     * d = dělení
-     */
-    char states[11] = {'s', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'd'};
+    
     char state = states[0];
+    int length = TOKEN_LENGTH;
 
-    while ( c != EOF)
+    while ( (c = getc(stdin)) != EOF)
     {
-        c = getc(stdin);
         switch (state){
         case 's':
             // ID/KeyWord
@@ -132,7 +86,7 @@ int main(int argc, char const *argv[])
                 token->attribute[i] = c;
                 i++;
             }
-            //Integer and Double
+            //Integer a Double
             else if((c >= '0' && c <= '9')){
                 state = states[2];
                 token->attribute[i] = c;
@@ -140,49 +94,39 @@ int main(int argc, char const *argv[])
             }
             //assign operator
             else if(c == ':'){
-                token->attribute[i] = c;
-                ++i;
-                token->attribute[i] = '\0';
-                strcpy(token->type, "DataAssign");
-                i = 0;
-                
-                state = states[0];
-                printToken(token);
-
+                STokenFinish(token, &i, "DataAssign", c);
+                return 0;
             }
             //Add operator
             else if(c == '+'){
-                token->attribute[i] = c;
-                ++i;
-                token->attribute[i] = '\0';
-                strcpy(token->type, "add");
-                i = 0;
-                printToken(token);
+                STokenFinish(token, &i, "add", c);
+                return 0;
 
             }
+            //rovná se/přiřazení
             else if(c == '='){
                 state = states[3];
                 token->attribute[i] = c;
                 i++;
             }
+            //mínus/komentáře
             else if(c == '-'){
                 token->attribute[i] = c;
                 ++i;
                 state = states[5];
             }
+            //dělení a celočíselné dělení
             else if(c == '/'){
                 token->attribute[i] = c;
                 ++i;
                 state = states[10];
             }
+            //krát
             else if(c == '*'){
-                token->attribute[i] = c;
-                ++i;
-                token->attribute[i] = '\0';
-                strcpy(token->type, "mul");
-                i = 0;
-                printToken(token);
+                STokenFinish(token, &i, "mul", c);
+                return 0;
             }
+            //string
             else if(c == '"'){
                 state = states[4];
             }
@@ -202,83 +146,59 @@ int main(int argc, char const *argv[])
                 token->attribute[i] = c;
                 i++;
             }
+            //závorky
             else if(c == '('){
-                token->attribute[i] = c;
-                ++i;
-                token->attribute[i] = '\0';
-                strcpy(token->type, "LeftBracket");
-                i = 0;
-                printToken(token);
+                STokenFinish(token, &i, "LeftBracket", c);
+                return 0;
             }
             else if(c == ')'){
-                token->attribute[i] = c;
-                ++i;
-                token->attribute[i] = '\0';
-                strcpy(token->type, "RightBracket");
-                i = 0;
-                printToken(token);
+                STokenFinish(token, &i, "RightBracket", c);
+                return 0;
             }
+            //čárka
             else if(c == ','){
-                token->attribute[i] = c;
-                ++i;
-                token->attribute[i] = '\0';
-                strcpy(token->type, "comma");
-                i = 0;
-                printToken(token);
+                STokenFinish(token, &i, "comma", c);
+                return 0;
             }
+            //tečka/konkatenace
             else if(c == '.'){//dalsi faze
                 state = states[9];
                 token->attribute[i] = c;
                 i++;
             }
+            //křivé závorky
             else if(c == '{'){
-                token->attribute[i] = c;
-                ++i;
-                token->attribute[i] = '\0';
-                strcpy(token->type, "LeftCurBr");
-                i = 0;
-                printToken(token);
+                STokenFinish(token, &i, "LeftCurBr", c);
+                return 0;
             }
             else if(c == '}'){
-                token->attribute[i] = c;
-                ++i;
-                token->attribute[i] = '\0';
-                strcpy(token->type, "RightCurBr");
-                i = 0;
-                printToken(token);
+                STokenFinish(token, &i, "RightCurBr", c);
+                return 0;
             }
+            //délka řetězce
             else if(c == '#'){
-                token->attribute[i] = c;
-                ++i;
-                token->attribute[i] = '\0';
-                strcpy(token->type, "length");
-                i = 0;
-                printToken(token);
+                STokenFinish(token, &i, "length", c);
+                return 0;
             }
             //cases  na % a ^
             else if(c == '%'){
-                token->attribute[i] = c;
-                ++i;
-                token->attribute[i] = '\0';
-                strcpy(token->type, "modulo");
-                i = 0;
-                printToken(token);
+                STokenFinish(token, &i, "modulo", c);
+                return 0;
             }
             else if(c == '^'){
-                token->attribute[i] = c;
-                ++i;
-                token->attribute[i] = '\0';
-                strcpy(token->type, "power");
-                i = 0;
-                printToken(token);
+                STokenFinish(token, &i, "power", c);
+                return 0;
             }
+            //inkrementace počítadla řádku
             else if(c == '\n'){
                 token->line++;
             }
+            //ignorace bílého znaku
             else if(c == ' '){
                 continue;
             }
             else{
+                //ošetření špatného charakteru
                 if(c!=EOF){
                     fprintf(stderr, "ERROR: Invalid character \"%c\" on line %d\n",c ,token->line);
                     return 1;
@@ -286,11 +206,12 @@ int main(int argc, char const *argv[])
             }
         break;
 
+        //stav vytvoření id/keyword tokenu
         case '1':
             if ((c >= 'a' && c <= 'z') || c == '_' || (c >= '0' && c <= '9')|| (c >= 'A' && c <= 'Z')){
                 token->attribute[i] = c;
                 i++;
-                
+                //realloc při nedostatečné délce tokenu
                 if (i > (length - 1))
                 {
                     length += REALL_TOKEN_LEN;
@@ -299,6 +220,7 @@ int main(int argc, char const *argv[])
                 
             }
             else{
+                //rozlišení keyword/id a dokončení tokenu
                 ungetc(c, stdin);
                 token->attribute[i] = '\0';
                 KeyWord = IsKeyWord(token);
@@ -314,20 +236,23 @@ int main(int argc, char const *argv[])
                 }
                 
                 state = states[0];
-                printToken(token);
+                return 0;
             }
         break;
 
+        //tvorba Integeru/doublu/exponentu
         case '2':
             if ((c >= '0' && c <= '9')){
                 token->attribute[i] = c;
                 i++;
+                //realloc při nedostatečné délce
                 if (i > (length - 1))
                 {
                     length += REALL_TOKEN_LEN;
                     token->attribute = realloc(token->attribute, length * sizeof(char));
                 }
             }
+            //exponent
             else if(c == 'E' || c == 'e' || c == '+' || c == '-' || c == '.'){
                 token->attribute[i] = c;
                 i++;
@@ -338,6 +263,7 @@ int main(int argc, char const *argv[])
                 }
                 DoubleNumber = true;
             }
+            //rozlišení double/int a dokončení tokenu
             else{
                 ungetc(c, stdin);
                 token->attribute[i] = '\0';
@@ -351,10 +277,11 @@ int main(int argc, char const *argv[])
                 
                 i = 0;
                 state = states[0];
-                printToken(token);
+                return 0;
             }
         break;
         
+        //stav pro rovná se nebo porovnání
         case '3':
             if (c == '='){
                 token->attribute[i] = c;
@@ -364,7 +291,7 @@ int main(int argc, char const *argv[])
                 i = 0;
                 
                 state = states[0];
-                printToken(token);
+                return 0;
             }
             else{
                 ungetc(c, stdin);
@@ -373,20 +300,21 @@ int main(int argc, char const *argv[])
                 i = 0;
                 
                 state = states[0];
-                printToken(token);
+                return 0;
             }
             
             
         break;
         
+        //case pro tvorbu stringů
         case '4':
             token->attribute[i] = c;
             i++;
-            if (i > (length - 1))
-            {
+            if (i > (length - 1)){
                 length += REALL_TOKEN_LEN;
                 token->attribute = realloc(token->attribute, length * sizeof(char));
             }
+            //escape sekvence
             if(c == '\\'){
                 c = getc(stdin);
                 --i;
@@ -406,6 +334,7 @@ int main(int argc, char const *argv[])
                     token->attribute[i] = '\\';
                     i++;
                 }
+                //escape sekvence která vytvoří znak
                 else if(c >= '0' && c <='2'){
                     char escaped[4];
                     escaped[0] = c;
@@ -441,6 +370,7 @@ int main(int argc, char const *argv[])
                     return 1;
                 }
             }
+            //dokončení stringu
             else if (c == '"')
             {
                 i--;
@@ -449,8 +379,9 @@ int main(int argc, char const *argv[])
                 i = 0;
                 
                 state = states[0];
-                printToken(token);
+                return 0;
             }
+            //ošetření stavu když chybí jedny uvozovky
             else if(c == '\n' || c == EOF){
                 fprintf(stderr, "ERROR: Unexpected End of file on line %d!", token->line);
                 return 1;
@@ -458,6 +389,7 @@ int main(int argc, char const *argv[])
             
         break;
 
+        //stav pro komentáře; scanner je ignoruje
         case '5':
             if(c == '-'){
                 Comment = true;
@@ -468,7 +400,7 @@ int main(int argc, char const *argv[])
                 token->line++;
                 Comment = false;
             }
-            
+            //blokový komentář
             else if(c == '[' && (c = getc(stdin) == '[')){
 
                 do
@@ -493,17 +425,19 @@ int main(int argc, char const *argv[])
                 }while (42); 
                 
             }
+            //jinak pokud není komentář, je o mínus
             else if(!Comment){
                 ungetc(c, stdin);
                 token->attribute[i] = '\0';
                 strcpy(token->type, "sub");
                 i = 0;
                 state = states[0];
-                printToken(token);
+                return 0;
             }
             
         break;
 
+        //stavy pro porovnávání integerů
         case '6':
             if(c == '='){
                 token->attribute[i] = c;
@@ -513,7 +447,7 @@ int main(int argc, char const *argv[])
                 i = 0;
                 
                 state = states[0];
-                printToken(token);
+                return 0;
             }
             else{
                 ungetc(c, stdin);
@@ -522,7 +456,7 @@ int main(int argc, char const *argv[])
                 i = 0;
                 
                 state = states[0];
-                printToken(token);
+                return 0;
             }
         break;
         case '7':
@@ -534,7 +468,7 @@ int main(int argc, char const *argv[])
                 i = 0;
                 
                 state = states[0];
-                printToken(token);
+                return 0;
             }
             else{
                 ungetc(c, stdin);
@@ -543,7 +477,7 @@ int main(int argc, char const *argv[])
                 i = 0;
                 
                 state = states[0];
-                printToken(token);
+                return 0;
             }
         break;
         case '8':
@@ -555,7 +489,7 @@ int main(int argc, char const *argv[])
                 i = 0;
                 
                 state = states[0];
-                printToken(token);
+                return 0;
             }
             else{
                 fprintf(stderr, "ERROR: Missing \'=\' on %d\n", token->line);
@@ -564,6 +498,7 @@ int main(int argc, char const *argv[])
 
         break;
 
+        //stav konkatenace
         case '9':
             if(c == '.'){
                 token->attribute[i] = c;
@@ -573,7 +508,7 @@ int main(int argc, char const *argv[])
                 i = 0;
                 
                 state = states[0];
-                printToken(token);
+                return 0;
             }
             else{
                 ungetc(c, stdin);
@@ -582,10 +517,11 @@ int main(int argc, char const *argv[])
                 i = 0;
                 
                 state = states[0];
-                printToken(token);
+                return 0;
             }
         break;
 
+        //stav celočíselného dělení
         case 'd':
             if(c == '/'){
                 token->attribute[i] = c;
@@ -595,7 +531,7 @@ int main(int argc, char const *argv[])
                 i = 0;
                 
                 state = states[0];
-                printToken(token);
+                return 0;
             }
             else{
                 ungetc(c, stdin);
@@ -604,7 +540,7 @@ int main(int argc, char const *argv[])
                 i = 0;
                 
                 state = states[0];
-                printToken(token);
+                return 0;
             }
         break;
 
@@ -614,8 +550,82 @@ int main(int argc, char const *argv[])
         }
         
     }
+    return (c == EOF) ? 1 : 0;
+}
+
+void printToken(tToken *token){
+    printf("token attribute: %s\n", token->attribute);
+    printf("token type: %s\n", token->type);
+    printf("token line: %d\n", token->line);
+    printf("\n");   
+}
+
+void initToken(tToken *token){
+    token->attribute = NULL;
+    token->type = NULL;
+}
+
+void deleteToken(tToken *token){
+    free(token->attribute);
+    free(token->type);
+    free(token);
+    token = NULL;
+}
+
+bool IsKeyWord(tToken *token){
+    for (int i = 0; i < 15; i++)
+    {
+        if (strcmp(keywords[i], token->attribute) == 0)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+void STokenFinish(tToken *token, int *i, char *string, char c){
+    token->attribute[*i] = c;
+    ++(*i);
+    token->attribute[*i] = '\0';
+    strcpy(token->type, string);
+    *i = 0;
+}
+
+int main(int argc, char const *argv[])
+{   
+    
+    tToken *token = NULL;
+    
+    token = malloc(sizeof(struct Token));
+    if(token == NULL){
+        fprintf(stderr, "ERROR: Failed malloc");
+        return 1;
+    } 
+    
+    initToken(token);
+
+    int length = TOKEN_LENGTH;
+    token->attribute = malloc(length * sizeof(char));
+    if(token->attribute == NULL){
+        fprintf(stderr, "ERROR: Failed malloc");
+        return 1;
+    }
+
+    token->type = malloc(15 * sizeof(char));
+    if(token->type == NULL){
+        fprintf(stderr, "ERROR: Failed malloc");
+        return 1;
+    }
+    token->line = 1;
+    
+    
+    while(c!=EOF){
+        if(!scanner(token)){
+            printToken(token);
+        }
+    }
+    deleteToken(token);
+    
     (void)argc;
     (void)argv;
-    deleteToken(token);
     return 0;
 }
