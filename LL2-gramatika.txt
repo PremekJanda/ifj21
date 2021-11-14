@@ -1,0 +1,82 @@
+<prog> -> require "ifj21" <main-list>
+
+<main-list> -> <def-declare-fcall><main-list>
+<main-list>-> eps*
+
+<statement-list> -> <statement><statement-list>
+<statement-list> -> eps
+<statement> -> <assign-or-fc-call> **
+<statement> -> <declare-local>
+<statement> -> <while>
+<statement> -> <if>
+<statement> -> <return>
+
+<assign-or-fc-call> -> id<assign-or-fc-call’> 
+<assign-or-fc-call’> -> (<item-list>)
+<assign-or-fc-call’> -> <id-list> = <function-or-item-list>
+<function-or-item-list> -> <item’><expr-or-else’>
+<function-or-item-list> -> id<expr-or-else>
+<expr-or-else’>-> , <item><item-another>
+<expr-or-else’>-> <expression>
+<expr-or-else>-> (<item_list>)
+<expr-or-else>-> <expression>
+<expr-or-else>-> , <item><item-another>
+<id-list> -> ,id<id-list>
+<id-list> -> eps
+
+<item’> -> integer_expr*
+<item’> -> string_expr
+<item’> -> number_expr
+<item’> -> nil
+
+<item> -> id
+<item> -> integer_expr
+<item> -> string_expr
+<item> -> number_expr
+<item> -> nil
+
+<return> -> return <item-list>
+<item-list> -> <item> <item-another>
+<item-list> -> eps
+<item-another> -> , <item><item-another>
+<item-another> -> eps
+
+<def-declare-fcall> ->  global id:<func-or-type>*
+<def-declare-fcall> -> function id (<func-assign_list>)  <return-types> <statement-list>  end*
+<def-declare-fcall> -> <function-call>
+
+<declare-local> -> local id:<type><declare-assign>
+<func-or-type> -> function(<types>)<return-types>*
+<func-or-type>-><type><declare-assign>*
+<declare-assign> -> =<item> 
+<declare-assign> ->eps
+<function-call>->id(<item-list>)*
+
+<func-assign-list> -> <func-assign>  <func-assign-another>
+<func-assign-list> -> eps
+<func-assign-another> -> , <func-assign><func-assign-another>
+<func-assign-another> -> eps
+<func-assign> -> id:<type> 
+
+<return-types> -> eps
+<return-types> -> : <type><type-list>
+<type-list> -> ,<type><type-list>
+<type-list> -> eps
+<types> -> <type><type-list>*
+<types> -> eps*
+
+<if> ->  if <if-while-expression> then <statement-list> else <statement-list> end
+
+<while> -> while <if-while-expression> do <statement-list> end
+<if-while-expression> -> <item><if-while-operator><item>
+
+<type> -> integer
+<type> -> string
+<type> -> number
+
+<if-while-operator> -> <
+<if-while-operator> -> >
+<if-while-operator> -> ==
+<if-while-operator> -> ~=
+<if-while-operator> -> <=
+<if-while-operator> -> >=
