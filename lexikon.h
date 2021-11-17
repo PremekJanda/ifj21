@@ -2,7 +2,7 @@
  *  Soubor: lexicon.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	22. 10. 2021 11:42:03
+ *  Poslední změna:17. 11. 2021 13:59:30
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -36,7 +36,11 @@ typedef struct Token {
 
 #define TOKEN_LENGTH 30
 #define REALL_TOKEN_LEN 30
-char keywords[15][10] = {"do", "else", "end", "function", "global", "if", "integer", "local", "nil", "number", "require", "return", "string", "then", "while"};
+
+extern char states[11];
+extern char keywords[15][10];
+extern char c;
+extern int i;
 
 
 
