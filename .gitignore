@@ -1,6 +1,7 @@
 # nastavení vscode
 .vscode/*
 *.code-workspace
+code-generation.vscode/*
 
 # Prerequisites
 *.d

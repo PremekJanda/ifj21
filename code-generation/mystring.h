@@ -15,6 +15,8 @@
 #ifndef __MY_STRING_H
 #define __MY_STRING_H
 
+#include <stddef.h>
+
 typedef struct{
     int capacity;
     char*data;
@@ -70,15 +72,34 @@ int resize_if_needed(buffer_t*dst, int needed_capacity);
  * @param position Starting position of src string
  * @return int Returns 1 if success, 0 when there is not enough memory
  */
-int strinbetween_realloc(buffer_t*dst, const char*src, int position);
+int strinbetween_realloc(buffer_t*dst, const char*src, size_t position);
 
 /**
  * @brief Copies the value of string src to the dst string buffer.
  * 
  * @param dst Destination, where the result string will be stored
  * @param src String to be copied
- * @return int Returns 1 if success, 0 when there is not enough memory
+ * @return Returns 1 if success, 0 when there is not enough memory
  */
 int strcpy_realloc(buffer_t*dst, const char*src);
+
+/**
+ * @brief Strcat using dynamic buffer and formated string
+ * 
+ * @param dst Buffer, where the result will be stored
+ * @param fmt Formated string to be concatenated to a dst string
+ * @return 0 if fails, 1 at success
+ */
+int strcat_format_realloc(buffer_t*dst, const char *fmt, ...);
+
+/**
+ * @brief Inserts the formated string inside other string. Inserted string will start at the index position in the new string
+ * 
+ * @param dst Original string, the result will be stored here
+ * @param fmt Formated string
+ * @param position Starting position of src string
+ * @return Returns 1 if success, 0 when there is not enough memory
+ */
+int strinbetween_format_realloc(buffer_t*dst, size_t position, const char *fmt, ...);
 
 #endif
