@@ -2,7 +2,7 @@
  *  Soubor: test.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:18. 11. 2021 02:17:30
+ *  Poslední změna:18. 11. 2021 04:12:09
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -21,35 +21,37 @@
     node_setdata(&node, type, 1);
 
 #define MAKE_TREE() \
-    NODE_INIT(node1,  "<prog>", "") \
+    NODE_INIT(node1,  "", "<prog>") \
      \
-    NODE_INIT(node2,  "require", "keyword") \
-    NODE_INIT(node3,  "ifj21", "string") \
-    NODE_INIT(node4,  "<main-list>", "") \
+    NODE_INIT(node2,  "keyword", "require") \
+    NODE_INIT(node3,  "string", "ifj21") \
+    NODE_INIT(node4,  "", "<main-list>") \
  \
-    NODE_INIT(node5,  "<def-declare-fcall>", "") \
+    NODE_INIT(node5,  "", "<def-declare-fcall>") \
      \
-    NODE_INIT(node6,  "<main-list>", "") \
+    NODE_INIT(node6,  "", "<main-list>") \
  \
-    NODE_INIT(node7,  "function", "keyword") \
-    NODE_INIT(node8,  "id", "string") \
-    NODE_INIT(node9,  "<func-argument-list>", "") \
-    NODE_INIT(node10, "<return-types>", "") \
-    NODE_INIT(node11, "<statement-list>", "") \
-    NODE_INIT(node12, "end", "keyword") \
+    NODE_INIT(node7,  "keyword", "function") \
+    NODE_INIT(node8,  "string", "main") \
+    NODE_INIT(node9,  "", "<func-argument-list>") \
+    NODE_INIT(node10, "", "<return-types>") \
+    NODE_INIT(node11, "", "<statement-list>") \
+    NODE_INIT(node12, "keyword", "end") \
  \
-    NODE_INIT(node13, "<def-declare-fval>", "") \
-    NODE_INIT(node14, "<main-list>", "") \
+    NODE_INIT(node13, "", "<def-declare-fcal>") \
+    NODE_INIT(node14, "", "<main-list>") \
      \
-    NODE_INIT(node15, "eps", "string") \
+    NODE_INIT(node15, "string", "eps") \
  \
-    NODE_INIT(node16, "eps", "string") \
+    NODE_INIT(node16, "string", "eps") \
  \
-    NODE_INIT(node17, "<statement>", "") \
-    NODE_INIT(node18, "<statement-list>", "") \
+    NODE_INIT(node17, "", "<statement>") \
+    NODE_INIT(node18, "", "<statement-list>") \
  \
-    NODE_INIT(node19, "id", "string") \
-    NODE_INIT(node20, "<item-list>", "") \
+    NODE_INIT(node19, "string", "main") \
+    NODE_INIT(node20, "", "<item-list>") \
+ \
+    NODE_INIT(node21, "", "eps") \
  \
  \
     node_addnext(&node1, &node2); \
@@ -77,7 +79,9 @@
     node_addnext(&node1.next[2].next[0].next[4], &node18); \
  \
     node_addnext(&node1.next[2].next[1].next[0], &node19); \
-    node_addnext(&node1.next[2].next[1].next[1], &node20); \
+    node_addnext(&node1.next[2].next[1].next[0], &node20); \
+ \
+    node_addnext(&node1.next[2].next[1].next[1], &node21); \
  \
     tree_print(node1, 0);
 

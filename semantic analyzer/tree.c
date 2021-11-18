@@ -82,8 +82,8 @@ void node_print(t_node node, size_t tabs)
     for (size_t i = 0; i < tabs; i++)
         printf("\t");
     
-    // printf("%s\n", node.data[0].data);
-    printf("%s %s\n", node.data[0].data, node.data[1].data);
+    // printf("%s\n", node.data[1].data);
+    printf("%s %s\n", node.data[1].data, node.data[0].data);
 }
 
 void tree_print(t_node node, size_t tabs)
