@@ -1,6 +1,8 @@
 #ifndef __TREE_H__
 #define __TREE_H__
 
+#include <stdio.h>
+
 typedef struct tree_item
 {
     int length;
@@ -13,8 +15,7 @@ typedef struct node
     int next_count;
     struct node *next;
     struct node *prev;
-    t_tree_item *data;  // data[0] => type
-                        // data[1] => atribut
+    t_tree_item *data;  // data[0] => type, data[1] => attribute
 } t_node;
 
 typedef struct tree

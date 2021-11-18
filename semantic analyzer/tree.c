@@ -80,7 +80,7 @@ void node_delete(t_node *node)
 void node_print(t_node node, size_t tabs)
 {
     for (size_t i = 0; i < tabs; i++)
-        printf("\t");
+        (i%2 == 1) ? printf("|\t") : printf("\t");
     
     // printf("%s\n", node.data[1].data);
     printf("%s %s\n", node.data[1].data, node.data[0].data);
