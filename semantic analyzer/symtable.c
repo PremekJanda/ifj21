@@ -2,7 +2,7 @@
  *  Soubor: symtable.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:18. 11. 2021 02:18:49
+ *  Poslední změna:	18. 11. 2021 20:36:23
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -161,7 +161,7 @@ htab_t * htab_init(size_t n) {
     return hash_table;
 }
 
-htab_item_t * htab_find(htab_t * t, key_t key) {
+htab_item_t * htab_find(htab_t *t, key_t key) {
     // získání indexu podle klíče v tabulce
     size_t index_in_arr = htab_hash_function(key) % t->arr_size;
     // nastavení ukazatele na první prvek
@@ -406,7 +406,7 @@ def_table_t * def_table_init() {
     return deftable;
 }
 
-bool def_table_add(def_table_t *deftable, char * name, bool data) {
+int def_table_add(char * name, def_table_t *deftable, bool data) {
     if (deftable->size == deftable->capacity) {
         // rozšíření kapacity na dvojnásobek
         deftable->capacity *= 2;
@@ -438,7 +438,7 @@ bool def_table_add(def_table_t *deftable, char * name, bool data) {
         deftable->size++;
     }
 
-    return true;
+    return EXIT_SUCCESS;
 }
 
 void def_table_free(def_table_t *deftable) {

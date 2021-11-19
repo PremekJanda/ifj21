@@ -2,7 +2,7 @@
  *  Soubor: symtable.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:18. 11. 2021 02:31:37
+ *  Poslední změna:	18. 11. 2021 20:35:16
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -274,7 +274,7 @@ def_table_t * def_table_init();
  * @param name Řetězec, který se vloží do paměti
  * @param data 0 - Deklarovaná fce, 1 - Definovaná fce
  */
-bool def_table_add(def_table_t *deftable, char *name, bool data);
+int def_table_add(char *name, def_table_t *deftable, bool data);
 
 /**
  * @brief Destruktor tabulky

@@ -2,7 +2,7 @@
  *  Soubor: semantic.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:18. 11. 2021 00:22:11
+ *  Poslední změna:	19. 11. 2021 23:19:20
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -14,14 +14,8 @@
 #ifndef __SEMANTIC_H__
 #define __SEMANTIC_H__
 
-#include <stdio.h>                  // size_t
-#include <string.h>                 // string fce
-#include <stdbool.h>                // bool
-#include <stdlib.h>                 // malloc
-#include <stdint.h>                 // uint32
-#include <stdarg.h>                 // pro va_list
-
 #include "symtable.h"
+#include "tree.h"
 
 #include "test.h"
 
@@ -80,10 +74,21 @@
 
 
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
-// - - - - Funkce  - - - - //
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+// - - - - - - - - - - - - - - - - - - //
+// - - - - Sémantické kontroly - - - - //
+// - - - - - - - - - - - - - - - - - - //
 
+/**
+ * @brief Hlavní funkce zajišťující sémantickou kontrolu
+ * @param node Ukazatel na kořenový stromu
+ */
+int semantic(t_node *node);
+
+
+
+// - - - - - - - - - - - - - - - - - - - //
+// - - - -  Zpracování gramatiky - - - - //
+// - - - - - - - - - - - - - - - - - - - //
 
 
 
@@ -91,5 +96,16 @@
 // - - - - - - - - - - - - - - - - //
 // - - - -  Pomocné funkce - - - - //
 // - - - - - - - - - - - - - - - - //
+int is_id_used(char *id, stack_t *symtable, def_table_t deftable);
+
+int is_f_set(char *name, def_table_t deftable, int state);
+
+int process_stmt_list(t_node *node, stack_t *symtable, def_table_t deftable);
+
+int add_var_to_symtable(t_node *node, stack_t *symtable, bool state);
+
+int add_scope_to_symtable(t_node *node, stack_t *symtable);
+
+
 
 #endif // __SEMANTIC_H__
