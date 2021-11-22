@@ -2,7 +2,11 @@
  *  Soubor: test.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	22. 11. 2021 00:47:59
+<<<<<<< HEAD
+ *  Poslední změna:	22. 11. 2021 19:38:08
+=======
+ *  Poslední změna:	22. 11. 2021 19:38:08
+>>>>>>> semantic_update
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -182,12 +186,49 @@
     NODE_INIT(node4,  "<main-list>", "") \
  \
     NODE_INIT(node5,  "<def-decl-fcall>", "") \
+    NODE_INIT(node6,  "<main-list>", "") \
+    \
+    NODE_INIT(node7,  "keyword", "global") \
+    NODE_INIT(node8,  "id", "jméno_proměnné") \
+    NODE_INIT(node9,  "DataAssign", ":") \
+    NODE_INIT(node10,  "<f-or-type>", "") \
+    \
+    NODE_INIT(node11,  "<type>", "") \
+    NODE_INIT(node12,  "<decl-assign>", "") \
+    \
+    NODE_INIT(node13,  "keyword", "string") \
+    \
+    NODE_INIT(node14,  " equals", "=") \
+    NODE_INIT(node15,  "<item>", "") \
+    \
+    NODE_INIT(node16,  "expr", "") \
+    \
+    NODE_INIT(node17,  "eps", "") \
 \
     node_addnext(&node1, &node2); \
     node_addnext(&node1, &node3); \
     node_addnext(&node1, &node4); \
 \
     node_addnext(&node1.next[2], &node5); \
+    node_addnext(&node1.next[2], &node6); \
+    \
+    node_addnext(&node1.next[2].next[0], &node7); \
+    node_addnext(&node1.next[2].next[0], &node8); \
+    node_addnext(&node1.next[2].next[0], &node9); \
+    node_addnext(&node1.next[2].next[0], &node10); \
+    \
+    node_addnext(&node1.next[2].next[1], &node17); \
+    \
+    node_addnext(&node1.next[2].next[0].next[3], &node11); \
+    node_addnext(&node1.next[2].next[0].next[3], &node12); \
+    \
+    node_addnext(&node1.next[2].next[0].next[3].next[0], &node13); \
+    \
+    node_addnext(&node1.next[2].next[0].next[3].next[1], &node14); \
+    node_addnext(&node1.next[2].next[0].next[3].next[1], &node15); \
+    \
+    node_addnext(&node1.next[2].next[0].next[3].next[1].next[0], &node16); \
+    \
     tree_print(node1, 0);
 
 
@@ -207,7 +248,7 @@
             free_word = true; \
         } else { \
             /* vytvoří nový záznam v tabulce*/ \
-            if (htab_lookup_add(hash_table, new_word) == NULL) \
+            if (htab_lookup_add(hash_table, new_word, new_word, new_word) == NULL) \
                 return error_exit("Chyba při allokaci paměti pro slovo '%s'!\n", new_word); \
         } \
         /* alokovaný identifikátor již existuje v tabulce a může být odstraněn*/ \

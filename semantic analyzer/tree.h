@@ -26,7 +26,7 @@ typedef struct tree
 
 #define ALLOC_CHECK(__ptr) \
     if (__ptr == NULL) \
-        return 1; 
+        return 99; 
 
 int node_init(t_node *node);
 

@@ -2,7 +2,7 @@
  *  Soubor: symtable.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:18. 11. 2021 02:31:37
+ *  Poslední změna:	22. 11. 2021 18:53:28
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -36,7 +36,8 @@
 // - - - - Datové typy a struktury - - - - //
 // - - - - - - - - - - - - - - - - - - - - //
 // Typy
-typedef const char * key_t;         // typ klíče
+typedef char * key_t;               // typ klíče
+// // typedef const char * key_t;         // typ klíče
 typedef int top_t;                  // typ hodnoty
 
 // Prvním prvekem vázaného seznamu je návratová hodnota
@@ -50,9 +51,9 @@ typedef struct fce_item {
 // Položka seznamu
 typedef struct htab_item {
     key_t key;                      // identifikátor
-    // * key_t type;                // datový typ výzaru
-    // * key_t attribute;           // identifikátor
-    // * key_t value;               // hodnota (pokud je dána)
+    key_t type;                     // datový typ výzaru
+    key_t value;                    // hodnota (pokud je dána)
+    // // * bool local;                // 1 - proměnná je lokálně definovaná, 0 - není lokalní
     fce_item_t * fce;               // ukazatel na strukturu funkce tabulky    
     struct htab_item *next_h_item;  // ukazatel na další prvek
 } htab_item_t;
@@ -72,7 +73,8 @@ typedef struct stack {
 
 
 typedef struct def_table_item {
-    bool data;
+    bool called;                    // 0 => nebyla volána,  1 => byla volána funkce
+    bool state;                     // 0 => deklarovaná,    1 => definovaná funkce
     char *name;
 } def_table_item_t;
 
@@ -92,7 +94,9 @@ typedef struct def_table {
  * @param e element/item Prvek k uvolnění z paměti
  */
 #define FREE_ELEMENT(e) \
+    free((void *)(e)->type); \
     free((void *)(e)->key); \
+    free((void *)(e)->value); \
     free((e));
 
 /**
@@ -108,12 +112,14 @@ typedef struct def_table {
  * @param e element/item 
  * @param k key Řetězec podle kterého se hledá
  */
-#define INIT_ELEMENT(e, k) \
+#define INIT_ELEMENT(e, t, k, v) \
     /* alokování bloků na hromadě */ \
     (e) = (htab_item_t *)malloc(sizeof(htab_item_t)); \
         if ((e) == NULL) return NULL; \
     /* inicializace dat */ \
+    (e)->type = (t); \
     (e)->key = (k); \
+    (e)->value = (v); \
     (e)->next_h_item = NULL; \
     (e)->fce = NULL;
 
@@ -216,7 +222,7 @@ htab_item_t * htab_find (htab_t *t, key_t key);
  * @param key Řetězec, podle kterého se hledá
  * @return Ukazatel na datový pár (key,value)
  */
-htab_item_t * htab_lookup_add (htab_t *t, key_t key);
+htab_item_t * htab_lookup_add (htab_t *t, key_t type, key_t key, key_t value);
 
 /**
  * @brief Ruší zadaný záznam
@@ -274,7 +280,7 @@ def_table_t * def_table_init();
  * @param name Řetězec, který se vloží do paměti
  * @param data 0 - Deklarovaná fce, 1 - Definovaná fce
  */
-bool def_table_add(def_table_t *deftable, char *name, bool data);
+int def_table_add(char *name, def_table_t *deftable, bool data);
 
 /**
  * @brief Destruktor tabulky
