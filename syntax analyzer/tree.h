@@ -1,6 +1,8 @@
 #ifndef __TREE_H__
 #define __TREE_H__
 
+#include <stdio.h>
+
 typedef struct tree_item
 {
     int length;
@@ -11,9 +13,9 @@ typedef struct node
 {
     int next_capacity;
     int next_count;
-    struct node *next;
+    struct node **next;
     struct node *prev;
-    t_tree_item *data;
+    t_tree_item *data;  // data[0] => type, data[1] => attribute
 } t_node;
 
 typedef struct tree
@@ -24,7 +26,7 @@ typedef struct tree
 
 #define ALLOC_CHECK(__ptr) \
     if (__ptr == NULL) \
-        return 1; 
+        return 99; 
 
 int node_init(t_node *node);
 

@@ -196,28 +196,43 @@ void table_print(t_table table, char delim)
 char *table_find(t_table table,char *nonterminal, char *terminal)
 {
     int line = 0;
+    int eps = 0;
     int column = 0;
+    bool found = false;
     for(int i = 0; i < table.count; i++)
     {
         if(!strcmp(nonterminal, table.rows[i].cells[0].value))
         {
             line = i;
+            found = true;
             break;
         }
     }
-    if(line == 0)
-        return 0;
+    if(found == false)
+        return "";
+    found = false;
     for(int i = 0; i < table.rows[0].count; i++)
     {
         if(!strcmp(terminal, table.rows[0].cells[i].value))
         {
             column = i;
+            if(strlen(table.rows[line].cells[column].value) == 0)
+                continue;
+            found = true;
             break;
         }
+        if(!strcmp(table.rows[0].cells[i].value, "eps") && strlen((table.rows[0].cells[i].value)) != 0)
+        {
+            eps = i;
+            found = true;
+        }
     }
-    if(column == 0)
-        return 0;
-    return table.rows[line].cells[column].value;
+    if(found == false)
+        return "";
+    if(strlen(table.rows[line].cells[column].value) == 0 && eps != 0)
+        return table.rows[line].cells[eps].value;
+    else
+        return table.rows[line].cells[column].value;
 }
 
 int table_linelength(t_table table, int line)

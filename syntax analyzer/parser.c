@@ -25,65 +25,106 @@ char *token_get(int i)
         case 4:
         return "stat";
         break;
-
-
         case 5:
         return "stat";
         break;
 
 
+
+
         case 6:
+        return "bruh";
+        break;
+
+        case 7:
+        return "stat";
+        break;
+                
+        case 8:
         return "stat";
         break;
 
-
-        case 7:
-        return "end";
-        break;
-
-        case 8:
+        case 9:
         return "end";
         break;
     }
     return "id";
 }
+
 char *token_get2(int i)
 {
     switch(i)
     {
         case 1:
-        return "i";
+        return "(";
         break;
 
         case 2:
-        return "*";
+        return "i";
         break;
 
         case 3:
-        return "i";
-        break;
-
-        case 4:
         return "+";
         break;
-        
-        case 5:
+
+
+        case 4:
         return "i";
         break;
-
-        case 6:
+        case 5:
         return "*";
         break;
 
-        case 7:
+
+
+
+        case 6:
         return "i";
         break;
 
+        case 7:
+        return ")";
+        break;
+                
         case 8:
+        return "*";
+        break;
+
+        case 9:
+        return "i";
+        break;
+
+        case 10:
+        return "i";
+        break;
+                
+        case 11:
+        return ")";
+        break;
+
+        case 13:
+        return "+";
+        break;
+        case 14:
+        return "(";
+        break;
+        case 15:
+        return ")";
+        break;
+
+        case 16:
         return "end";
         break;
     }
-    return "id";
+    return "end";
+}
+
+int find_rule(t_table table, t_stack stack, char *token)
+{
+    if(strlen(table_find(table, stack_top(stack), token)) == 0)
+        return -1;
+    else
+        return atoi(table_find(table, stack_top(stack), token));
 }
 
 int is_terminal(char *string)
@@ -95,6 +136,7 @@ int is_terminal(char *string)
 }
 
 
+
 int bottom_up(t_table precedence_table)
 {
     t_stack stack;
@@ -103,77 +145,132 @@ int bottom_up(t_table precedence_table)
 
     t_stack nonterminals;
     stack_init(&nonterminals);
+
+    t_node node;
+    node_init(&node);
     
     int handles_count = 0;
     int handles_capacity = 10;
-    int *handles = malloc(sizeof(int) * 10);
+    int *handles = malloc(sizeof(int) * 20);
 
     char *token = token_get2(1);
     int tokencount = 2;
 
+    t_node *node_buffer = malloc(20 * sizeof(t_node));
+    int node_buffer_count = 0;
+
     while(strcmp(token, "end"))
     {
+        printf("lololchvpisdfoisfsoidv________\n\n\n\n");
+        stack_print(stack);
         if(strcmp(stack_top(stack), "E"))
             stack_push(&nonterminals, stack_top(stack));
         char *operator = table_find(precedence_table, stack_top(nonterminals), token);
-        printf("\n%s %d    non:%s ter:%s  \n ",operator, tokencount, stack_top(nonterminals), token );
+        printf("\nahoj %s   %s   %s    \n", operator, stack_top(nonterminals), token);
+        if(node_buffer_count != 0)
+            tree_print(node_buffer[0], 0);
         if(!strcmp(operator,"<"))
         {
+            if(strcmp(token, "("))
+            {
+                t_node new_node;
+                node_init(&new_node);
+                node_setdata(&new_node, token, 0);
+                node_buffer[node_buffer_count] = new_node;
+                node_buffer_count++;
+            }
+
+            stack_print(stack);
             stack_push(&stack, token);
             handles[handles_count] = stack_topindex(stack);
-            if(strcmp(stack_top(stack), "i") && strcmp(stack_top(stack), "E"))
+            if(strcmp(stack_top(stack), "i") && strcmp(stack_top(stack), "e") && strcmp(stack_top(stack), "E"))
                 handles[handles_count]--;
-            printf("jdi do pici");
-            printf("\nlasthan:%d\n",handles[handles_count]);
 
             handles_count++;
             token = token_get2(tokencount);
+
+
+
+                printf("PICOOOOO");
             tokencount++;
         }
         else if(!strcmp(operator,">"))
         {
+            t_node new_node;
+            node_init(&new_node);
+            node_setdata(&new_node, "E", 0);
             
-            printf("\n-----------------------------\n");
-            stack_print(stack);
+             printf("\n\n");
+            tree_print(node_buffer[0], 0);
             printf("\n\n");
-            stack_print(nonterminals);
-            printf("\n\n");
-            printf("\ntu lasthan:%d\n",handles[handles_count - 1]);
             for(int i = stack_topindex(stack); i >= handles[handles_count - 1]; i--)
             {
                 if(strcmp(stack_top(stack), "E"))
                     stack_pop(&nonterminals);
                 stack_pop(&stack);
-                printf("\ntu lasthan: %d  %d  %d\n", handles_count ,handles[handles_count - 1], i);
+                node_buffer_count--;
+                node_addnext(&new_node,  &node_buffer[node_buffer_count]);
             }
-            printf("kokokoko");
+            
+            printf("\n\n");
+            tree_print(node_buffer[0], 0);
+            printf("\n\n");
+            node_buffer[node_buffer_count] = new_node;
+            node_buffer_count++;
             handles_count--;
             stack_push(&stack, "E");
         }
-        else
+        else if(!strcmp(operator,"="))
         {
-            return 1;
+            stack_print(stack);
+            token = token_get2(tokencount);
+            tokencount++;
+            stack_pop(&nonterminals);
+            handles_count--;
+            if(!strcmp(stack_top(stack), "E"))
+            {
+                stack_pop(&stack);
+                stack_pop(&stack);
+                stack_push(&stack, "E");
+            }
+            else
+                stack_pop(&stack);
+            printf("\n\n");
+            stack_print(nonterminals);
+            printf("\n\n");
+            stack_print(stack);
+            printf("\n\n");
         }
+        else
+            return 1;
     }
+
     while(handles_count != 0)
     {
         printf("\n\n");
+        tree_print(node_buffer[0], 0);
+        printf("\n\n");
         stack_print(stack);
         printf("\n\n");
+        t_node new_node;
+        node_init(&new_node);
+        node_setdata(&new_node, "E", 0);
         for(int i = stack_topindex(stack); i >= handles[handles_count - 1]; i--)
         {
-            stack_pop(&stack);
             if(strcmp(stack_top(stack), "E"))
                 stack_pop(&nonterminals);
+            stack_pop(&stack);
+            node_buffer_count--;
+            node_addnext(&new_node, &node_buffer[node_buffer_count]);
         }
-        handles_count--;
+        node_buffer[node_buffer_count] = new_node;
+        node_buffer_count++;
         stack_push(&stack, "E");
+        handles_count--;
     }
     free(handles);
-    printf("jdi do pici");
-    printf("\n\n");
     stack_print(stack);
-    printf("\n\n");
+    tree_print(node_buffer[node_buffer_count-1], 0);
     return 0;
 }
 
@@ -195,9 +292,6 @@ int main()
     table_init(&precedence_table);
     table_readfile(&precedence_table, "precedence.txt", ':');
 
-    t_tree tree;
-    tree_init(&tree);
-
     stack_push(&stack, "$");
     stack_push(&stack, "<prog>");
     char *token = token_get(1);
@@ -212,34 +306,21 @@ int main()
     t_node node;
     node_init(&node);
     node_setdata(&node, "<prog>", 0);
-    
-    t_node node5;
-    node_init(&node5);
-    node_setdata(&node5, "kokotchlupaty", 0);
 
+
+    
     t_node *current_node = &node;
-    printf("\n\nvylizte mi prdel: %s\n", node.data[0].data);
 
     table_print(ll_table,':');
-    t_tree syntax_tree;
 
-    tree_setfirst(&syntax_tree, &node);
-    
-    printf("%s", syntax_tree.first->data[0].data);
-    printf("------------------------------");
-    printf("\n");
-    
-    printf("kokooot%s", syntax_tree.first->data[0].data);
-    
     int next_count_count = 0;
-    int *next_count_stack1 = malloc(sizeof(int) * 100000000);
-    int *next_count_stack2 = malloc(sizeof(int) * 100000000);
-
+    int *next_count_stack1 = malloc(sizeof(int) * 20);
+    int *next_count_stack2 = malloc(sizeof(int) * 20);
     while(strcmp(stack_top(stack), "$"))
     {
         stack_print(stack);
-        printf("\n\n");
         rule = atoi(table_find(ll_table, stack_top(stack), token));
+        printf("pravidlo %d ", rule);
         if(rule == 0)
         {
             printf("sytax error\n");
@@ -249,47 +330,43 @@ int main()
         printf("\n\n");
         for(int i = table_linelength(rules, rule) - 1; i >= 0; i--)
         {
-            printf("%d:", i);
-            t_node new_node;
-            node_init(&new_node);
-            node_setdata(&new_node, table_getdata(rules, rule, table_linelength(rules, rule) - 1 - i), 0);
-            node_addnext(current_node, &new_node);
-            printf("[]");
-
+            t_node *new_node = malloc(sizeof(t_node));
+            node_init(new_node);
+            node_setdata(new_node, table_getdata(rules, rule, table_linelength(rules, rule) - 1 - i), 0);
+            node_addnext(current_node, new_node);
             stack_push(&stack, table_getdata(rules, rule, i));
         }
-        printf("\ntooo: %s", current_node->data[0].data);
+
         next_count_count++;
         next_count_stack1[next_count_count] = table_linelength(rules, rule);
         next_count_stack2[next_count_count] = 0;
-        current_node = &current_node->next[next_count_stack2[next_count_count]];
-        printf("\ntooo2: %s\n\n", current_node->data[0].data);
-        while(!strcmp(token, stack_top(stack)))
-        {
+        current_node = current_node->next[next_count_stack2[next_count_count]];
+
+
+        while(!strcmp(token, stack_top(stack)) || !strcmp("eps", stack_top(stack)))
+        {   
             next_count_stack2[next_count_count]++;
-            printf("\n\nxddd: %d    %d\n\n", next_count_stack1[next_count_count],next_count_stack2[next_count_count]);
-            while(next_count_stack1[next_count_count] == next_count_stack2[next_count_count] && next_count_count > 0 && current_node->prev != NULL)
+            while(next_count_stack1[next_count_count] == next_count_stack2[next_count_count] && current_node->prev != NULL)
             {
-                printf("ahojj");
                 current_node = current_node->prev;
                 next_count_count--;
                 next_count_stack2[next_count_count]++;
-                printf("\ntooo3: %s", current_node->data[0].data);
-                printf("\nodporny kokot  :%d:  %d  \n \n\n\n", next_count_stack1[next_count_count],next_count_stack2[next_count_count]);
             }
             if(current_node->prev != NULL)
-                current_node = &current_node->prev->next[next_count_stack2[next_count_count]];
-            token = token_get(count);
-            count++;
+            {
+                current_node = current_node->prev->next[next_count_stack2[next_count_count]];
+            }    
+            if(strcmp("eps", stack_top(stack)))
+            {
+                token = token_get(count);
+                count++;
+            }
             stack_pop(&stack);
         } 
     }
-
-    printf("------------------------------");
-    printf("\n");
+    tree_print(node, 0);
     
-    tree_print(node);
-    
+    node_delete(&node);
     /*
     printf("\n%d\n", node.next[0].next[1].next[3].next[0].next[0].next_count);*/
 
@@ -297,10 +374,14 @@ int main()
     //table_print(precedence_table, ':');
     /*bottom_up(precedence_table);*/
 
+
+
     table_delete(&ll_table);
     table_delete(&rules);
     table_delete(&precedence_table);
     stack_delete(&stack);
+    free(next_count_stack1);
+    free(next_count_stack2);
 
     printf("\n");
 
