@@ -2,7 +2,7 @@
  *  Soubor: symtable.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	18. 11. 2021 20:36:23
+ *  Poslední změna:	20. 11. 2021 14:31:17
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -406,7 +406,7 @@ def_table_t * def_table_init() {
     return deftable;
 }
 
-int def_table_add(char * name, def_table_t *deftable, bool data) {
+int def_table_add(char * name, def_table_t *deftable, bool state) {
     if (deftable->size == deftable->capacity) {
         // rozšíření kapacity na dvojnásobek
         deftable->capacity *= 2;
@@ -420,7 +420,8 @@ int def_table_add(char * name, def_table_t *deftable, bool data) {
     bool item_found = false;
     for (size_t i = 0; i < deftable->size; i++) {
         if (strcmp(deftable->item[i].name, name) == 0) {
-            deftable->item[i].data = data;
+            deftable->item[i].state = state;
+            deftable->item[i].called = 0;
             item_found = true;
             break;
         }
@@ -431,7 +432,7 @@ int def_table_add(char * name, def_table_t *deftable, bool data) {
         deftable->item[deftable->size].name = (char *)malloc(strlen(name) + 1);
         ALLOC_CHECK(deftable->item[deftable->size].name)
         // zápis dat
-        deftable->item[deftable->size].data = data;
+        deftable->item[deftable->size].state = state;
         // zkopírování nového názvu
         strcpy(deftable->item[deftable->size].name, name);
         // rozšíření pole
@@ -529,7 +530,11 @@ void def_table_print(def_table_t deftable) {
     printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
     
     for (size_t i = 0; i < deftable.size; i++) 
-        printf("%s %s\n", deftable.item[i].name, (deftable.item[i].data) ? "defined" : "declared");
+        printf("%s %s %s\n", 
+            deftable.item[i].name, 
+            (deftable.item[i].state) ? "defined" : "declared", 
+            (deftable.item[i].called) ? "called" : "not called"
+        );
 }
 
 int error_exit(const char *fmt, ...) {

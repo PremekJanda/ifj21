@@ -2,7 +2,7 @@
  *  Soubor: symtable.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	18. 11. 2021 20:35:16
+ *  Poslední změna:	22. 11. 2021 01:24:50
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -53,6 +53,7 @@ typedef struct htab_item {
     // * key_t type;                // datový typ výzaru
     // * key_t attribute;           // identifikátor
     // * key_t value;               // hodnota (pokud je dána)
+    // // * bool local;                // 1 - proměnná je lokálně definovaná, 0 - není lokalní
     fce_item_t * fce;               // ukazatel na strukturu funkce tabulky    
     struct htab_item *next_h_item;  // ukazatel na další prvek
 } htab_item_t;
@@ -72,7 +73,8 @@ typedef struct stack {
 
 
 typedef struct def_table_item {
-    bool data;
+    bool called;                    // 0 => nebyla volána,  1 => byla volána funkce
+    bool state;                     // 0 => deklarovaná,    1 => definovaná funkce
     char *name;
 } def_table_item_t;
 

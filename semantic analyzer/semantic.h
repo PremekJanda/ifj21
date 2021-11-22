@@ -2,7 +2,7 @@
  *  Soubor: semantic.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	19. 11. 2021 23:19:20
+ *  Poslední změna:	22. 11. 2021 02:14:45
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -70,7 +70,6 @@
 // - - - - - - - - - - - - - - - - - - - - //
 // - - - - Datové typy a struktury - - - - //
 // - - - - - - - - - - - - - - - - - - - - //
-// Typy
 
 
 
@@ -80,9 +79,54 @@
 
 /**
  * @brief Hlavní funkce zajišťující sémantickou kontrolu
- * @param node Ukazatel na kořenový stromu
+ * @param root_node Ukazatel na kořenový stromu
  */
-int semantic(t_node *node);
+int semantic(t_node *root_node);
+
+
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+// - - - - Sémantická kontrola programu - exit(3)  - - - - //
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
+/**
+ * @brief 
+ * @param id 
+ * @param symtable 
+ * @param deftable 
+ * @return ERROR_CODE @see #defined
+ */
+int is_id_used(key_t id, stack_t *symtable, def_table_t deftable);
+
+/**
+ * @brief 
+ * @param name 
+ * @param symtable 
+ * @param state 
+ * @return ERROR_CODE @see #defined
+ */
+int is_f_set(key_t name, def_table_t *deftable, int state);
+
+/**
+ * @brief Hledá funkce, které byly volány a pokud nejsou definovány, tak vyhodí chybu
+ * @param deftable 
+ * @return ERROR_CODE @see #defined
+ */
+int eval_fcall(def_table_t deftable);
+
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+// - - - - Typová nekompatibilita výrazů - exit(6) - - - - //
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
+/**
+ * @brief 
+ * @param node
+ * @return ERROR_CODE @see #defined
+ */
+int eval_expr_type(t_node node, key_t value, key_t type);
 
 
 
@@ -90,20 +134,51 @@ int semantic(t_node *node);
 // - - - -  Zpracování gramatiky - - - - //
 // - - - - - - - - - - - - - - - - - - - //
 
+/**
+ * @brief Zpracování těla programu aka globálních proměnných a funkcí
+ * @param node 
+ * @param symtable 
+ * @param deftable 
+ * @return ERROR_CODE @see #defined
+ */
+int process_main_list(t_node *node, stack_t *symtable, def_table_t *deftable);
 
+/**
+ * @brief 
+ * @param node 
+ * @param symtable 
+ * @param deftable 
+ * @return ERROR_CODE @see #defined
+ */
+int process_stmt_list(t_node *node, stack_t *symtable, def_table_t *deftable);
 
+/**
+ * @brief 
+ * @param node 
+ * @param symtable 
+ * @return ERROR_CODE @see #defined
+ */
+int process_decl_local(t_node *node, stack_t *symtable);
 
-// - - - - - - - - - - - - - - - - //
-// - - - -  Pomocné funkce - - - - //
-// - - - - - - - - - - - - - - - - //
-int is_id_used(char *id, stack_t *symtable, def_table_t deftable);
+// - - - - - - - - - - - - - - - - - - - - - - - //
+// - - - -  Operace nad tabulkou symbolů - - - - //
+// - - - - - - - - - - - - - - - - - - - - - - - //
 
-int is_f_set(char *name, def_table_t deftable, int state);
+/**
+ * @brief 
+ * @param node 
+ * @param symtable 
+ * @param value 
+ * @return ERROR_CODE @see #defined
+ */
+int add_var_to_symtable(key_t type, key_t attribute, key_t value, stack_t *symtable);
 
-int process_stmt_list(t_node *node, stack_t *symtable, def_table_t deftable);
-
-int add_var_to_symtable(t_node *node, stack_t *symtable, bool state);
-
+/**
+ * @brief 
+ * @param node 
+ * @param symtable 
+ * @return ERROR_CODE @see #defined
+ */
 int add_scope_to_symtable(t_node *node, stack_t *symtable);
 
 
