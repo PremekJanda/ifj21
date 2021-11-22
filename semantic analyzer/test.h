@@ -3,9 +3,9 @@
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
 <<<<<<< HEAD
- *  Poslední změna:	22. 11. 2021 19:38:08
+ *  Poslední změna:	22. 11. 2021 20:58:46
 =======
- *  Poslední změna:	22. 11. 2021 19:38:08
+ *  Poslední změna:	22. 11. 2021 20:58:46
 >>>>>>> semantic_update
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
@@ -328,6 +328,17 @@
     }\
     deleteToken(token);
 
-    
+
+#define HTAB_ITEM_ADD() \
+    key_t type = malloc(10); \
+    sprintf(type, "%s", "type"); \
+    key_t key = malloc(10); \
+    sprintf(key, "%s", "key"); \
+    key_t value = malloc(10); \
+    sprintf(value, "%s", "value"); \
+ \
+    htab_lookup_add(htab, type, key, value); \
+
+
 
 #endif // __TEST_H__

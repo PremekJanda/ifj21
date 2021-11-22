@@ -2,7 +2,7 @@
  *  Soubor: symtable.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	22. 11. 2021 18:53:28
+ *  Poslední změna:	22. 11. 2021 21:54:13
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -94,9 +94,9 @@ typedef struct def_table {
  * @param e element/item Prvek k uvolnění z paměti
  */
 #define FREE_ELEMENT(e) \
-    free((void *)(e)->type); \
-    free((void *)(e)->key); \
-    free((void *)(e)->value); \
+    if ((e)->key != NULL) free((void *)(e)->key); \
+    if ((e)->type != NULL) free((void *)(e)->type); \
+    if ((e)->value != NULL) free((void *)(e)->value); \
     free((e));
 
 /**
