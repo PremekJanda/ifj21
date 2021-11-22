@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	22. 11. 2021 14:25:30
+ *  Last modified:	22. 11. 2021 19:28:27
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -22,8 +22,8 @@ int return_signal = SEM_OK;
 int main() {
 
     // * TESTOVÁNÍ
-    MAKE_TREE()
-    // MAKE_SMALL_TREE()
+    // MAKE_TREE()
+    MAKE_SMALL_TREE()
     // MAKE_DEF_TABLE()
     // MAKE_SYMTABLE()
     
@@ -35,6 +35,7 @@ int main() {
     
     // * TESTOVÁNÍ
     node_delete(&node1);
+    // stack_free(stack);
     
     
     return EXIT_SUCCESS;
@@ -137,9 +138,16 @@ int is_f_set(key_t name, def_table_t *deftable, int state) {
 
 // zohoduje se o tom, zda bude funkce definována, deklarována nebo volána
 int process_main_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
+
+    // vytvoření globálního rámce
+    // _ERR() add_scope_to_symtable(symtable)                                      ERR_()
+
     while ((*node).next_count != 1) {
         TEMP_VARS()
         
+        printf("(((%s))) (((%s)))\n", curr.data[0].data, curr.data[1].data);
+        printf("(((%s))) (((%s)))\n", next.data[0].data, next.data[1].data);
+
         // DEFINICE funkce
         if (strcmp(next.data[1].data, "function") == 0) {
             printf("function definition\n");
@@ -154,7 +162,7 @@ int process_main_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
 
         // DEKLARACE funkce nebo proměnné
         } else if (strcmp(next.data[1].data, "global") == 0) {
-u
+
             // sémantická kontrola stejného jména proměnné nebo funkce a její redeklarace
             _ERR() is_id_used(curr.next[1].data[1].data, symtable, *deftable)    ERR_()
 
@@ -171,20 +179,26 @@ u
 
             // jde o proměnnou
             } else {
-                    key_t name = (*node).next[1].data[1].data;
-                    key_t type = (*node).next[3].next[0].next[0].data[0].data;
+                    key_t name = curr.next[1].data[1].data;
+                    key_t type = curr.next[3].next[0].next[0].data[0].data;
+
                     key_t value = NULL;
 
                     // INICIALIZACE
-                    if ((*node).next[3].next[1].next_count == 2) {
+                    if (curr.next[3].next[1].next_count == 2) {
                         printf("global var initialization\n");
-                        key_t assign_type;
-                        _ERR() eval_expr_type((*node).next[3].next[1].next[1].next[0], value, assign_type)    ERR_()
-                    
+                        key_t assign_type = NULL;
+                        // _ERR() eval_expr_type(curr.next[3].next[1].next[1].next[0], value, assign_type)    ERR_()
+                        _ERR() eval_expr_type(curr.next[3].next[1].next[1].next[0], &value, &assign_type)    ERR_()
+
+                        printf("[%s m m %s]", assign_type, value);
+                        
                         // provede se typová kontrola nad přiřazením
                         TYPE_CHECK(type, assign_type)
 
-                        free(assign_type);
+
+                        free((void*)assign_type);
+                        free((void*)value);
 
                     // DEKLARACE
                     } else {
@@ -258,8 +272,9 @@ int process_decl_local(t_node *node, stack_t *symtable) {
         printf("local var initialization\n");
 
         // vyhodnocení, zda jsou všechny prvky expr stejného typu
-        key_t assign_type;
-        _ERR() eval_expr_type(node->next[4].next[1].next[0], value, assign_type)    ERR_()
+        key_t assign_type = NULL;
+        // _ERR() eval_expr_type(node->next[4].next[1].next[0], value, assign_type)    ERR_()
+        _ERR() eval_expr_type(node->next[4].next[1].next[0], &value, &assign_type)    ERR_()
 
         // provede se typová kontrola nad přiřazením
         TYPE_CHECK(type, assign_type)
@@ -281,11 +296,34 @@ int process_def_decl_fcall() {
     return EXIT_SUCCESS;
 }
 
-int eval_expr_type(t_node node, key_t value, key_t type) {
-    // TODO 
+// int eval_expr_type(t_node node, key_t value, key_t type) {
+int eval_expr_type(t_node node, key_t *value, key_t *type) {
     (void)node;
-    (void)value;
-    (void)type;
+
+    // // ! DELETE LATER
+    // value = (key_t)malloc(3);
+    // sprintf(value, "%d", rand() % 50);
+
+    // type = (key_t)malloc(10);
+    // sprintf(type, "%d", rand() % 50);
+
+
+    // ! DELETE LATER
+    *value = (void*)malloc(3);
+    sprintf(*value, "%d", rand() % 50);
+
+    *type = (void*)malloc(10);
+    sprintf(*type, "%d", rand() % 50);
+
+
+
+    printf("[%s %s]", *type, *value);
+
+
+    
+
+    // free(*type);
+    // free(*value);
 
     // rekurzivně (nejspíš) projít strom a vyhodit, zda všechny typy prvků souhlasí
 
@@ -309,11 +347,17 @@ int eval_fcall(def_table_t deftable) {
 // TODO key_t type;                // datový typ výzaru
 // TODO key_t attribute;           // identifikátor
 // TODO key_t value;               // hodnota (pokud je dána)
-int add_var_to_symtable(key_t type, key_t attribute, key_t value, stack_t *symtable) {
-    (void)type;
-    (void)attribute;
-    (void)value;
-    (void)symtable;
+int add_var_to_symtable(key_t type, key_t key, key_t value, stack_t *symtable) {
+    // (void)type;
+    // (void)key;
+    // (void)value;
+    // (void)symtable;
+
+    printf("[%s %s %s]", type, key, value);
+
+    // 
+    htab_lookup_add(symtable->stack[symtable->top], type, key, value);
+
 
     // TODO chci upravovat expr ?
 
@@ -322,10 +366,13 @@ int add_var_to_symtable(key_t type, key_t attribute, key_t value, stack_t *symta
     return EXIT_SUCCESS;
 }
 
-// TODO
-int add_scope_to_symtable(t_node *node, stack_t *symtable) {
-    (void)node;
-    (void)symtable;
+int add_scope_to_symtable(stack_t *symtable) {
+    htab_t *htab = htab_init(HASH_TABLE_DIMENSION);
+    
+    if (htab == NULL)
+        return 99;
+        
+    stack_push(&symtable, htab);
 
     return EXIT_SUCCESS;
 }

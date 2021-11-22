@@ -2,7 +2,7 @@
  *  Soubor: semantic.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	22. 11. 2021 02:14:45
+ *  Poslední změna:	22. 11. 2021 19:14:40
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -126,7 +126,8 @@ int eval_fcall(def_table_t deftable);
  * @param node
  * @return ERROR_CODE @see #defined
  */
-int eval_expr_type(t_node node, key_t value, key_t type);
+// int eval_expr_type(t_node node, key_t value, key_t type);
+int eval_expr_type(t_node node, key_t *value, key_t *type);
 
 
 
@@ -179,7 +180,7 @@ int add_var_to_symtable(key_t type, key_t attribute, key_t value, stack_t *symta
  * @param symtable 
  * @return ERROR_CODE @see #defined
  */
-int add_scope_to_symtable(t_node *node, stack_t *symtable);
+int add_scope_to_symtable(stack_t *symtable);
 
 
 
