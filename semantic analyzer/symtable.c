@@ -2,7 +2,7 @@
  *  Soubor: symtable.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	20. 11. 2021 14:31:17
+ *  Poslední změna:	22. 11. 2021 16:27:52
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -180,7 +180,7 @@ htab_item_t * htab_find(htab_t *t, key_t key) {
     return NULL;    
 }
 
-htab_item_t * htab_lookup_add(htab_t *t, key_t key) {
+htab_item_t * htab_lookup_add(htab_t *t, key_t type, key_t key, key_t value) {
     
     // získání indexu podle klíče v tabulce
     size_t index_in_arr = htab_hash_function(key) % t->arr_size;
@@ -191,7 +191,7 @@ htab_item_t * htab_lookup_add(htab_t *t, key_t key) {
     // v případě prvního elementu v řadě
     if (element == NULL) {
         // alokace a inicializace dat
-        INIT_ELEMENT(element, key);
+        INIT_ELEMENT(element, type, key, value);
         t->ptr_arr[index_in_arr] = element;
         
         return element;
@@ -204,13 +204,14 @@ htab_item_t * htab_lookup_add(htab_t *t, key_t key) {
         // kontrola, jestli se se 'key' vyskytuje v tabulce
         if (strcmp(element->key, key) == 0) {
             // // element->data->value++;
+            element->value = value;
             return element;
         }        
         element = element->next_h_item;
     } while (element != NULL);
     
     // prvek nebyl nalezen -> je vytvořen nový
-    INIT_ELEMENT(element, key);    
+    INIT_ELEMENT(element, type, key, value);    
     prev_element->next_h_item = element;
 
     return element;
@@ -234,7 +235,7 @@ htab_t * htab_resize(size_t n, htab_t *from) {
             
             // přidá slovo do nové tabulky
             htab_item_t *new_element;
-            if ((new_element = htab_lookup_add(new_hash_table, new_word)) == NULL) {
+            if ((new_element = htab_lookup_add(new_hash_table, new_word, new_word, new_word)) == NULL) {
                 error_exit("Chyba při allokaci paměti pro slovo '%s'!\n", new_word);
                 exit(0);
             }
@@ -497,7 +498,7 @@ void htab_print(const htab_t *t) {
 }
 
 void item_print(const htab_item_t *i) {
-    printf("\t\t%-3s ",i->key);
+    printf("\t\ta: %-5s t: %-5s v: %-5s ", i->key, i->type, i->value);
     
     if (i->fce == NULL) 
         printf("není fce\n");
