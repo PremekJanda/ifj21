@@ -2,7 +2,7 @@
  *  Soubor: test.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:18. 11. 2021 12:40:45
+ *  Poslední změna:	22. 11. 2021 00:47:59
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -21,80 +21,80 @@
     node_setdata(&node, type, 1);
 
 #define MAKE_TREE() \
-    NODE_INIT(node1,  "", "<prog>") \
+    NODE_INIT(node1,  "<prog>", "") \
      \
     NODE_INIT(node2,  "keyword", "require") \
     NODE_INIT(node3,  "string", "ifj21") \
-    NODE_INIT(node4,  "", "<main-list>") \
+    NODE_INIT(node4,  "<main-list>", "") \
  \
-    NODE_INIT(node5,  "", "<def-decl-fcall>") \
+    NODE_INIT(node5,  "<def-decl-fcall>", "") \
      \
-    NODE_INIT(node6,  "", "<main-list>") \
+    NODE_INIT(node6,  "<main-list>", "") \
  \
     NODE_INIT(node7,  "keyword", "function") \
-    NODE_INIT(node8,  "string", "main") \
-    NODE_INIT(node9,  "", "<f-arg-list>") \
-    NODE_INIT(node10, "", "<return-types>") \
-    NODE_INIT(node11, "", "<stmt-list>") \
+    NODE_INIT(node8,  "id", "main") \
+    NODE_INIT(node9,  "<f-arg-list>", "") \
+    NODE_INIT(node10, "<return-types>", "") \
+    NODE_INIT(node11, "<stmt-list>", "") \
     NODE_INIT(node12, "keyword", "end") \
  \
-    NODE_INIT(node13, "", "<def-decl-fcal>") \
-    NODE_INIT(node14, "", "<main-list>") \
+    NODE_INIT(node13, "<def-decl-fcal>", "") \
+    NODE_INIT(node14, "<main-list>", "") \
      \
-    NODE_INIT(node15, "string", "eps") \
+    NODE_INIT(node15, "eps", "") \
  \
-    NODE_INIT(node16, "string", "eps") \
+    NODE_INIT(node16, "eps", "") \
  \
-    NODE_INIT(node17, "", "<stmt>") \
-    NODE_INIT(node18, "", "<stmt-list>") \
+    NODE_INIT(node17, "<stmt>", "") \
+    NODE_INIT(node18, "<stmt-list>", "") \
  \
-    NODE_INIT(node19, "string", "main") \
-    NODE_INIT(node20, "", "<item-list>") \
+    NODE_INIT(node19, "id", "main") \
+    NODE_INIT(node20, "<item-list>", "") \
  \
-    NODE_INIT(node21, "", "eps") \
+    NODE_INIT(node21, "eps", "") \
  \
-    NODE_INIT(node22, "", "<decl-local>") \
+    NODE_INIT(node22, "<decl-local>", "") \
  \
-    NODE_INIT(node23, "", "<stmt>") \
-    NODE_INIT(node24, "", "<stmt-list>") \
+    NODE_INIT(node23, "<stmt>", "") \
+    NODE_INIT(node24, "<stmt-list>", "") \
  \
-    NODE_INIT(node25, "", "eps") \
+    NODE_INIT(node25, "eps", "") \
  \
-    NODE_INIT(node26, "", "local") \
-    NODE_INIT(node27, "", "s1") \
-    NODE_INIT(node28, "", ":") \
-    NODE_INIT(node29, "", "<type>") \
-    NODE_INIT(node30, "", "<decl-assign>") \
+    NODE_INIT(node26, "keyword", "local") \
+    NODE_INIT(node27, "id", "s1") \
+    NODE_INIT(node28, "DataAssign", ":") \
+    NODE_INIT(node29, "<type>", "") \
+    NODE_INIT(node30, "<decl-assign>", "") \
  \
     NODE_INIT(node31, "", "id") \
-    NODE_INIT(node32, "", "<assign-or-fcall>") \
+    NODE_INIT(node32, "<assign-or-fcall>", "") \
  \
-    NODE_INIT(node33, "", "<stmt>") \
-    NODE_INIT(node34, "", "<stmt-list>") \
+    NODE_INIT(node33, "<stmt>", "") \
+    NODE_INIT(node34, "<stmt-list>", "") \
  \
-    NODE_INIT(node35, "", "string") \
+    NODE_INIT(node35, "keyword", "string") \
  \
-    NODE_INIT(node36, "", "=") \
-    NODE_INIT(node37, "", "<item>") \
+    NODE_INIT(node36, "assign", "=") \
+    NODE_INIT(node37, "<item>", "") \
  \
-    NODE_INIT(node38, "", "<item-list>") \
+    NODE_INIT(node38, "<item-list>", "") \
  \
-    NODE_INIT(node39, "", "<if>") \
+    NODE_INIT(node39, "<if>", "") \
  \
-    NODE_INIT(node40, "", "eps") \
+    NODE_INIT(node40, "eps", "") \
  \
-    NODE_INIT(node41, "", "expr") \
+    NODE_INIT(node41, "expr", "") \
  \
-    NODE_INIT(node42, "", "<item>") \
-    NODE_INIT(node43, "", "<another-item>") \
+    NODE_INIT(node42, "<item>", "") \
+    NODE_INIT(node43, "<another-item>", "") \
  \
-    NODE_INIT(node44, "", "if") \
-    NODE_INIT(node45, "", "<cond>") \
-    NODE_INIT(node46, "", "than") \
-    NODE_INIT(node47, "", "<stmt-list>") \
-    NODE_INIT(node48, "", "else") \
-    NODE_INIT(node49, "", "<stmt-list>") \
-    NODE_INIT(node50, "", "end") \
+    NODE_INIT(node44, "keyword", "if") \
+    NODE_INIT(node45, "<cond>", "") \
+    NODE_INIT(node46, "keyword", "than") \
+    NODE_INIT(node47, "<stmt-list>", "") \
+    NODE_INIT(node48, "keyword", "else") \
+    NODE_INIT(node49, "<stmt-list>", "") \
+    NODE_INIT(node50, "keyword", "end") \
  \
  \
  \
@@ -175,13 +175,13 @@
 
 
 #define MAKE_SMALL_TREE() \
-    NODE_INIT(node1,  "", "<prog>") \
+    NODE_INIT(node1,  "<prog>", "") \
      \
     NODE_INIT(node2,  "keyword", "require") \
     NODE_INIT(node3,  "string", "ifj21") \
-    NODE_INIT(node4,  "", "<main-list>") \
+    NODE_INIT(node4,  "<main-list>", "") \
  \
-    NODE_INIT(node5,  "", "<def-decl-fcall>") \
+    NODE_INIT(node5,  "<def-decl-fcall>", "") \
 \
     node_addnext(&node1, &node2); \
     node_addnext(&node1, &node3); \
