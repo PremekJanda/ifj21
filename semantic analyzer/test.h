@@ -2,11 +2,7 @@
  *  Soubor: test.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
-<<<<<<< HEAD
- *  Poslední změna:	22. 11. 2021 20:58:46
-=======
- *  Poslední změna:	22. 11. 2021 20:58:46
->>>>>>> semantic_update
+ *  Poslední změna:	22. 11. 2021 23:32:52
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -15,8 +11,12 @@
  */
 
 // následující řádky zabrání násobnému vložení:
+#include "tree.h"
+
 #ifndef __TEST_H__
 #define __TEST_H__
+
+
 
 #define NODE_INIT(node, attribute, type) \
     t_node node; \
@@ -106,75 +106,73 @@
     node_addnext(&node1, &node3); \
     node_addnext(&node1, &node4); \
  \
-    node_addnext(&node1.next[2], &node5); \
-    node_addnext(&node1.next[2], &node6); \
+    node_addnext(node1.next[2], &node5); \
+    node_addnext(node1.next[2], &node6); \
  \
-    node_addnext(&node1.next[2].next[0], &node7); \
-    node_addnext(&node1.next[2].next[0], &node8); \
-    node_addnext(&node1.next[2].next[0], &node9); \
-    node_addnext(&node1.next[2].next[0], &node10); \
-    node_addnext(&node1.next[2].next[0], &node11); \
-    node_addnext(&node1.next[2].next[0], &node12); \
+    node_addnext(node1.next[2]->next[0], &node7); \
+    node_addnext(node1.next[2]->next[0], &node8); \
+    node_addnext(node1.next[2]->next[0], &node9); \
+    node_addnext(node1.next[2]->next[0], &node10); \
+    node_addnext(node1.next[2]->next[0], &node11); \
+    node_addnext(node1.next[2]->next[0], &node12); \
  \
-    node_addnext(&node1.next[2].next[1], &node13); \
-    node_addnext(&node1.next[2].next[1], &node14); \
+    node_addnext(node1.next[2]->next[1], &node13); \
+    node_addnext(node1.next[2]->next[1], &node14); \
      \
-    node_addnext(&node1.next[2].next[0].next[2], &node15); \
+    node_addnext(node1.next[2]->next[0]->next[2], &node15); \
  \
-    node_addnext(&node1.next[2].next[0].next[3], &node16); \
+    node_addnext(node1.next[2]->next[0]->next[3], &node16); \
      \
-    node_addnext(&node1.next[2].next[0].next[4], &node17); \
-    node_addnext(&node1.next[2].next[0].next[4], &node18); \
+    node_addnext(node1.next[2]->next[0]->next[4], &node17); \
+    node_addnext(node1.next[2]->next[0]->next[4], &node18); \
  \
-    node_addnext(&node1.next[2].next[1].next[0], &node19); \
-    node_addnext(&node1.next[2].next[1].next[0], &node20); \
+    node_addnext(node1.next[2]->next[1]->next[0], &node19); \
+    node_addnext(node1.next[2]->next[1]->next[0], &node20); \
  \
-    node_addnext(&node1.next[2].next[1].next[1], &node21); \
+    node_addnext(node1.next[2]->next[1]->next[1], &node21); \
  \
-    node_addnext(&node1.next[2].next[0].next[4].next[0], &node22); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[0], &node22); \
  \
-    node_addnext(&node1.next[2].next[0].next[4].next[1], &node23); \
-    node_addnext(&node1.next[2].next[0].next[4].next[1], &node24); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[1], &node23); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[1], &node24); \
  \
-    node_addnext(&node1.next[2].next[1].next[0].next[1], &node25); \
+    node_addnext(node1.next[2]->next[1]->next[0]->next[1], &node25); \
  \
-    node_addnext(&node1.next[2].next[0].next[4].next[0].next[0], &node26); \
-    node_addnext(&node1.next[2].next[0].next[4].next[0].next[0], &node27); \
-    node_addnext(&node1.next[2].next[0].next[4].next[0].next[0], &node28); \
-    node_addnext(&node1.next[2].next[0].next[4].next[0].next[0], &node29); \
-    node_addnext(&node1.next[2].next[0].next[4].next[0].next[0], &node30); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[0]->next[0], &node26); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[0]->next[0], &node27); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[0]->next[0], &node28); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[0]->next[0], &node29); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[0]->next[0], &node30); \
  \
-    node_addnext(&node1.next[2].next[0].next[4].next[1].next[0], &node31); \
-    node_addnext(&node1.next[2].next[0].next[4].next[1].next[0], &node32); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[0], &node31); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[0], &node32); \
  \
-    node_addnext(&node1.next[2].next[0].next[4].next[1].next[1], &node33); \
-    node_addnext(&node1.next[2].next[0].next[4].next[1].next[1], &node34); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1], &node33); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1], &node34); \
  \
-    node_addnext(&node1.next[2].next[0].next[4].next[0].next[0].next[3], &node35); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[0]->next[0]->next[3], &node35); \
  \
-    node_addnext(&node1.next[2].next[0].next[4].next[0].next[0].next[4], &node36); \
-    node_addnext(&node1.next[2].next[0].next[4].next[0].next[0].next[4], &node37); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[0]->next[0]->next[4], &node36); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[0]->next[0]->next[4], &node37); \
  \
-    node_addnext(&node1.next[2].next[0].next[4].next[1].next[0].next[1], &node38); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[0]->next[1], &node38); \
  \
-    node_addnext(&node1.next[2].next[0].next[4].next[1].next[1].next[0], &node39); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1]->next[0], &node39); \
  \
-    node_addnext(&node1.next[2].next[0].next[4].next[1].next[1].next[1], &node40); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1]->next[1], &node40); \
  \
-    node_addnext(&node1.next[2].next[0].next[4].next[0].next[0].next[4].next[1], &node41); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[0]->next[0]->next[4]->next[1], &node41); \
  \
-    node_addnext(&node1.next[2].next[0].next[4].next[1].next[0].next[1].next[0], &node42); \
-    node_addnext(&node1.next[2].next[0].next[4].next[1].next[0].next[1].next[0], &node43); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[0]->next[1]->next[0], &node42); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[0]->next[1]->next[0], &node43); \
  \
-    node_addnext(&node1.next[2].next[0].next[4].next[1].next[1].next[0].next[0], &node44); \
-    node_addnext(&node1.next[2].next[0].next[4].next[1].next[1].next[0].next[0], &node45); \
-    node_addnext(&node1.next[2].next[0].next[4].next[1].next[1].next[0].next[0], &node46); \
-    node_addnext(&node1.next[2].next[0].next[4].next[1].next[1].next[0].next[0], &node47); \
-    node_addnext(&node1.next[2].next[0].next[4].next[1].next[1].next[0].next[0], &node48); \
-    node_addnext(&node1.next[2].next[0].next[4].next[1].next[1].next[0].next[0], &node49); \
-    node_addnext(&node1.next[2].next[0].next[4].next[1].next[1].next[0].next[0], &node50); \
- \
-    tree_print(node1, 0);
+    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1]->next[0]->next[0], &node44); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1]->next[0]->next[0], &node45); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1]->next[0]->next[0], &node46); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1]->next[0]->next[0], &node47); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1]->next[0]->next[0], &node48); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1]->next[0]->next[0], &node49); \
+    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1]->next[0]->next[0], &node50);tree_print(node1, 0);
 
 
 
@@ -209,25 +207,25 @@
     node_addnext(&node1, &node3); \
     node_addnext(&node1, &node4); \
 \
-    node_addnext(&node1.next[2], &node5); \
-    node_addnext(&node1.next[2], &node6); \
+    node_addnext(node1.next[2], &node5); \
+    node_addnext(node1.next[2], &node6); \
     \
-    node_addnext(&node1.next[2].next[0], &node7); \
-    node_addnext(&node1.next[2].next[0], &node8); \
-    node_addnext(&node1.next[2].next[0], &node9); \
-    node_addnext(&node1.next[2].next[0], &node10); \
+    node_addnext(node1.next[2]->next[0], &node7); \
+    node_addnext(node1.next[2]->next[0], &node8); \
+    node_addnext(node1.next[2]->next[0], &node9); \
+    node_addnext(node1.next[2]->next[0], &node10); \
     \
-    node_addnext(&node1.next[2].next[1], &node17); \
+    node_addnext(node1.next[2]->next[1], &node17); \
     \
-    node_addnext(&node1.next[2].next[0].next[3], &node11); \
-    node_addnext(&node1.next[2].next[0].next[3], &node12); \
+    node_addnext(node1.next[2]->next[0]->next[3], &node11); \
+    node_addnext(node1.next[2]->next[0]->next[3], &node12); \
     \
-    node_addnext(&node1.next[2].next[0].next[3].next[0], &node13); \
+    node_addnext(node1.next[2]->next[0]->next[3]->next[0], &node13); \
     \
-    node_addnext(&node1.next[2].next[0].next[3].next[1], &node14); \
-    node_addnext(&node1.next[2].next[0].next[3].next[1], &node15); \
+    node_addnext(node1.next[2]->next[0]->next[3]->next[1], &node14); \
+    node_addnext(node1.next[2]->next[0]->next[3]->next[1], &node15); \
     \
-    node_addnext(&node1.next[2].next[0].next[3].next[1].next[0], &node16); \
+    node_addnext(node1.next[2]->next[0]->next[3]->next[1]->next[0], &node16); \
     \
     tree_print(node1, 0);
 
@@ -248,7 +246,7 @@
             free_word = true; \
         } else { \
             /* vytvoří nový záznam v tabulce*/ \
-            if (htab_lookup_add(hash_table, new_word, new_word, new_word) == NULL) \
+            if (htab_lookup_add(hash_table, new_word) == NULL) \
                 return error_exit("Chyba při allokaci paměti pro slovo '%s'!\n", new_word); \
         } \
         /* alokovaný identifikátor již existuje v tabulce a může být odstraněn*/ \
@@ -328,17 +326,6 @@
     }\
     deleteToken(token);
 
-
-#define HTAB_ITEM_ADD() \
-    key_t type = malloc(10); \
-    sprintf(type, "%s", "type"); \
-    key_t key = malloc(10); \
-    sprintf(key, "%s", "key"); \
-    key_t value = malloc(10); \
-    sprintf(value, "%s", "value"); \
- \
-    htab_lookup_add(htab, type, key, value); \
-
-
+    
 
 #endif // __TEST_H__
