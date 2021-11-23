@@ -1,0 +1,15 @@
+require "ifj21"
+
+function main()
+    write()
+    local a : integer = readi()
+    if a < i then
+        write()
+    else
+        write()
+        local vysl : integer = factorial(a)
+    end
+    write()
+end
+
+main()
