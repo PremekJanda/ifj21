@@ -2,7 +2,7 @@
  *  Soubor: lexikon.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	23. 11. 2021 17:04:45
+ *  Poslední změna:	23. 11. 2021 18:01:18
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -25,6 +25,7 @@
 * d = dělení
 */
 char states[11] = {'s', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'd'};
+char keywords[15][10] = {"do", "else", "end", "function", "global", "if", "integer", "local", "nil", "number", "require", "return", "string", "then", "while"};
 
 char c;
 int i;
