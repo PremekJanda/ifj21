@@ -7,6 +7,7 @@
  * @brief Small library of functions, that work with string buffers
  * @version 0.1
  * @date 2021-11-13
+ * Last modified:	23. 11. 2021 01:35:47
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -20,7 +21,7 @@
 #include <stdarg.h>
 
 int buffer_init(buffer_t*buffer){
-    buffer->capacity = 2;
+    buffer->capacity = 45;
     if ((buffer->data = malloc(buffer->capacity)) != NULL){
         buffer->data[0] = '\0';
         return 1;
@@ -67,6 +68,32 @@ int strcpy_realloc(buffer_t*dst, const char*src) {
         return 0;
     }
     strcpy(dst->data,src);
+    return 1;
+}
+int replace_all_chars_by_string(buffer_t*buffer, char c, char*string){
+    char*ptr = NULL;
+    char*rest_of_string = NULL;
+    ptr = buffer->data;
+    int index;
+    while ((ptr = strchr(ptr, c)) != NULL)
+    {
+        rest_of_string = ptr+1;
+        index = ptr - buffer->data; //index of char to be deleted
+        if (*rest_of_string != '\0') {
+            *ptr = '\0';
+            strcat(buffer->data, rest_of_string);
+            if (!strinbetween_realloc(buffer, string, index)){
+                return 0;
+            }
+             
+        }
+        else {
+            if (!strcat_realloc(buffer, string)){
+                return 0;
+            }
+        }
+        ptr += strlen(string);
+    }
     return 1;
 }
 
@@ -151,15 +178,4 @@ int strinbetween_format_realloc(buffer_t*dst, size_t index, const char *fmt, ...
         buffer_destroy(&var);
         return 1;
     }
-}
-
-int main(){
-    buffer_t buffer;
-    buffer_init(&buffer);
-    strcpy_realloc(&buffer, "VAR \n");
-    strcat_format_realloc(&buffer, "DEFVAR float@%a\n", 3.1415926);
-
-    
-    printf("%s", buffer.data);
-    return 0;
 }

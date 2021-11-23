@@ -1,18 +1,58 @@
+/**
+ * @file code-generator.h
+ * @authors David Kocman  - xkocma08, VUT FIT
+ *          Radomír Bábek - xbabek02, VUT FIT
+ *          Martin Ohnút  - xohnut01, VUT FIT
+ *          Přemek Janda  - xjanda28, VUT FIT
+ * @brief Hlavičkový soubor funkcí pro generování kódu
+ * @version 0.1
+ * @date 2021-11-13
+ * Last Modified:	23. 11. 2021 13:04:50
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+
+
 #ifndef __CODE_GENERATOR_H
 #define __CODE_GENERATOR_H
 
 #include "tree.h"
-
-int eval_expression(t_node*tree);
-
-void generate_code(t_tree*tree, buffer_t*code);
+#include "mystring.h"
+#include <stdbool.h>
+#include "hashtable/hashtable.h"
 
 typedef enum {TF,LF,GF} frame_t;
 
-#define END_IF_FAIL(code) \
-    if (code->data == NULL){ \
+#define END_IF_FAIL(buffer) \
+    if (buffer->data == NULL){ \
         free_memory_then_quit(99);\
     }\
+
+typedef struct{
+    int total_expr_count;
+    int total_conditionals_count;
+    int total_label_count;
+    buffer_t text;
+}code_t;
+
+typedef struct{
+    bool results[3];
+    char result_var_id[3][26];
+}expr_results_t;
+
+
+void init_result_field(code_t*code, expr_results_t*results);
+
+void eval_expression(code_t*code, t_node*expr, expr_results_t*result_field);
+
+/**
+ * @brief Vygeneruje kód jazyka IFJ21Code ze syntaktického stromu podrobenému syntaktické a sémantické analýze
+ * 
+ * @param tree Syntaktický strom
+ * @param code Řetězcový buffer
+ */
+void generate_code(t_tree*tree, code_t*code);
 
 /**
  * @brief Najde hledaný label v kódu ifj21code
@@ -21,7 +61,7 @@ typedef enum {TF,LF,GF} frame_t;
  * @param label_id Identifikátor labelu, který vyhledáváme
  * @return int index prvního znaku za odřádkováním instrukce LABEL, nebo -1 při nenalezení
  */
-int find_label(buffer_t*code, char*label_id);
+int find_label(code_t*code, char*label_id);
 
 /**
  * @brief Zkontroluje první uzel syntaktického stromu a posune se dál v analýze
@@ -38,7 +78,7 @@ t_node*check_prog_node(t_node*prog_node);
  * @param main_node Uzel, který se zpracovává
  * @return 0 při nedostatku paměti, 1 při úspěchu
  */
-void def_declare_fcall_crossroad(buffer_t*code, t_node*main_node);
+void def_declare_fcall_crossroad(code_t*code, t_node*main_node);
 
 /**
  * @brief Vygeneruje kód volání funkce
@@ -46,7 +86,7 @@ void def_declare_fcall_crossroad(buffer_t*code, t_node*main_node);
  * @param code Buffer, do kterého funkce zapíše mezikód
  * @param fcall_node Uzel syntaktického stromu, obsahující volání funkce
  */
-void function_call_gen(buffer_t*code,t_node*fcall_node);
+void function_call_gen(code_t*code,t_node*fcall_node);
 
 /**
  * @brief Vygeneruje kód funkce
@@ -54,7 +94,7 @@ void function_call_gen(buffer_t*code,t_node*fcall_node);
  * @param code Buffer, do kterého funkce zapíše mezikód
  * @param function_node Uzel syntaktického stromu, obsahující definici funkce
  */
-void function_gen(buffer_t*code,t_node*function_node);
+void function_gen(code_t*code,t_node*function_node);
 
 /**
  * @brief Ukončí program, uvolní všechnu přiřazenou paměť
@@ -63,7 +103,7 @@ void function_gen(buffer_t*code,t_node*function_node);
  */
 void free_memory_then_quit(int return_code);
 
-void create_function_label(buffer_t*code, const char*id);
+void create_function_label(code_t*code, const char*id);
 
 /**
  * @brief Vygeneruje kód pro deklaraci globální proměnné s možností přiřazení hodnoty
@@ -73,6 +113,45 @@ void create_function_label(buffer_t*code, const char*id);
  * @param id Identifikátor funkce, nebo proměnné. Deklarace funkce bude ignorována
  * 
  */
-void create_global_variable(buffer_t*code,t_node*declaration_node, const char*id);
+void create_global_variable(code_t*code,t_node*declaration_node, const char*id);
+
+/**
+ * @brief Projde syntaktický strom a přejmenuje všechny identifikátory na unikátní. Rekurzivní funkce.
+ * 
+ * @param tree Syntaktický strom
+ * @param ht_already_processed Hashovací tabulka, zajistí, že se nebude opravovat dvakrát stejný identifikátor
+ * @param fc Identifikátor funkce, ve které se průchod stromem momentálně nachází
+ * @param depth Úroveň zanoření
+ * @param depth_total Hodnota začne na 0 a zvýší se při každém zanoření
+ */
+void rename_all_id(t_node* tree, ht_table_t*ht_already_processed, char**fc, int*depth, int*depth_total);
+
+/**
+ * @brief Změní názvy identifikátorů pouze pro ty které opravdu značí stejnou proměnnou
+ * 
+ * @param id Název identifikátoru k nalezení v syntaktickém stromu
+ * @param new_id Nový unikátní identifikátor
+ * @param tree Syntaktický strom
+ */
+void field_of_visibility_id_replacement(char*id, char*new_id, t_node*tree);
+
+/**
+ * @brief Zkontroluje, jestli je identifikátor k nalezení v lokální rámci LF
+ * 
+ * @param code Ifj21Code kód
+ * @param id Identifikátor proměnné
+ * @return Vrací 1, pokud je k nalezení v LF, jinak 0
+ */
+int is_local(code_t*code, char*id);
+
+
+/**
+ * @brief Zkontroluje, jestli je identifikátor k nalezení v globálním rámci GF
+ * 
+ * @param code Ifj21Code kód
+ * @param id Identifikátor proměnné
+ * @return Ukazatel na definici proměnné, nebo NULL pokud není proměnná k nalezení v GF
+ */
+char*is_global(code_t*code, char*id);
 
 #endif

@@ -4,9 +4,12 @@
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
  *          Přemek Janda  - xjanda28, VUT FIT
- * @brief Small library of functions, that work with string buffers
+ * @brief Small library of functions, that work with string buffers.
+ *        Documentation was writen in english, before we have made decision to 
+ *        write all together in czech.
  * @version 0.1
  * @date 2021-11-13
+ * Last Modified:	22. 11. 2021 19:09:39
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -101,5 +104,15 @@ int strcat_format_realloc(buffer_t*dst, const char *fmt, ...);
  * @return Returns 1 if success, 0 when there is not enough memory
  */
 int strinbetween_format_realloc(buffer_t*dst, size_t position, const char *fmt, ...);
+
+/**
+ * @brief Replaces 
+ * 
+ * @param buffer 
+ * @param c 
+ * @param string 
+ * @return int 
+ */
+int replace_all_chars_by_string(buffer_t*buffer, char c, char*string);
 
 #endif
