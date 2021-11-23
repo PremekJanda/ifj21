@@ -2,7 +2,7 @@
  *  Soubor: lexikon.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	22. 11. 2021 00:35:48
+ *  Poslední změna:	23. 11. 2021 17:04:45
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -25,7 +25,7 @@
 * d = dělení
 */
 char states[11] = {'s', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'd'};
-char keywords[15][10] = {"do", "else", "end", "function", "global", "if", "integer", "local", "nil", "number", "require", "return", "string", "then", "while"};
+
 char c;
 int i;
 
@@ -75,8 +75,12 @@ int scanner(tToken *token){
     char state = states[0];
     int length = TOKEN_LENGTH;
 
-    while ( (c = getc(stdin)) != EOF)
+    while (c  != EOF)
     {
+        c = getc(stdin);
+        if(c == '\r'){
+            continue;
+        }
         switch (state){
         case 's':
             // ID/KeyWord
@@ -128,6 +132,8 @@ int scanner(tToken *token){
             }
             //string
             else if(c == '"'){
+                token->attribute[i] = c;
+                i++;
                 state = states[4];
             }
             //cases na <,>,<=,>=,~=
@@ -196,6 +202,11 @@ int scanner(tToken *token){
             //ignorace bílého znaku
             else if(c == ' '){
                 continue;
+            }
+            else if(c == EOF){
+                token->attribute[0] = '\0';
+                strcpy(token->type, "EOF");
+                return 0;
             }
             else{
                 //ošetření špatného charakteru
@@ -373,7 +384,7 @@ int scanner(tToken *token){
             //dokončení stringu
             else if (c == '"')
             {
-                i--;
+                
                 token->attribute[i] = '\0';
                 strcpy(token->type, "string");
                 i = 0;
@@ -550,7 +561,7 @@ int scanner(tToken *token){
         }
         
     }
-    return (c == EOF) ? 1 : 0;
+    return 0;
 }
 
 void printToken(tToken *token){
