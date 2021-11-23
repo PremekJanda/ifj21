@@ -2,7 +2,7 @@
  *  Soubor: lexikon.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	23. 11. 2021 18:01:18
+ *  Poslední změna:	23. 11. 2021 20:07:47
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -79,9 +79,6 @@ int scanner(tToken *token){
     while (c  != EOF)
     {
         c = getc(stdin);
-        if(c == '\r'){
-            continue;
-        }
         switch (state){
         case 's':
             // ID/KeyWord
@@ -201,7 +198,7 @@ int scanner(tToken *token){
                 token->line++;
             }
             //ignorace bílého znaku
-            else if(c == ' '){
+            else if(c == ' ' || c == '\r' || c == '\t'){
                 continue;
             }
             else if(c == EOF){
@@ -211,10 +208,8 @@ int scanner(tToken *token){
             }
             else{
                 //ošetření špatného charakteru
-                if(c!=EOF){
-                    fprintf(stderr, "ERROR: Invalid character \"%c\" on line %d\n",c ,token->line);
-                    return 1;
-                }
+                fprintf(stderr, "ERROR: Invalid character \"%c\" on line %d\n",c ,token->line);
+                return 1;
             }
         break;
 
@@ -265,7 +260,7 @@ int scanner(tToken *token){
                 }
             }
             //exponent
-            else if(c == 'E' || c == 'e' || c == '+' || c == '-' || c == '.'){
+            else if(c == 'E' || c == 'e' || c == '.' || c == '+' || c == '-'){
                 token->attribute[i] = c;
                 i++;
                 if (i > (length - 1))
@@ -601,7 +596,7 @@ void STokenFinish(tToken *token, int *i, char *string, char c){
     strcpy(token->type, string);
     *i = 0;
 }
-
+/*
 int main(int argc, char const *argv[])
 {   
     
@@ -640,4 +635,4 @@ int main(int argc, char const *argv[])
     (void)argc;
     (void)argv;
     return 0;
-}
+}*/
