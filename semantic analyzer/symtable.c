@@ -2,7 +2,7 @@
  *  Soubor: symtable.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	24. 11. 2021 04:47:48
+ *  Poslední změna:	24. 11. 2021 06:54:27
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -510,7 +510,7 @@ void item_print(const htab_item_t *i) {
 void fce_print(const fce_item_t *i, size_t return_values) {
     size_t counter = 1;
     if (return_values == 0)
-        printf("Žádné návratové hodnoty");
+        printf("Žádné návratové hodnoty | ");
 
     while(i != NULL) {
         if (counter == return_values && return_values != 0)

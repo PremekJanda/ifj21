@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	24. 11. 2021 05:24:45
+ *  Last modified:	24. 11. 2021 06:58:11
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -22,9 +22,9 @@ int return_signal = SEM_OK;
 int main() {
 
     // * TESTOVÁNÍ
-    // MAKE_TREE()
+    MAKE_TREE()
     // MAKE_SMALL_TREE()
-    MAKE_F_DECL_TREE()
+    // MAKE_F_DECL_TREE()
     // MAKE_DEF_TABLE()
     // MAKE_SYMTABLE()
     
@@ -349,7 +349,7 @@ int process_cond(t_node *node) {
 
 int process_types(t_node *node, fce_item_t **item) {
     // nejprve určí první typ
-    while (node->next_count != 1) {
+    if (node->next_count != 1) {
         ALLOC_STR(item_key, node->next[0]->next[0]->data[1].data);
         fce_item_push(item, item_key);
 
@@ -390,9 +390,43 @@ int process_return_types(t_node *node, fce_item_t **item, size_t *return_values)
     return EXIT_SUCCESS;
 }
 
+// TODO
+int process_f_arg_list(t_node *node, fce_item_t **item, stack_t *symtable) {
+    // nejprve určí první typ
+    if (node->next_count != 1) {
+        // f-arg
+        ALLOC_STR(type_first, node->next[0]->next[2]->data[1].data);
+        ALLOC_STR(key_first, node->next[0]->next[0]->data[1].data);
+        ALLOC_STR(value_second, "");
 
+        ALLOC_CHECK(htab_lookup_add(symtable->stack[symtable->top], type_first, key_first, value_second, LOCAL, 0))
 
-// TODO přidání funkce do globálního rámce tabulky symbolů 
+        ALLOC_STR(arg_type_first, node->next[0]->next[2]->data[1].data);
+        fce_item_push(item, arg_type_first);
+
+        node = node->next[1];
+        printf("ahoj\n");
+        // f-arg-another
+        while (node->next_count != 1) {
+            // f-arg
+
+            printf("arg \n");
+            ALLOC_STR(type, node->next[1]->next[2]->data[1].data);
+            ALLOC_STR(key, node->next[1]->next[0]->data[1].data);
+            ALLOC_STR(value, "");
+
+            ALLOC_CHECK(htab_lookup_add(symtable->stack[symtable->top], type, key, value, LOCAL, 0))
+
+            ALLOC_STR(arg_type, node->next[1]->next[2]->data[1].data);
+            fce_item_push(item, arg_type);
+
+            node = node->next[2];
+        }
+    }
+    
+    return EXIT_SUCCESS;
+}
+
 int f_declare(t_node *node, stack_t *symtable) {
     // alokace potřebných proměnných
     ALLOC_STR(name, node->next[1]->data[1].data);
@@ -404,8 +438,7 @@ int f_declare(t_node *node, stack_t *symtable) {
     fce_item_t *fce_i = NULL;
     ALLOC_CHECK((htab_i = htab_lookup_add(symtable->stack[0], type, name, value, 0, 0)))
     
-    // návratové typy
-    // počet vrácených hodnot
+    // zpracuje návratové hodnoty a jejich počet
     process_return_types(node->next[3]->next[5], &fce_i, &htab_i->ret_values);
 
     // typy paramentrů
@@ -419,22 +452,35 @@ int f_declare(t_node *node, stack_t *symtable) {
 
 // TODO přidání definice funkce do globálního rámce tabulky symbolů + sémantická kontrola nitra
 int f_define(t_node *node, stack_t *symtable, def_table_t *deftable) {
+    // přidání lokálního rámce funkce
+    _ERR() add_scope_to_symtable(symtable)                              ERR_()
+
+    // alokace potřebných proměnných
+    ALLOC_STR(name, node->next[1]->data[1].data);
+    ALLOC_STR(type, "");
+    ALLOC_STR(value, "");
+
+    // přidání prázdné funkce do tabulky symbolů
+    htab_item_t *htab_i;
+    fce_item_t *fce_i = NULL;
+    ALLOC_CHECK((htab_i = htab_lookup_add(symtable->stack[0], type, name, value, 0, 0)))
     
-    _ERR() add_scope_to_symtable(symtable)                                      ERR_()
+    // zpracuje návratové hodnoty a jejich počet
+    process_return_types(node->next[5], &fce_i, &htab_i->ret_values);
+
+    // typy paramentrů
+    process_f_arg_list(node->next[3], &fce_i, symtable);
+
+    // přiřazení ukazatele
+    htab_i->fce = fce_i;
     
-    _ERR() process_stmt_list(node->next[4], symtable, deftable)         ERR_()
+    _ERR() process_stmt_list(node->next[6], symtable, deftable)         ERR_()
 
     // * odkomentovat
     printf("\n+ + + + + + + + + + + + + + + + + + + + +\nZÁSOBNÍK PŘED UKONČENÍM FUNKCE %s \n", node->next[1]->data[1].data);
     stack_print(symtable);
     stack_pop(symtable);
     
-    return EXIT_SUCCESS;
-}
-
-// TODO dodělat
-int add_f_to_table() {
-
     return EXIT_SUCCESS;
 }
 

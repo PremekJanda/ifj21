@@ -2,7 +2,7 @@
  *  Soubor: test.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	24. 11. 2021 05:22:56
+ *  Poslední změna:	24. 11. 2021 06:56:21
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -38,7 +38,9 @@
  \
     NODE_INIT(node7,  "keyword", "function") \
     NODE_INIT(node8,  "id", "main") /* definice funkce */\
+    NODE_INIT(node200, "(", "(") \
     NODE_INIT(node9,  "<f-arg-list>", "") \
+    NODE_INIT(node201, ")", ")") \
     NODE_INIT(node10, "<return-types>", "") \
     NODE_INIT(node11, "<stmt-list>", "") \
     NODE_INIT(node12, "keyword", "end") \
@@ -46,7 +48,7 @@
     NODE_INIT(node13, "<def-decl-fcal>", "") \
     NODE_INIT(node14, "<main-list>", "") \
      \
-    NODE_INIT(node15, "eps", "") \
+    /* NODE_INIT(node15, "eps", "") */ \
  \
     NODE_INIT(node16, "eps", "") \
  \
@@ -112,7 +114,9 @@
  \
     node_addnext(node1.next[2]->next[0], &node7); \
     node_addnext(node1.next[2]->next[0], &node8); \
+    node_addnext(node1.next[2]->next[0], &node200); \
     node_addnext(node1.next[2]->next[0], &node9); \
+    node_addnext(node1.next[2]->next[0], &node201); \
     node_addnext(node1.next[2]->next[0], &node10); \
     node_addnext(node1.next[2]->next[0], &node11); \
     node_addnext(node1.next[2]->next[0], &node12); \
@@ -120,60 +124,60 @@
     node_addnext(node1.next[2]->next[1], &node13); \
     node_addnext(node1.next[2]->next[1], &node14); \
      \
-    node_addnext(node1.next[2]->next[0]->next[2], &node15); \
+    /*node_addnext(node1.next[2]->next[0]->next[3], &node15); */\
  \
-    node_addnext(node1.next[2]->next[0]->next[3], &node16); \
+    node_addnext(node1.next[2]->next[0]->next[5], &node16); \
      \
-    node_addnext(node1.next[2]->next[0]->next[4], &node17); \
-    node_addnext(node1.next[2]->next[0]->next[4], &node18); \
+    node_addnext(node1.next[2]->next[0]->next[6], &node17); \
+    node_addnext(node1.next[2]->next[0]->next[6], &node18); \
  \
     node_addnext(node1.next[2]->next[1]->next[0], &node19); \
     node_addnext(node1.next[2]->next[1]->next[0], &node20); \
  \
     /*node_addnext(node1.next[2]->next[1]->next[1], &node21); */\
  \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[0], &node22); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[0], &node22); \
  \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[1], &node23); \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[1], &node24); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[1], &node23); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[1], &node24); \
  \
     node_addnext(node1.next[2]->next[1]->next[0]->next[1], &node25); \
  \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[0]->next[0], &node26); \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[0]->next[0], &node27); \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[0]->next[0], &node28); \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[0]->next[0], &node29); \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[0]->next[0], &node30); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[0]->next[0], &node26); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[0]->next[0], &node27); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[0]->next[0], &node28); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[0]->next[0], &node29); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[0]->next[0], &node30); \
  \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[0], &node31); \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[0], &node32); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[0], &node31); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[0], &node32); \
  \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1], &node33); \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1], &node34); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[1], &node33); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[1], &node34); \
  \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[0]->next[0]->next[3], &node35); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[0]->next[0]->next[3], &node35); \
  \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[0]->next[0]->next[4], &node36); \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[0]->next[0]->next[4], &node37); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[0]->next[0]->next[4], &node36); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[0]->next[0]->next[4], &node37); \
  \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[0]->next[1], &node38); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[0]->next[1], &node38); \
  \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1]->next[0], &node39); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[1]->next[0], &node39); \
  \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1]->next[1], &node40); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[1]->next[1], &node40); \
  \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[0]->next[0]->next[4]->next[1], &node41); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[0]->next[0]->next[4]->next[1], &node41); \
  \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[0]->next[1]->next[0], &node42); \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[0]->next[1]->next[0], &node43); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[0]->next[1]->next[0], &node42); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[0]->next[1]->next[0], &node43); \
  \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1]->next[0]->next[0], &node44); \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1]->next[0]->next[0], &node45); \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1]->next[0]->next[0], &node46); \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1]->next[0]->next[0], &node47); \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1]->next[0]->next[0], &node48); \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1]->next[0]->next[0], &node49); \
-    node_addnext(node1.next[2]->next[0]->next[4]->next[1]->next[1]->next[0]->next[0], &node50); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[1]->next[0]->next[0], &node44); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[1]->next[0]->next[0], &node45); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[1]->next[0]->next[0], &node46); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[1]->next[0]->next[0], &node47); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[1]->next[0]->next[0], &node48); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[1]->next[0]->next[0], &node49); \
+    node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[1]->next[0]->next[0], &node50); \
  \
     NODE_INIT(node105,  "<def-decl-fcall>", "") \
     NODE_INIT(node106,  "<main-list>", "") \
@@ -215,6 +219,36 @@
     \
     node_addnext(node1.next[2]->next[1]->next[1]->next[0]->next[3]->next[1]->next[0], &node1016); \
     \
+   \
+    NODE_INIT(node300,  "<f-arg>", "") \
+    NODE_INIT(node301,  "<f-arg-another>", "") \
+   \
+    NODE_INIT(node302,  "keyword", "param1") \
+    NODE_INIT(node303,  ":", ":") \
+    NODE_INIT(node304,  "keyword", "string") \
+   \
+    NODE_INIT(node350,  ",", ",") \
+    NODE_INIT(node305,  "<f-arg>", "") \
+    NODE_INIT(node306,  "<f-arg-another>", "") \
+   \
+    NODE_INIT(node307,  "keyword", "param2") \
+    NODE_INIT(node308,  ":", ":") \
+    NODE_INIT(node309,  "keyword", "string") \
+   \
+    NODE_INIT(node310,  "eps", "") \
+    node_addnext(&node9, &node300); \
+    node_addnext(&node9, &node301); \
+    node_addnext(&node300, &node302); \
+    node_addnext(&node300, &node303); \
+    node_addnext(&node300, &node304); \
+    node_addnext(&node301, &node350); \
+    node_addnext(&node301, &node305); \
+    node_addnext(&node301, &node306); \
+    node_addnext(&node305, &node307); \
+    node_addnext(&node305, &node308); \
+    node_addnext(&node305, &node309); \
+    node_addnext(&node306, &node310); \
+\
     tree_print(node1, 0);
 
 

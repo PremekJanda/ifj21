@@ -2,7 +2,7 @@
  *  Soubor: semantic.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	24. 11. 2021 05:12:59
+ *  Poslední změna:	24. 11. 2021 06:27:18
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -200,6 +200,7 @@ int process_types(t_node *node, fce_item_t **item);
 
 int process_return_types(t_node *node, fce_item_t **item, size_t *return_values);
 
+int process_f_arg_list(t_node *node, fce_item_t **item, stack_t *symtable);
 
 // - - - - - - - - - - - - - - - - - - - //
 // - - - - -  Práce s funkcemi - - - - - //
