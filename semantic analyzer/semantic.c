@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	24. 11. 2021 05:01:07
+ *  Last modified:	24. 11. 2021 05:24:45
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -166,9 +166,6 @@ int process_main_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
 
     while (node->next_count != 1) {
         TEMP_VARS()
-        
-        // printf("(((%s))) (((%s)))\n", curr->data[0].data, curr->data[1].data);
-        // printf("(((%s))) (((%s)))\n", next->data[0].data, next->data[1].data);
 
         // DEFINICE funkce
         if (strcmp(next->data[1].data, "function") == 0) {
@@ -280,6 +277,28 @@ int process_stmt_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
 }
 
 // TODO
+int process_while(t_node *node, stack_t *symtable, def_table_t *deftable) {
+    (void)node;
+    (void)symtable;
+    (void)deftable;
+
+    // _ERR() add_scope_to_symtable(symtable)                                      ERR_()
+
+    return EXIT_SUCCESS;
+}
+
+// TODO
+int process_if(t_node *node, stack_t *symtable, def_table_t *deftable) {
+    (void)node;
+    (void)symtable;
+    (void)deftable;
+
+    // _ERR() add_scope_to_symtable(symtable)                                      ERR_()
+
+    return EXIT_SUCCESS;
+}
+
+// TODO
 int process_decl_local(t_node *node, stack_t *symtable) {
     TEMP_VARS()
 
@@ -312,7 +331,6 @@ int process_decl_local(t_node *node, stack_t *symtable) {
     return EXIT_SUCCESS;
 }
 
-
 int process_cond(t_node *node) {
     key_t value1, type1, value2, type2;
 
@@ -330,11 +348,20 @@ int process_cond(t_node *node) {
 }
 
 int process_types(t_node *node, fce_item_t **item) {
+    // nejprve určí první typ
     while (node->next_count != 1) {
         ALLOC_STR(item_key, node->next[0]->next[0]->data[1].data);
         fce_item_push(item, item_key);
 
         node = node->next[1];
+        
+        // projde type-list dokud se nenarazí na eps
+        while (node->next_count != 1) {
+            ALLOC_STR(ret_key_next, node->next[1]->next[0]->data[1].data);
+            fce_item_push(item, ret_key_next);
+
+            node = node->next[2];
+        }
     }
     
     return EXIT_SUCCESS;
@@ -346,7 +373,8 @@ int process_return_types(t_node *node, fce_item_t **item, size_t *return_values)
         fce_item_push(item, ret_key_first);
 
         node = node->next[2];
-
+    
+        // projde type-list dokud se nenarazí na eps
         while (node->next_count != 1) {
             ALLOC_STR(ret_key_next, node->next[1]->next[0]->data[1].data);
             fce_item_push(item, ret_key_next);
@@ -358,28 +386,6 @@ int process_return_types(t_node *node, fce_item_t **item, size_t *return_values)
 
         (*return_values)++;
     }
-
-    return EXIT_SUCCESS;
-}
-
-// TODO
-int process_while(t_node *node, stack_t *symtable, def_table_t *deftable) {
-    (void)node;
-    (void)symtable;
-    (void)deftable;
-
-    // _ERR() add_scope_to_symtable(symtable)                                      ERR_()
-
-    return EXIT_SUCCESS;
-}
-
-// TODO
-int process_if(t_node *node, stack_t *symtable, def_table_t *deftable) {
-    (void)node;
-    (void)symtable;
-    (void)deftable;
-
-    // _ERR() add_scope_to_symtable(symtable)                                      ERR_()
 
     return EXIT_SUCCESS;
 }

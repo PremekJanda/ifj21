@@ -2,7 +2,7 @@
  *  Soubor: test.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	24. 11. 2021 04:32:31
+ *  Poslední změna:	24. 11. 2021 05:22:56
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -301,6 +301,7 @@
     \
     NODE_INIT(node19,  "keyword", "string") \
     \
+    NODE_INIT(node50,  ",", ",") \
     NODE_INIT(node20,  "<type>", "") \
     NODE_INIT(node21,  "<type-list>", "") \
     \
@@ -347,6 +348,7 @@
     node_addnext(&node14, &node18); \
     \
     node_addnext(&node17, &node19); \
+    node_addnext(&node18, &node50); \
     node_addnext(&node18, &node20); \
     node_addnext(&node18, &node21); \
     \
