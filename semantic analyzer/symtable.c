@@ -2,7 +2,7 @@
  *  Soubor: symtable.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	22. 11. 2021 16:27:52
+ *  Poslední změna:	24. 11. 2021 02:05:50
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -180,7 +180,7 @@ htab_item_t * htab_find(htab_t *t, key_t key) {
     return NULL;    
 }
 
-htab_item_t * htab_lookup_add(htab_t *t, key_t type, key_t key, key_t value) {
+htab_item_t * htab_lookup_add(htab_t *t, key_t type, key_t key, key_t value, bool local, size_t ret_values) {
     
     // získání indexu podle klíče v tabulce
     size_t index_in_arr = htab_hash_function(key) % t->arr_size;
@@ -191,7 +191,7 @@ htab_item_t * htab_lookup_add(htab_t *t, key_t type, key_t key, key_t value) {
     // v případě prvního elementu v řadě
     if (element == NULL) {
         // alokace a inicializace dat
-        INIT_ELEMENT(element, type, key, value);
+        INIT_ELEMENT(element, type, key, value, local, ret_values);
         t->ptr_arr[index_in_arr] = element;
         
         return element;
@@ -203,7 +203,7 @@ htab_item_t * htab_lookup_add(htab_t *t, key_t type, key_t key, key_t value) {
         
         // kontrola, jestli se se 'key' vyskytuje v tabulce
         if (strcmp(element->key, key) == 0) {
-            // // element->data->value++;
+            // TODO strcpy možná bude rozšířený buffer value
             element->value = value;
             return element;
         }        
@@ -211,7 +211,7 @@ htab_item_t * htab_lookup_add(htab_t *t, key_t type, key_t key, key_t value) {
     } while (element != NULL);
     
     // prvek nebyl nalezen -> je vytvořen nový
-    INIT_ELEMENT(element, type, key, value);    
+    INIT_ELEMENT(element, type, key, value, local, ret_values);    
     prev_element->next_h_item = element;
 
     return element;
@@ -229,19 +229,21 @@ htab_t * htab_resize(size_t n, htab_t *from) {
         // projde postupně všechny prvky seznamu
         while(element != NULL) {
             // inicializace nového slova pro uložení do paměti
-            char *new_word;
-            new_word = malloc(MAX_WORD_LEN + 1);
-            strcpy(new_word, element->key);
+            char *type, *key, *value;
+            type = malloc(MAX_WORD_LEN + 1);
+            strcpy(type, element->type);
+            key = malloc(MAX_WORD_LEN + 1);
+            strcpy(key, element->key);
+            value = malloc(MAX_WORD_LEN + 1);
+            strcpy(value, element->value);
             
             // přidá slovo do nové tabulky
             htab_item_t *new_element;
-            if ((new_element = htab_lookup_add(new_hash_table, new_word, new_word, new_word)) == NULL) {
-                error_exit("Chyba při allokaci paměti pro slovo '%s'!\n", new_word);
+            if ((new_element = htab_lookup_add(new_hash_table, type, key, value, element->local, element->ret_values)) == NULL) {
+                // TODO opravit chybové hlášení
+                error_exit("Chyba při allokaci paměti pro slovo '%s'!\n", key);
                 exit(0);
             }
-
-            // zkopírování četností klíčů do nové tabulky
-            // // new_data->value = element->data->value;
                 
             element = element->next_h_item;
         }
@@ -370,14 +372,16 @@ void fce_free(fce_item_t *i) {
     fce_item_t *next_item, *item = i;
     
     // první prvek je NULL
-    if (item == NULL)
+    if (i == NULL)
         return;
+    printf("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n");
     
     do {
-        // posun na další prvek,, aby nedošlo ke smazání ukazatele
+        // posun na další prvek, aby nedošlo ke smazání ukazatele
         next_item = item->next_f_item;
         // uvolnění paměti
-        free(item);
+        FREE_FCE(item)
+        // free(item);
     } while ((item = next_item) != NULL);
 }
 
@@ -434,6 +438,7 @@ int def_table_add(char * name, def_table_t *deftable, bool state) {
         ALLOC_CHECK(deftable->item[deftable->size].name)
         // zápis dat
         deftable->item[deftable->size].state = state;
+        deftable->item[deftable->size].called = 0;
         // zkopírování nového názvu
         strcpy(deftable->item[deftable->size].name, name);
         // rozšíření pole
@@ -498,7 +503,7 @@ void htab_print(const htab_t *t) {
 }
 
 void item_print(const htab_item_t *i) {
-    printf("\t\ta: %-5s t: %-5s v: %-5s ", i->key, i->type, i->value);
+    printf("\t\ta: %-5s t: %-5s v: %-5s l: %s ", i->key, i->type, i->value, (i->local) ? "(lokální)" : "(globální)");
     
     if (i->fce == NULL) 
         printf("není fce\n");

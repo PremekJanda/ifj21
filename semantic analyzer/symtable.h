@@ -2,7 +2,7 @@
  *  Soubor: symtable.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	22. 11. 2021 21:54:13
+ *  Poslední změna:	24. 11. 2021 01:57:13
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -43,7 +43,6 @@ typedef int top_t;                  // typ hodnoty
 // Prvním prvekem vázaného seznamu je návratová hodnota
 // Další prvky jsou parametry funkce
 typedef struct fce_item {
-    // * bool defined;
     key_t key;                      // parametry a datové typy
     struct fce_item *next_f_item;   // ukazatel na další prvek (parametr / dat. typ)
 } fce_item_t;
@@ -53,7 +52,8 @@ typedef struct htab_item {
     key_t key;                      // identifikátor
     key_t type;                     // datový typ výzaru
     key_t value;                    // hodnota (pokud je dána)
-    // // * bool local;                // 1 - proměnná je lokálně definovaná, 0 - není lokalní
+    bool local;                     // 1 - proměnná je lokální, 0 - není lokalní
+    size_t ret_values;              // počet návratových nodnot
     fce_item_t * fce;               // ukazatel na strukturu funkce tabulky    
     struct htab_item *next_h_item;  // ukazatel na další prvek
 } htab_item_t;
@@ -70,7 +70,6 @@ typedef struct stack {
     top_t top;                      // ukazatel na vrchol zásobníku
     htab_t *stack[];                // pole hashovacích tabulek
 } stack_t;
-
 
 typedef struct def_table_item {
     bool called;                    // 0 => nebyla volána,  1 => byla volána funkce
@@ -94,8 +93,8 @@ typedef struct def_table {
  * @param e element/item Prvek k uvolnění z paměti
  */
 #define FREE_ELEMENT(e) \
-    if ((e)->key != NULL) free((void *)(e)->key); \
-    if ((e)->type != NULL) free((void *)(e)->type); \
+    if ((e)->type != NULL)  free((void *)(e)->type); \
+    if ((e)->key != NULL)   free((void *)(e)->key); \
     if ((e)->value != NULL) free((void *)(e)->value); \
     free((e));
 
@@ -103,16 +102,16 @@ typedef struct def_table {
  * @brief Uvolní data z paměti
  * @param e element/item Prvek k uvolnění z paměti
  */
-#define FREE_FCE(e) \
-    free((void *)(e)->fce->key);  \
-    free((e)->fce);
+#define FREE_FCE(i) \
+    if ((i)->key != NULL) free((void *)(i)->key);  \
+    free((i));
 
 /**
  * @brief Alokování dat na hromadě a prvotní inincializace dat
  * @param e element/item 
  * @param k key Řetězec podle kterého se hledá
  */
-#define INIT_ELEMENT(e, t, k, v) \
+#define INIT_ELEMENT(e, t, k, v, l, r) \
     /* alokování bloků na hromadě */ \
     (e) = (htab_item_t *)malloc(sizeof(htab_item_t)); \
         if ((e) == NULL) return NULL; \
@@ -120,6 +119,8 @@ typedef struct def_table {
     (e)->type = (t); \
     (e)->key = (k); \
     (e)->value = (v); \
+    (e)->local = (l); \
+    (e)->ret_values = (r); \
     (e)->next_h_item = NULL; \
     (e)->fce = NULL;
 
@@ -216,13 +217,14 @@ htab_t * htab_resize (size_t n, htab_t *from);
  */
 htab_item_t * htab_find (htab_t *t, key_t key);  
 
+// TODO dokumentace
 /**
  * @brief Funkce vyhledá v hashovací tabulce dané slovo a inkrementuje jeho četnost výskytu, pokud nenajde založí nový záznam
  * @param t Struktura hashovací tabulky
  * @param key Řetězec, podle kterého se hledá
  * @return Ukazatel na datový pár (key,value)
  */
-htab_item_t * htab_lookup_add (htab_t *t, key_t type, key_t key, key_t value);
+htab_item_t * htab_lookup_add (htab_t *t, key_t type, key_t key, key_t value, bool local, size_t ret_values);
 
 /**
  * @brief Ruší zadaný záznam

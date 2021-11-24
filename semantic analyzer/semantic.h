@@ -2,7 +2,7 @@
  *  Soubor: semantic.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	22. 11. 2021 19:14:40
+ *  Poslední změna:	23. 11. 2021 21:03:37
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -54,6 +54,9 @@
 #define SEM_TYPE 6
 #define SEM_OTHER 7
 
+#define LOCAL 1
+#define GLOBAL 0
+
 // Vrací funkce co má v každé větvi
 // Vrací funkce v každé větvi (if else musí vrátit v obou případech)
 // Sedí typy
@@ -67,9 +70,30 @@
 
 
 
-// - - - - - - - - - - - - - - - - - - - - //
-// - - - - Datové typy a struktury - - - - //
-// - - - - - - - - - - - - - - - - - - - - //
+// - - - - - - - - - - - - - - - //
+// - - - - Pomocná makra - - - - //
+// - - - - - - - - - - - - - - - //
+
+#define TYPE_CHECK(var_type, assign_type) \
+    if (strcmp(var_type, assign_type)) \
+        return SEM_ASSIGN;
+    
+
+#define _ERR() \
+    if ((return_signal = 
+
+#define ERR_() \
+    ) != 0) return return_signal; 
+
+
+#define TEMP_VARS() \
+    t_node *curr = node->next[0]; \
+    t_node *next = node->next[0]->next[0]; \
+    (void)curr; \
+    (void)next;
+
+    // printf("curr: %s\n", curr->data[1].data);
+    // printf("next: %s\n", next->data[1].data);
 
 
 
@@ -82,7 +106,6 @@
  * @param root_node Ukazatel na kořenový stromu
  */
 int semantic(t_node *root_node);
-
 
 
 
@@ -127,7 +150,7 @@ int eval_fcall(def_table_t deftable);
  * @return ERROR_CODE @see #defined
  */
 // int eval_expr_type(t_node node, key_t value, key_t type);
-int eval_expr_type(t_node node, key_t *value, key_t *type);
+int eval_expr_type(t_node *node, key_t *value, key_t *type);
 
 
 
@@ -161,6 +184,24 @@ int process_stmt_list(t_node *node, stack_t *symtable, def_table_t *deftable);
  */
 int process_decl_local(t_node *node, stack_t *symtable);
 
+int process_cond(t_node *node);
+
+int process_while(t_node *node, stack_t *symtable, def_table_t *deftable);
+
+int process_if(t_node *node, stack_t *symtable, def_table_t *deftable);
+
+
+
+// - - - - - - - - - - - - - - - - - - - //
+// - - - - -  Práce s funkcemi - - - - - //
+// - - - - - - - - - - - - - - - - - - - //
+
+int f_declare(t_node *node, stack_t *symtable, def_table_t *deftable);
+
+int f_define(t_node *node, stack_t *symtable, def_table_t *deftable);
+
+
+
 // - - - - - - - - - - - - - - - - - - - - - - - //
 // - - - -  Operace nad tabulkou symbolů - - - - //
 // - - - - - - - - - - - - - - - - - - - - - - - //
@@ -172,7 +213,7 @@ int process_decl_local(t_node *node, stack_t *symtable);
  * @param value 
  * @return ERROR_CODE @see #defined
  */
-int add_var_to_symtable(key_t type, key_t attribute, key_t value, stack_t *symtable);
+int add_var_to_symtable(key_t type, key_t attribute, key_t value, bool local, stack_t *symtable);
 
 /**
  * @brief 
@@ -182,6 +223,7 @@ int add_var_to_symtable(key_t type, key_t attribute, key_t value, stack_t *symta
  */
 int add_scope_to_symtable(stack_t *symtable);
 
+int add_f_to_table();
 
 
 #endif // __SEMANTIC_H__
