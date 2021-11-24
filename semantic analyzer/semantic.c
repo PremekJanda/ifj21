@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	24. 11. 2021 02:25:48
+ *  Last modified:	24. 11. 2021 05:01:07
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -36,6 +36,7 @@ int main() {
     
     // * TESTOVÁNÍ
     node_delete(&node1);    
+    // stack_free(stack);
     
     return EXIT_SUCCESS;
 }
@@ -195,17 +196,13 @@ int process_main_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
                 _ERR() def_table_add(curr->next[1]->data[1].data, deftable, DECLARED) ERR_()
                 
                 // TODO 
-                _ERR() f_declare(curr, symtable, deftable)                              ERR_()
-
+                _ERR() f_declare(curr, symtable)                              ERR_()
             // jde o proměnnou
             } else {
-                    // type
-                    key_t type = malloc(strlen(curr->next[3]->next[0]->next[0]->data[1].data) + 1);
-                    sprintf(type, "%s", curr->next[3]->next[0]->next[0]->data[1].data);
-                    // atribute
-                    key_t name = malloc(strlen(curr->next[1]->data[1].data) + 1);
-                    sprintf(name, "%s", curr->next[1]->data[1].data);
-
+                    // alokace proměnných
+                    ALLOC_STR(name, curr->next[1]->data[1].data);
+                    ALLOC_STR(type, curr->next[3]->next[0]->next[0]->data[1].data);
+                    // hodnota prozatím není známa
                     key_t value = NULL;
 
                     // INICIALIZACE
@@ -286,12 +283,9 @@ int process_stmt_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
 int process_decl_local(t_node *node, stack_t *symtable) {
     TEMP_VARS()
 
-    // typ proměnné
-    key_t type = malloc(strlen(next->next[3]->next[0]->data[1].data) + 1);
-    sprintf(type, "%s", next->next[3]->next[0]->data[1].data);
-    // jméno proměnné
-    key_t name = malloc(strlen(next->next[1]->data[1].data) + 1);
-    sprintf(name, "%s", next->next[1]->data[1].data);
+    // atribut a typ proměnné
+    ALLOC_STR(name, next->next[1]->data[1].data);
+    ALLOC_STR(type, next->next[3]->next[0]->data[1].data);
     // hodnota prozatím není známa
     key_t value = NULL;
     
@@ -337,25 +331,33 @@ int process_cond(t_node *node) {
 
 int process_types(t_node *node, fce_item_t **item) {
     while (node->next_count != 1) {
-
-        // key_t item_key = malloc(sizeof(node->next[0]->next[0]->data[1].data) + 1);
-        // ALLOC_CHECK(item_key)
-        // sprintf(item_key, "%s", node->next[0]->next[0]->data[1].data);
-
-        key_t item_key = node->next[0]->next[0]->data[1].data;
-        
-        printf("item: %s\n", item_key);
+        ALLOC_STR(item_key, node->next[0]->next[0]->data[1].data);
         fce_item_push(item, item_key);
 
         node = node->next[1];
     }
-
-    fce_print(*item);
     
     return EXIT_SUCCESS;
 }
 
-int process_return_types() {
+int process_return_types(t_node *node, fce_item_t **item, size_t *return_values) {
+    if (node->next_count != 1) {
+        ALLOC_STR(ret_key_first, node->next[1]->next[0]->data[1].data);
+        fce_item_push(item, ret_key_first);
+
+        node = node->next[2];
+
+        while (node->next_count != 1) {
+            ALLOC_STR(ret_key_next, node->next[1]->next[0]->data[1].data);
+            fce_item_push(item, ret_key_next);
+
+            node = node->next[2];
+
+            (*return_values)++;
+        }
+
+        (*return_values)++;
+    }
 
     return EXIT_SUCCESS;
 }
@@ -385,33 +387,26 @@ int process_if(t_node *node, stack_t *symtable, def_table_t *deftable) {
 
 
 // TODO přidání funkce do globálního rámce tabulky symbolů 
-int f_declare(t_node *node, stack_t *symtable, def_table_t *deftable) {
-    (void)node;
-    (void)symtable;
-    (void)deftable;
-    
-    printf("\nnode: %s \n", node->data[0].data);
-    
-    key_t name = (key_t)malloc(sizeof(node->next[1]->data[0].data));
-    sprintf(name, "%s", node->next[1]->data[0].data);
+int f_declare(t_node *node, stack_t *symtable) {
+    // alokace potřebných proměnných
+    ALLOC_STR(name, node->next[1]->data[1].data);
+    ALLOC_STR(type, "");
+    ALLOC_STR(value, "");
 
     // přidání prázdné funkce do tabulky symbolů
-    ALLOC_CHECK(htab_lookup_add(symtable->stack[0], NULL, name, NULL, 0, 0))
-
-    fce_item_t *fce_item = htab_find(symtable->stack[0], name)->fce;
-    // fce_item = malloc(sizeof(fce_item_t));
+    htab_item_t *htab_i;
+    fce_item_t *fce_i = NULL;
+    ALLOC_CHECK((htab_i = htab_lookup_add(symtable->stack[0], type, name, value, 0, 0)))
     
     // návratové typy
     // počet vrácených hodnot
-    process_return_types();
+    process_return_types(node->next[3]->next[5], &fce_i, &htab_i->ret_values);
 
     // typy paramentrů
-    process_types(node->next[3]->next[3], &fce_item);
+    process_types(node->next[3]->next[3], &fce_i);
 
-    
-    // _ERR() process_stmt_list(node->next[4], symtable, deftable)         ERR_()
-    
-    // free(name);
+    // přiřazení ukazatele
+    htab_i->fce = fce_i;
 
     return EXIT_SUCCESS;
 }

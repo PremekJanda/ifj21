@@ -2,7 +2,7 @@
  *  Soubor: semantic.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	23. 11. 2021 21:03:37
+ *  Poslední změna:	24. 11. 2021 04:53:32
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -74,16 +74,22 @@
 // - - - - Pomocná makra - - - - //
 // - - - - - - - - - - - - - - - //
 
-#define TYPE_CHECK(var_type, assign_type) \
-    if (strcmp(var_type, assign_type)) \
-        return SEM_ASSIGN;
-    
 
 #define _ERR() \
     if ((return_signal = 
 
 #define ERR_() \
     ) != 0) return return_signal; 
+
+#define TYPE_CHECK(__var_type, __assign_type) \
+    if (strcmp(__var_type, __assign_type)) \
+        return SEM_ASSIGN;
+
+
+#define ALLOC_STR(__var_name, __src) \
+    key_t __var_name = malloc(strlen(__src) + 1); \
+    ALLOC_CHECK(__var_name) \
+    sprintf(__var_name, "%s", __src);
 
 
 #define TEMP_VARS() \
@@ -196,7 +202,7 @@ int process_if(t_node *node, stack_t *symtable, def_table_t *deftable);
 // - - - - -  Práce s funkcemi - - - - - //
 // - - - - - - - - - - - - - - - - - - - //
 
-int f_declare(t_node *node, stack_t *symtable, def_table_t *deftable);
+int f_declare(t_node *node, stack_t *symtable);
 
 int f_define(t_node *node, stack_t *symtable, def_table_t *deftable);
 

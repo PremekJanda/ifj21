@@ -2,7 +2,7 @@
  *  Soubor: symtable.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	24. 11. 2021 02:05:50
+ *  Poslední změna:	24. 11. 2021 04:47:48
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -270,7 +270,6 @@ bool htab_erase_item(htab_t *t, key_t key) {
     // prvek je první v seznamu, NEMÁ následníka
     if (element->next_h_item == NULL) 
         if (strcmp(element->key, key) == 0) {
-            
             fce_free(element->fce);
             FREE_ELEMENT(element);
             
@@ -283,7 +282,6 @@ bool htab_erase_item(htab_t *t, key_t key) {
     if (element->next_h_item != NULL) 
         if (strcmp(element->key, key) == 0) {
             t->ptr_arr[index_in_arr] = element->next_h_item;
-            
             fce_free(element->fce);
             FREE_ELEMENT(element);
             
@@ -300,7 +298,6 @@ bool htab_erase_item(htab_t *t, key_t key) {
         // kontrola, jestli se se 'key' vyskytuje v tabulce
         if (strcmp(element->key, key) == 0) {
             prev_element->next_h_item = element->next_h_item;
-            
             fce_free(element->fce);
             FREE_ELEMENT(element);
             
@@ -348,8 +345,8 @@ void htab_free(htab_t *t) {
 
 void fce_item_push(fce_item_t **i, key_t key) {
     // pokud se jedná o první prvek
-    if ((*i) == NULL) {
-        INIT_FCE((*i), key)
+    if (*i == NULL) {
+        INIT_FCE(*i, key)
         return;
     }
     
@@ -374,7 +371,6 @@ void fce_free(fce_item_t *i) {
     // první prvek je NULL
     if (i == NULL)
         return;
-    printf("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n");
     
     do {
         // posun na další prvek, aby nedošlo ke smazání ukazatele
@@ -508,27 +504,28 @@ void item_print(const htab_item_t *i) {
     if (i->fce == NULL) 
         printf("není fce\n");
     else
-        fce_print(i->fce);
+        fce_print(i->fce, i->ret_values);
 }
 
-void fce_print(const fce_item_t *i) {
-    size_t counter = 0;
-    while(i != NULL) {
-        if (counter == 0) {
-            printf("Návratový typ: [%s] ", i->key);
-            
-        } else {
-            if ((counter % 2) == 1) 
-                printf("|typ:[%s],", i->key);
-            else
-                printf("hodnota:[%s]| -> ", i->key);
-        }
+void fce_print(const fce_item_t *i, size_t return_values) {
+    size_t counter = 1;
+    if (return_values == 0)
+        printf("Žádné návratové hodnoty");
 
+    while(i != NULL) {
+        if (counter == return_values && return_values != 0)
+            printf("%s | ", i->key);
+        else 
+            if (i->next_f_item != NULL)
+                printf("%s -> ", i->key);
+            else
+                printf("%s", i->key);
+              
         i = i->next_f_item;
         counter++;
     } 
 
-    printf("-|\n");
+    printf("\n");
 }
 
 void def_table_print(def_table_t deftable) {
