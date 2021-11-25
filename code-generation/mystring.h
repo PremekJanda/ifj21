@@ -9,7 +9,7 @@
  *        write all together in czech.
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	22. 11. 2021 19:09:39
+ * Last Modified:	25. 11. 2021 01:18:36
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -106,13 +106,22 @@ int strcat_format_realloc(buffer_t*dst, const char *fmt, ...);
 int strinbetween_format_realloc(buffer_t*dst, size_t position, const char *fmt, ...);
 
 /**
- * @brief Replaces 
+ * @brief Replaces all characters in string by given string
  * 
- * @param buffer 
- * @param c 
- * @param string 
- * @return int 
+ * @param buffer Dynamic string buffer
+ * @param c Char to be replaced
+ * @param string String to replace char with
+ * @return Returns 1 if success, 0 when there is not enough memory
  */
 int replace_all_chars_by_string(buffer_t*buffer, char c, char*string);
+
+/**
+ * @brief Appends the content of text file into the string buffer
+ * 
+ * @param buffer Dynamic string buffer
+ * @param filename Name of the file
+ * @return 0 if success, 1 if file could not be opened
+ */
+int append_file(buffer_t*buffer, char*filename);
 
 #endif

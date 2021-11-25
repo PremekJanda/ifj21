@@ -1,9 +1,0 @@
-make --dry-run --always-make --keep-going --print-directory
-make: Entering directory '/home/rbabek/IFJ/ifj21/code-generation'
-gcc -std=c99 -pedantic -Wall -Wextra -g -c -o tree.o tree.c
-gcc -std=c99 -pedantic -Wall -Wextra -g -c -o mystring.o mystring.c
-gcc -std=c99 -pedantic -Wall -Wextra -g -c -o hashtable/hashtable.o hashtable/hashtable.c
-gcc -std=c99 -pedantic -Wall -Wextra -g -c -o code-generator.o code-generator.c
-gcc -std=c99 -pedantic -Wall -Wextra -g tree.o mystring.o hashtable/hashtable.o code-generator.o -o code-generator
-make: Leaving directory '/home/rbabek/IFJ/ifj21/code-generation'
- 
