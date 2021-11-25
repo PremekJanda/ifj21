@@ -4,7 +4,7 @@
  * @brief Hlavičkový soubor funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	25. 11. 2021 02:16:24
+ * Last Modified:	25. 11. 2021 03:18:14
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -39,6 +39,8 @@ typedef struct{
 }expr_results_t;
 
 
+void init_code(code_t*code);
+
 void init_result_field(code_t*code, expr_results_t*results);
 
 void eval_expression(code_t*code, t_node*expr, expr_results_t*result_field);
@@ -49,7 +51,7 @@ void eval_expression(code_t*code, t_node*expr, expr_results_t*result_field);
  * @param tree Syntaktický strom
  * @param code Řetězcový buffer
  */
-void generate_code(t_tree*tree, code_t*code);
+void generate_code(t_node*tree, code_t*code);
 
 /**
  * @brief Najde hledaný label v kódu ifj21code
@@ -84,6 +86,16 @@ void def_declare_fcall_crossroad(code_t*code, t_node*main_node);
  * @param fcall_node Uzel syntaktického stromu, obsahující volání funkce
  */
 void function_call_gen(code_t*code,t_node*fcall_node);
+
+/**
+ * @brief Překopíruje obsah uzlu item do proměnné uvnitř IFJ21Code
+ * 
+ * @param code Code buffer
+ * @param dest_frame Rámec proměnné, do které budeme zapisovat
+ * @param dest_id Identifikátor proměnné, do které budeme zapisovat
+ * @param item Uzel, jehož obsah budeme kopírovat
+ */
+void move_item_to_var(code_t*code, char*dest_frame, const char*dest_id, t_node*item);
 
 /**
  * @brief Vygeneruje kód funkce
@@ -150,5 +162,21 @@ int is_local(code_t*code, char*id);
  * @return Ukazatel na definici proměnné, nebo NULL pokud není proměnná k nalezení v GF
  */
 char*is_global(code_t*code, char*id);
+
+void generate_assignment(code_t*code, t_node*assignment);
+
+void generate_if(code_t*code, t_node*if_node, char*fc);
+
+void generate_while(code_t*code, t_node*while_node, char*fc);
+
+void generate_local_decl(code_t*code, t_node*local_dec);
+
+void generate_return(code_t*code, t_node*return_node);
+
+void predefine_vars_of_stmt_list(code_t*code, t_node*stmt_list);
+
+void eval_condition(code_t*code, t_node*condition);
+
+void stmt_list_crossroad(code_t*code, t_node*stmt_list, char*fc_from);
 
 #endif
