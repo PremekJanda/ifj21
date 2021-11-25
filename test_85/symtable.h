@@ -2,7 +2,7 @@
  *  Soubor: symtable.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	25. 11. 2021 01:10:37
+ *  Poslední změna:	25. 11. 2021 15:42:42
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -180,6 +180,8 @@ void symtable_push (stack_t **s, htab_t *t);
  * @param s Struktura zásobníku tabulek symbolů
  */
 void symtable_pop (stack_t *s);
+
+htab_item_t * symtable_lookup_item(stack_t *s, key_t id);
 
 
 

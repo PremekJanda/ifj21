@@ -2,7 +2,7 @@
  *  Soubor: symtable.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	25. 11. 2021 11:41:55
+ *  Poslední změna:	25. 11. 2021 15:42:33
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -129,7 +129,17 @@ void symtable_pop(stack_t *s) {
     s->top--;
 }
 
+htab_item_t * symtable_lookup_item(stack_t *s, key_t id) {
+    // hledaný item
+    htab_item_t *lookup_item;
+    // hledání v tabulce symbolů
+    for (top_t i = s->top; i >= 0; i--) 
+        if ((lookup_item = htab_find(s->stack[i], id)) != NULL)
+            return lookup_item;
 
+    // prvek nebyl nalezen
+    return NULL;
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - //
 // - - - - Funkce pro práci s tabulkou - - - - //

@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	25. 11. 2021 11:45:42
+ *  Last modified:	25. 11. 2021 16:25:21
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -41,7 +41,7 @@ int return_signal = SEM_OK;
 //     node_delete(&node1);    
 //     // symtable_free(stack);
     
-//     return EXIT_SUCCESS;
+//     return SEM_OK;
 // }
 
 
@@ -61,7 +61,7 @@ int is_id_used(key_t id, stack_t *symtable, def_table_t deftable) {
         if (strcmp(deftable.item[i].name, id) == 0)
             return EXIT_FAILURE;
 
-    return EXIT_SUCCESS;
+    return SEM_OK;
 }
 
 int is_f_set(key_t name, def_table_t *deftable, int state) {
@@ -101,12 +101,12 @@ int is_f_set(key_t name, def_table_t *deftable, int state) {
                     // funkce musí být před zavoláním definována
                     if (deftable->item[i].state == DECLARED) {
                         printf("volání funkce, která nebyla definována (což může být ok)\n");
-                        return EXIT_SUCCESS;
+                        return SEM_OK;
                     } else {
                         printf("call function %s\n", name);
                         // přidá příznak do tabulky funkcí, o volání funkce
                         deftable->item[i].called = 1;
-                        return EXIT_SUCCESS;
+                        return SEM_OK;
                     }
                 }
             }
@@ -116,7 +116,7 @@ int is_f_set(key_t name, def_table_t *deftable, int state) {
         return SEM_DEFINE;
     }
     
-    return EXIT_SUCCESS;
+    return SEM_OK;
 }
 
 int eval_fcall(def_table_t deftable) {
@@ -126,7 +126,7 @@ int eval_fcall(def_table_t deftable) {
             return SEM_DEFINE;
     }
 
-    return EXIT_SUCCESS;
+    return SEM_OK;
 }
 
 
@@ -135,7 +135,7 @@ int eval_fcall(def_table_t deftable) {
 // - - - - Typová nekompatibilita výrazů - exit(6) - - - - //
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
-int eval_expr_type(t_node *node, key_t *value, key_t *type) {
+int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
     // printf("[[%s %s %d]]", node->data[0].data, node->data[1].data, node->next_count);
     // printf("ROOTNODE: %s %s %d ~~~\n", node->data[0].data, node->data[1].data, node->next_count);
 
@@ -158,15 +158,15 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type) {
             return SEM_OK;
         } 
 
-        return SEM_ASSIGN;
+        return SEM_TYPE;
 
     //binární operátory
     } else if (node->next_count == 3) {
         // levý operand
-        if (eval_expr_type(node->next[0], value, type)) {
+        if (eval_expr_type(node->next[0], value, type, symtable)) {
             free(*value);
             free(*type);
-            return SEM_ASSIGN;
+            return SEM_TYPE;
         }
 
         ALLOC_STR(type1, *type)
@@ -175,18 +175,18 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type) {
         // printf("~~~val1    %s %s %d ~~~\n", type1, val1, node->next_count);
         
         // pravý operand
-        if (eval_expr_type(node->next[2], value, type)) {
+        if (eval_expr_type(node->next[2], value, type, symtable)) {
             free(*value); free(*type);
             free(type1);  free(val1);
-            return SEM_ASSIGN;
+            return SEM_TYPE;
         }
 
         ALLOC_STR(type2, *type)
         ALLOC_STR(val2, *value)
 
-        // printf("~~~val2    %s %s %d ~~~\n", type2, val2, node->next_count);
+        printf("~~~val2    %s %s %d ~~~\n", type2, val2, node->next_count);
 
-        bool sem_assign = strcmp(type1, type2);
+        bool sem_type = strcmp(type1, type2);
 
         // konverze z int na number
         if ((!strcmp("number", type1) && !strcmp("integer", type2)) || 
@@ -196,19 +196,19 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type) {
             sprintf(*type, "%s", "number");
 
             // provedení konverze bylo v pořádku
-            sem_assign = false;
+            sem_type = false;
         }
         
-        // printf("??? %s %s => %d ???\n", type1, type2, sem_assign);
+        printf("??? %s %s => %d ???\n", type1, type2, sem_type);
         
         // uvolnění zdrojů při chybě
         free(type1); free(type2);
         free(val1);  free(val2);
 
-        return (sem_assign) ? SEM_ASSIGN : SEM_OK;
+        return (sem_type) ? SEM_TYPE : SEM_OK;
         
     } else if (node->next_count == 1) {
-        eval_expr_type(node->next[0], value, type);
+        eval_expr_type(node->next[0], value, type, symtable);
         return SEM_OK;
 
     } else if (node->next_count == 0) {
@@ -217,18 +217,35 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type) {
 
         ALLOC_STR(t, node->data[0].data)
         ALLOC_STR(v, node->data[1].data)
-        
-        *type = t;
-        *value = v;
 
-        return SEM_OK;
+        // pokud se narazí na proměnnou
+        if (!strcmp(t, "id")) {
+            htab_item_t *item;
+            
+            // vyhledá se id v tabulce symolů
+            if ((item = symtable_lookup_item(symtable, v)) != NULL) {
+                // nahrazení za nový typ a hodnotu
+                free(t); free(v);
+                ALLOC_STR(t, item->type)
+                ALLOC_STR(v, item->value)
+
+                UPDATE_EXPR(SEM_OK)
+
+            // proměnná nebyla nalezena -> chyba
+            } else {
+
+                UPDATE_EXPR(SEM_DEFINE)
+            }
+        }
+
+        UPDATE_EXPR(SEM_OK)
     }
 
     // rekurzivně (nejspíš) projít strom a vyhodit, zda všechny typy prvků souhlasí
 
     // po projití stromem naallokuje velikostu stringu, který bude zapisovat jako value a type
 
-    return EXIT_SUCCESS;
+    return SEM_OK;
 }
 
 
@@ -287,21 +304,15 @@ int process_main_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
                         printf("global var initialization\n");
                         key_t assign_type = NULL;
                         
-                        // vyhodnocení typu přiřazené hodnoty
-                        if (eval_expr_type(curr->next[3]->next[1]->next[1], &value, &assign_type)) {
-                            free(name);
-                            free(type);
-                            free(assign_type);
-                            free(value);
-                            return SEM_ASSIGN;
+                        // vyhodnocení typů přiřazovaných hodnot
+                        if (eval_expr_type(curr->next[3]->next[1]->next[1], &value, &assign_type, symtable)) {
+                            FREE_VAR_DECL()
+                            return SEM_TYPE;
                         }
                         
                         // provede se typová kontrola nad přiřazením
                         if (strcmp(type, assign_type)) {
-                            free(name);
-                            free(type);
-                            free(assign_type);
-                            free(value);
+                            FREE_VAR_DECL()
                             return SEM_ASSIGN;
                         }
                         
@@ -329,7 +340,7 @@ int process_main_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
         node = node->next[1];
     }
 
-    return EXIT_SUCCESS;
+    return SEM_OK;
 }
 
 // TODO
@@ -348,12 +359,13 @@ int process_stmt_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
 
         } else if (!strcmp(next->data[0].data, "<while>")) {
             printf("while\n");
-            // _ERR() process_cond(curr)                                               ERR_()
+
+            _ERR() process_cond(curr->next[0]->next[1], symtable)                                               ERR_()
             _ERR() process_while(curr, symtable, deftable)                          ERR_()
             
         } else if (!strcmp(next->data[0].data, "<if>")) {
             printf("if\n");
-            // _ERR() process_cond(curr)                                               ERR_()
+            _ERR() process_cond(curr->next[0]->next[1], symtable)                                               ERR_()
             _ERR() process_if(curr, symtable, deftable)                             ERR_()
 
         } else if (!strcmp(next->data[0].data, "<return>")) {
@@ -368,7 +380,7 @@ int process_stmt_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
         node = node->next[1];
     }
     
-    return EXIT_SUCCESS;
+    return SEM_OK;
 }
 
 // TODO
@@ -379,7 +391,7 @@ int process_while(t_node *node, stack_t *symtable, def_table_t *deftable) {
 
     // _ERR() add_scope_to_symtable(symtable)                                      ERR_()
 
-    return EXIT_SUCCESS;
+    return SEM_OK;
 }
 
 // TODO
@@ -390,19 +402,22 @@ int process_if(t_node *node, stack_t *symtable, def_table_t *deftable) {
 
     // _ERR() add_scope_to_symtable(symtable)                                      ERR_()
 
-    return EXIT_SUCCESS;
+    return SEM_OK;
 }
 
-int process_cond(t_node *node) {
+int process_cond(t_node *node, stack_t *symtable) {
     printf("processing cond\n");
     key_t value1, type1, value2, type2;
 
-    // ověření obou stran porovnání
-    _ERR() eval_expr_type(node->next[0], &value1, &type1)                 ERR_()
-    _ERR() eval_expr_type(node->next[2], &value2, &type2)                 ERR_()
 
-    if (strcmp(type1, type2)) 
-        return SEM_ASSIGN;
+    // ověření obou stran porovnání
+    _ERR() eval_expr_type(node->next[0]->next[0], &value1, &type1, symtable)                 ERR_()
+    _ERR() eval_expr_type(node->next[2]->next[0], &value2, &type2, symtable)                 ERR_()
+
+    printf("/ %s %s /\n", type1, type2);
+
+    // obě strany musí bát stejné
+    bool sem_type = strcmp(type1, type2);
 
     // uvolnění paměti
     free(value1); free(type1);
@@ -410,7 +425,7 @@ int process_cond(t_node *node) {
     
     printf("cond succes\n");
     
-    return EXIT_SUCCESS;
+    return (sem_type) ? SEM_TYPE : SEM_OK;
 }
 
 // TODO označení chyby
@@ -430,23 +445,15 @@ int process_decl_local(t_node *node, stack_t *symtable) {
         // vyhodnocení, zda jsou všechny prvky expr stejného typu
         key_t assign_type = NULL;
         
-        // provede se typová kontrola nad přiřazením
-        if (eval_expr_type(next->next[4]->next[1]->next[0], &value, &assign_type)) {
-            free(assign_type);
-            free(value);
-            free(name);
-            free(type);
-            return SEM_ASSIGN;
+        // vyhodnocení typů přiřazovaných hodnot
+        if (eval_expr_type(next->next[4]->next[1]->next[0], &value, &assign_type, symtable)) {
+            FREE_VAR_DECL()
+            return SEM_TYPE;
         }
-        
-        // printf("|||%s|||\n", next->next[3]->next[0]->data[0].data);
 
-        // TODO zpracovat error
+        // provede se typová kontrola nad přiřazením
         if (strcmp(type, assign_type)) {
-            free(name);
-            free(type);
-            free(assign_type);
-            free(value);
+            FREE_VAR_DECL()
             return SEM_ASSIGN;
         }
 
@@ -462,12 +469,12 @@ int process_decl_local(t_node *node, stack_t *symtable) {
     // přidání proměnné do tabulky symbolů
     add_var_to_symtable(type, name, value, LOCAL, symtable);
 
-    return EXIT_SUCCESS;
+    return SEM_OK;
 }
 
 int process_f_or_item_list() {
     
-    return EXIT_SUCCESS;
+    return SEM_OK;
 }
 
 int process_types(t_node *node, fce_item_t **item) {
@@ -487,7 +494,7 @@ int process_types(t_node *node, fce_item_t **item) {
         }
     }
     
-    return EXIT_SUCCESS;
+    return SEM_OK;
 }
 
 int process_return_types(t_node *node, fce_item_t **item, int *return_values) {
@@ -513,7 +520,7 @@ int process_return_types(t_node *node, fce_item_t **item, int *return_values) {
     }
 
     printf("%s", "succes return-types\n");
-    return EXIT_SUCCESS;
+    return SEM_OK;
 }
 
 int process_f_arg_list(t_node *node, fce_item_t **item, stack_t *symtable) {
@@ -556,7 +563,7 @@ int process_f_arg_list(t_node *node, fce_item_t **item, stack_t *symtable) {
     }
     
     printf("%s", "success f-arg-list\n");
-    return EXIT_SUCCESS;
+    return SEM_OK;
 }
 
 int f_declare(t_node *node, stack_t *symtable) {
@@ -579,7 +586,7 @@ int f_declare(t_node *node, stack_t *symtable) {
     // přiřazení ukazatele
     htab_i->fce = fce_i;
 
-    return EXIT_SUCCESS;
+    return SEM_OK;
 }
 
 // TODO přidání definice funkce do globálního rámce tabulky symbolů + sémantická kontrola nitra
@@ -613,7 +620,7 @@ int f_define(t_node *node, stack_t *symtable, def_table_t *deftable) {
     symtable_print(symtable);
     symtable_pop(symtable);
     
-    return EXIT_SUCCESS;
+    return SEM_OK;
 }
 
 
@@ -655,7 +662,7 @@ int add_var_to_symtable(key_t type, key_t key, key_t value, bool local, stack_t 
     
     ALLOC_CHECK(htab_lookup_add(symtable->stack[symtable->top], type, key, value, local, -1))
 
-    return EXIT_SUCCESS;
+    return SEM_OK;
 }
 
 int add_scope_to_symtable(stack_t *symtable) {
@@ -667,9 +674,8 @@ int add_scope_to_symtable(stack_t *symtable) {
     // přidání do zásobníku rámců
     symtable_push(&symtable, htab);
 
-    return EXIT_SUCCESS;
+    return SEM_OK;
 }
-
 
 int semantic(t_node *root_node) {
     // pokud je soubor prázdný, není třeba provádět sémantickou analýzu

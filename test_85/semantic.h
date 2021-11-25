@@ -2,7 +2,7 @@
  *  Soubor: semantic.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	24. 11. 2021 11:57:53
+ *  Poslední změna:	25. 11. 2021 16:13:11
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -101,6 +101,17 @@
     // printf("curr: %s\n", curr->data[1].data);
     // printf("next: %s\n", next->data[1].data);
 
+#define FREE_VAR_DECL() \
+    free(name); \
+    free(type); \
+    free(assign_type); \
+    free(value); \
+
+#define UPDATE_EXPR(__return) \
+    *type = t; \
+    *value = v; \
+    return __return; 
+
 
 
 // - - - - - - - - - - - - - - - - - - //
@@ -156,7 +167,7 @@ int eval_fcall(def_table_t deftable);
  * @return ERROR_CODE @see #defined
  */
 // int eval_expr_type(t_node node, key_t value, key_t type);
-int eval_expr_type(t_node *node, key_t *value, key_t *type);
+int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable);
 
 
 
@@ -186,7 +197,7 @@ int process_while(t_node *node, stack_t *symtable, def_table_t *deftable);
 
 int process_if(t_node *node, stack_t *symtable, def_table_t *deftable);
 
-int process_cond(t_node *node);
+int process_cond(t_node *node, stack_t *symtable);
 
 /**
  * @brief 
