@@ -9,7 +9,7 @@
  *        write all together in czech.
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	25. 11. 2021 01:18:36
+ * Last Modified:	25. 11. 2021 01:52:20
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -17,6 +17,9 @@
 
 #ifndef __MY_STRING_H
 #define __MY_STRING_H
+
+//used when reading from a file I've personally written, so I know how large each rows are
+#define MAX_ROW_LENGTH 1000
 
 #include <stddef.h>
 
