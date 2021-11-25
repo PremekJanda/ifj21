@@ -4,7 +4,7 @@
  * @brief Hlavičkový soubor funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	25. 11. 2021 23:20:04
+ * Last Modified:	25. 11. 2021 23:39:28
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -36,7 +36,6 @@ typedef struct{
 void init_code(code_t*code);
 
 void convert_strings(t_node*tree);
-
 
 void eval_expression(code_t*code, t_node*expr);
 
