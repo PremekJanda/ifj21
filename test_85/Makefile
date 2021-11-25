@@ -1,7 +1,7 @@
 # Soubor: Makefile
 #
 # Předmět: IJC - Projekt 2
-# Datum poslední změny:	25. 11. 2021 02:54:51
+# Datum poslední změny:	25. 11. 2021 03:37:55
 # Autor: Přemek Janda - xjanda28, VUT FIT
 # Popis: Program MAKEFILE pro překlad všech potřebných souborů
 
@@ -25,12 +25,11 @@ compiler: $(OBJ)
 
 .PHONY: run test zip clean
 run:
-	@ $(MAKE) clean --no-print-directory
-	@ $(MAKE) test --no-print-directory
 	@ ./compiler < program.txt > _out.txt
 	@ echo "Make run done"
 
 test:
+	@ $(MAKE) clean --no-print-directory
 	@ $(MAKE) --no-print-directory
 	@ valgrind --leak-check=full --show-leak-kinds=all ./compiler < program.txt >_out.txt 2> _val.valgrind
 	@ echo "Make test done"
