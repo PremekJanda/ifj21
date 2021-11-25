@@ -74,19 +74,22 @@ void node_delete(t_node *node)
     node_free(node);
 }
 
+void tree_delete(t_node *node) {
+    node_delete(node);
+    free(node);
+}
+
 void node_print(t_node node, size_t tabs)
 {
     for (size_t i = 0; i < tabs; i++)
-        printf("      ");
+        (i%2 == 1) ? printf("|\t") : printf("\t");
     
-    printf("%s|%s\n", node.data[0].data, node.data[1].data);
-    // printf("%s %s\n", node.data[0].data, node.data[1].data);
+    printf("%s | %s\n", node.data[0].data, node.data[1].data);
 }
 
 void tree_print(t_node node, size_t tabs)
 {
     // první se printne root, později s tabulátorem navíc potomci
-    printf("%d: ", node.next_count);
     node_print(node, tabs);
 
     // rekurze přes všechny potomky
@@ -100,56 +103,3 @@ void tree_item_delete(t_tree_item *tree_item)
     if (tree_item->data != NULL)
         free(tree_item->data);
 }
-
-
-// ! /////////////// ! //
-// !     UNUSED      ! //
-// ! /////////////// ! //
-// void tree_init(t_tree *tree)
-// {
-//     tree->first = NULL;
-//     tree->active = NULL;
-// }
-
-// void tree_setfirst(t_tree *tree, t_node *node)
-// {
-//     t_node new_node;
-//     node_init(&new_node);
-//     node_copy(&new_node, node);
-//     tree->first = &new_node;
-// }
-
-// void tree_delete(t_tree *tree)
-// {
-//     node_delete(tree->first);
-// }
-
-// int node_copy(t_node *node1, t_node *node2)
-// {
-//     node1->next_count = node2->next_count;
-
-//     if (node1->next_capacity != node2->next_capacity)
-//     {
-//         node1->next_capacity = node2->next_capacity;
-//         t_node *newnext = realloc(node1->next, sizeof(t_node) * node1->next_capacity);
-        
-//         if (newnext == NULL)
-//             return 1;
-        
-//         node1->next = newnext;
-//     }
-
-//     for(int i = 0; node2->next_count; i++)
-//         node1->next[i] = node2->next[i];
-
-//     tree_item_init(&node1->data[0]);
-//     tree_item_init(&node1->data[1]);
-
-//     if (node2->data[0].length != 0)
-//         node_setdata(node1, node2->data[0].data, 0);
-    
-//     if (node2->data[1].length != 0)
-//         node_setdata(node1, node2->data[1].data, 1);
-    
-//     return 0;
-// }
