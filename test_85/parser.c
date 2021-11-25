@@ -248,7 +248,7 @@ int syntax_analyzer(t_node *tree)
                 return_code = bottom_up(precedence_table, current_node, token, token_backup, backup);
                 backup = "";
             }
-            if(!strcmp(token->type, stack_top(stack)) || (!strcmp(token->type, "keyword") && strcmp(current_node->data[0].data, "expr")))
+            if(!strcmp(token->type, stack_top(stack)) || (!strcmp(token->type, "keyword") && strcmp(current_node->data[0].data, "expr") && strcmp(current_node->data[0].data, "eps")))
             {
                 node_setdata(current_node, token->attribute, 1);
                 node_setdata(current_node, token->type, 0);
