@@ -2,7 +2,7 @@
  *  Soubor: test.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	24. 11. 2021 06:56:21
+ *  Poslední změna:	24. 11. 2021 22:07:42
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -79,10 +79,10 @@
     NODE_INIT(node33, "<stmt>", "") \
     NODE_INIT(node34, "<stmt-list>", "") \
  \
-    NODE_INIT(node35, "keyword", "string") \
+    NODE_INIT(node35, "keyword", "number") \
  \
     NODE_INIT(node36, "assign", "=") \
-    NODE_INIT(node37, "<item>", "") \
+    NODE_INIT(node37, "<f-or-item-list>", "") \
  \
     NODE_INIT(node38, "<item-list>", "") \
  \
@@ -90,7 +90,7 @@
  \
     NODE_INIT(node40, "eps", "") \
  \
-    NODE_INIT(node41, "expr", "") \
+    /*NODE_INIT(node41, "expr", "") */\
  \
     NODE_INIT(node42, "<item>", "") \
     NODE_INIT(node43, "<another-item>", "") \
@@ -166,7 +166,7 @@
  \
     node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[1]->next[1], &node40); \
  \
-    node_addnext(node1.next[2]->next[0]->next[6]->next[0]->next[0]->next[4]->next[1], &node41); \
+    /*node_addnext(node1.next[2]->next[0]->next[6]->next[0]->next[0]->next[4]->next[1], &node41); */\
  \
     node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[0]->next[1]->next[0], &node42); \
     node_addnext(node1.next[2]->next[0]->next[6]->next[1]->next[0]->next[1]->next[0], &node43); \
@@ -190,12 +190,12 @@
     NODE_INIT(node1011,  "<type>", "") \
     NODE_INIT(node1012,  "<decl-assign>", "") \
     \
-    NODE_INIT(node1013,  "keyword", "string") \
+    NODE_INIT(node1013,  "keyword", "integer") \
     \
-    NODE_INIT(node1014,  " equals", "=") \
-    NODE_INIT(node1015,  "<item>", "") \
+    /*NODE_INIT(node1014,  "=", "=") */\
+    /*NODE_INIT(node1015,  "<item>", "") */\
     \
-    NODE_INIT(node1016,  "expr", "") \
+    /*NODE_INIT(node1016,  "expr", "") */\
     \
     NODE_INIT(node1017,  "eps", "") \
 \
@@ -214,10 +214,10 @@
     \
     node_addnext(node1.next[2]->next[1]->next[1]->next[0]->next[3]->next[0], &node1013); \
     \
-    node_addnext(node1.next[2]->next[1]->next[1]->next[0]->next[3]->next[1], &node1014); \
-    node_addnext(node1.next[2]->next[1]->next[1]->next[0]->next[3]->next[1], &node1015); \
+    /*node_addnext(node1.next[2]->next[1]->next[1]->next[0]->next[3]->next[1], &node1014); */\
+    /*node_addnext(node1.next[2]->next[1]->next[1]->next[0]->next[3]->next[1], &node1015); */\
     \
-    node_addnext(node1.next[2]->next[1]->next[1]->next[0]->next[3]->next[1]->next[0], &node1016); \
+    /*node_addnext(node1.next[2]->next[1]->next[1]->next[0]->next[3]->next[1]->next[0], &node1016); */\
     \
    \
     NODE_INIT(node300,  "<f-arg>", "") \
@@ -248,6 +248,29 @@
     node_addnext(&node305, &node308); \
     node_addnext(&node305, &node309); \
     node_addnext(&node306, &node310); \
+   \
+    NODE_INIT(node400,  "integer", "ahoj1") \
+    NODE_INIT(node401,  "..", "..") \
+    NODE_INIT(node402,  "eps", "") \
+    NODE_INIT(node403,  "number", "ahoj2") \
+    NODE_INIT(node404,  "..", "..") \
+    NODE_INIT(node405,  "number", "ahoj3") \
+    node_addnext(&node37, &node400); \
+    node_addnext(&node37, &node401); \
+    node_addnext(&node37, &node402); \
+    node_addnext(&node402, &node403); \
+    node_addnext(&node402, &node404); \
+    node_addnext(&node402, &node405); \
+   \
+    NODE_INIT(node500,  "=", "=") \
+    NODE_INIT(node501,  "<f-or-item-list>", "") \
+    NODE_INIT(node502,  "#", "#") \
+    NODE_INIT(node503,  "string", "123456789") \
+    node_addnext(&node1012, &node500); \
+    node_addnext(&node1012, &node501); \
+    node_addnext(&node501, &node502); \
+    node_addnext(&node501, &node503); \
+    /*node_addnext(&node1012, &node502); */\
 \
     tree_print(node1, 0);
 

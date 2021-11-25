@@ -2,7 +2,7 @@
  *  Soubor: symtable.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	24. 11. 2021 06:54:27
+ *  Poslední změna:	24. 11. 2021 11:37:02
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -180,7 +180,7 @@ htab_item_t * htab_find(htab_t *t, key_t key) {
     return NULL;    
 }
 
-htab_item_t * htab_lookup_add(htab_t *t, key_t type, key_t key, key_t value, bool local, size_t ret_values) {
+htab_item_t * htab_lookup_add(htab_t *t, key_t type, key_t key, key_t value, bool local, int ret_values) {
     
     // získání indexu podle klíče v tabulce
     size_t index_in_arr = htab_hash_function(key) % t->arr_size;
@@ -499,9 +499,9 @@ void htab_print(const htab_t *t) {
 }
 
 void item_print(const htab_item_t *i) {
-    printf("\t\ta: %-5s t: %-5s v: %-5s l: %s ", i->key, i->type, i->value, (i->local) ? "(lokální)" : "(globální)");
+    printf("\t\ta: [%s] t: [%s] v: [%s] l: [%s] rv: [%d] \t|\t ", i->key, i->type, i->value, (i->local) ? "lokální" : "globální", i->ret_values);
     
-    if (i->fce == NULL) 
+    if (i->fce == NULL && i->ret_values == -1) 
         printf("není fce\n");
     else
         fce_print(i->fce, i->ret_values);
@@ -514,12 +514,12 @@ void fce_print(const fce_item_t *i, size_t return_values) {
 
     while(i != NULL) {
         if (counter == return_values && return_values != 0)
-            printf("%s | ", i->key);
+            printf("[%s] | ", i->key);
         else 
             if (i->next_f_item != NULL)
-                printf("%s -> ", i->key);
+                printf("[%s] -> ", i->key);
             else
-                printf("%s", i->key);
+                printf("[%s]", i->key);
               
         i = i->next_f_item;
         counter++;
