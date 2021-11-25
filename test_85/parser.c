@@ -168,7 +168,7 @@ int syntax_analyzer(t_node *tree)
 
     t_table precedence_table;
     table_init(&precedence_table);
-    table_readfile(&precedence_table, "precedence.txt", ':');
+    table_readfile(&precedence_table, "precedence.txt", ';');
 
     stack_push(&stack, "$");
     stack_push(&stack, "<prog>");
@@ -195,7 +195,9 @@ int syntax_analyzer(t_node *tree)
     {
         if(return_code != 0)
             break;
-        if(!strcmp(token->type, "id") || !strcmp(token->type, "integer") || !strcmp(token->type, "string") || !strcmp(token->type, "number") || !strcmp(token->type, "("))
+        if(!strcmp(token->attribute, "nil") && !strcmp(token->type, "keyword") && !strcmp(stack_top(stack), "<item>"))
+            strcpy(token->type, "nil");
+        if(!strcmp(token->type, "id") || !strcmp(token->type, "integer") || !strcmp(token->type, "nil") || !strcmp(token->type, "string") || !strcmp(token->type, "number") || !strcmp(token->type, "("))
         {
             rule = atoi(table_find(ll_table, stack_top(stack), token->type));
     	    expr = true;
@@ -205,10 +207,13 @@ int syntax_analyzer(t_node *tree)
             rule = atoi(table_find(ll_table, stack_top(stack), token->attribute));
             expr = false;
         }
-        if((!strcmp(token->type, "id") && !strcmp(backup, "")) && (atoi(table_find(ll_table, stack_top(stack), "expr")) != 0 && table_find(ll_table, stack_top(stack), "id") != 0))
+        if(!strcmp(token->type, "id") && (atoi(table_find(ll_table, stack_top(stack), "expr")) != 0 && table_find(ll_table, stack_top(stack), "id") != 0))
         {
-            return_code = scanner(token_backup);
-            backup = token_backup->attribute;
+            if(!strcmp(backup, ""))
+            {
+                return_code = scanner(token_backup);
+                backup = token_backup->attribute;
+            }
             if(strcmp(backup, ",") && strcmp(backup, "(") && strcmp(backup, "=="))
                 rule = atoi(table_find(ll_table, stack_top(stack), "expr"));
             else
@@ -219,9 +224,6 @@ int syntax_analyzer(t_node *tree)
         if(rule == 0)
         {
             return_code = 2;
-            printf("\n\n");
-            stack_print(stack);
-            printf("\n\n");
             fprintf(stderr, "Syntax error\nToken %s   %s    %d\n", token->type, token->attribute, token->line);
             break;
         }
@@ -246,10 +248,10 @@ int syntax_analyzer(t_node *tree)
                 return_code = bottom_up(precedence_table, current_node, token, token_backup, backup);
                 backup = "";
             }
-            if(!strcmp(token->type, stack_top(stack)) || !strcmp(token->type, "keyword"))
+            if(!strcmp(token->type, stack_top(stack)) || (!strcmp(token->type, "keyword") && strcmp(current_node->data[0].data, "expr")))
             {
-                node_setdata(current_node, token->type, 0);
                 node_setdata(current_node, token->attribute, 1);
+                node_setdata(current_node, token->type, 0);
             }
             next_count_stack2[next_count_count]++;
             while(next_count_stack1[next_count_count] == next_count_stack2[next_count_count] && current_node->prev != NULL)
