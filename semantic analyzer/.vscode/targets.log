@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu Nov 25 01:59:12 2021
+# Make data base, printed on Mon Nov 22 19:47:33 2021
 
 # Variables
 
@@ -18,6 +18,8 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 WSLENV = VSCODE_WSL_EXT_LOCATION/up
 # default
 .SHELLFLAGS := -c
+# makefile (from 'Makefile', line 11)
+OBJ = tree.o symtable.o semantic.o
 # environment
 VSCODE_AGENT_FOLDER = /home/rbabek/.vscode-server
 # environment
@@ -29,15 +31,15 @@ VSCODE_LOG_NATIVE = false
 # automatic
 @F = $(notdir $@)
 # makefile
-CURDIR := /home/rbabek/IFJ/ifj21
+CURDIR := /home/rbabek/IFJ/ifj21/semantic analyzer
 # makefile
 SHELL = /bin/sh
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en","availableLanguages":{}}
 # environment
 _ = /home/rbabek/.vscode-server/bin/ccbaa2d27e38e5afa3e5c21c1c7bef4657064247/node
-# makefile (from 'Makefile', line 5)
-CFLAGS = -std=c99 -g -Wall -Wextra -pedantic -lm
+# makefile (from 'Makefile', line 10)
+CFLAGS = -std=c99 -pedantic -Wall -Wextra -g
 # makefile (from 'Makefile', line 1)
 MAKEFILE_LIST :=  Makefile
 # 'override' directive
@@ -55,17 +57,15 @@ PATH = /home/rbabek/.vscode-server/bin/ccbaa2d27e38e5afa3e5c21c1c7bef4657064247/
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-631d1d56-9217-4704-bfce-1b8efde1a566.sock
+VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-7d138572-4c4f-4205-be0c-1d161d67fee1.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # automatic
 %F = $(notdir $%)
-# makefile (from 'Makefile', line 1)
-PRJ = lexikon
 # environment
 VSCODE_PIPE_LOGGING = true
 # environment
-PWD = /home/rbabek/IFJ/ifj21
+PWD = /home/rbabek/IFJ/ifj21/semantic analyzer
 # default
 .LOADED := 
 # environment
@@ -90,7 +90,7 @@ MAKE = $(MAKE_COMMAND)
 MAKECMDGOALS := all
 # environment
 SHLVL = 0
-# makefile (from 'Makefile', line 4)
+# makefile (from 'Makefile', line 9)
 CC = gcc
 # default
 MAKE_VERSION := 4.2.1
@@ -120,14 +120,10 @@ MFLAGS = -pqrR
 +D = $(patsubst %/,%,$(dir $+))
 # automatic
 +F = $(notdir $+)
-# makefile (from 'Makefile', line 6)
-LDFLAG = -lm
 # default
 MAKEFILES := 
 # automatic
 <F = $(notdir $<)
-# makefile (from 'Makefile', line 3)
-PROGS = $(PRJ)
 # environment
 LC_ALL = C
 # environment
@@ -151,7 +147,7 @@ VSCODE_EXTHOST_WILL_SEND_SOCKET = true
 # environment
 WSL_DISTRO_NAME = Ubuntu
 # variable set hash-table stats:
-# Load=70/1024=7%, Rehash=0, Collisions=4/105=4%
+# Load=68/1024=7%, Rehash=0, Collisions=6/94=6%
 
 # Pattern-specific Variable Values
 
@@ -159,69 +155,83 @@ WSL_DISTRO_NAME = Ubuntu
 
 # Directories
 
-# . (device 2064, inode 83795): 20 files, no impossibilities.
+# . (device 2064, inode 86155): 17 files, no impossibilities.
 
-# 20 files, no impossibilities in 1 directories.
+# 17 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
-# No implicit rules.
+%.o: %.c %.h
+#  recipe to execute (from 'Makefile', line 25):
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+# 1 implicit rules, 0 (0.0%) terminal.
 
 # Files
 
-# Not a target:
-lexikon.c:
-#  Implicit rule search has been done.
-#  Last modified 2021-11-25 01:23:12.546156
-#  File has been updated.
-#  Successfully updated.
-
-all: lexikon
+all: semantic
 #  Command line target.
 #  Implicit rule search has been done.
 #  File does not exist.
 #  File has been updated.
-#  Needs to be updated (-q is set).
-# variable set hash-table stats:
-# Load=0/32=0%, Rehash=0, Collisions=0/6=0%
+#  Successfully updated.
 
-# Not a target:
-code-generation/mystring.c:
+.PHONY: run test zip clean
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
 
-# Not a target:
-tree.o,:
+zip:
+#  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
-#  Modification time never checked.
+#  File does not exist.
 #  File has not been updated.
-
-# Not a target:
-.SUFFIXES:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 49):
+	zip semantic.zip *.c *.h Makefile
 
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2021-11-25 01:57:39.976156
+#  Last modified 2021-11-22 19:47:01.22
 #  File has been updated.
 #  Successfully updated.
 
-# Not a target:
-code-generation/mystring.h:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+symtable.o: symtable.c symtable.h
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'symtable'
+#  Last modified 2021-11-22 19:44:04.86
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 25):
+	$(CC) $(CFLAGS) -c -o $@ $<
 
-mystring.o: code-generation/mystring.c code-generation/mystring.h
+test:
+#  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
-#  Modification time never checked.
+#  File does not exist.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 23):
-	$(CC) $(CFLAGS) $^ $(LDFLAG) -o $@
+#  recipe to execute (from 'Makefile', line 35):
+	@ $(MAKE) --no-print-directory
+	@ valgrind --leak-check=full --show-leak-kinds=all ./semantic >_out.txt 2> _val.valgrind
+	@ echo "Make test done"
+	
+
+semantic: tree.o symtable.o semantic.o
+#  Implicit rule search has not been done.
+#  Last modified 2021-11-22 19:46:20.98
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 20):
+	$(CC) $(CFLAGS) $^ -o $@
+
+semantic.o: semantic.c semantic.h
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'semantic'
+#  Last modified 2021-11-22 19:46:20.86
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 25):
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 # Not a target:
 .DEFAULT:
@@ -230,100 +240,91 @@ mystring.o: code-generation/mystring.c code-generation/mystring.h
 #  File has not been updated.
 
 tree.o: tree.c tree.h
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 17):
-	$(CC) $(CFLAGS) $^ $(LDFLAG) -o $@
-	
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'tree'
+#  Last modified 2021-11-22 19:44:04.8
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 25):
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 # Not a target:
 tree.c:
+#  Implicit rule search has been done.
+#  Last modified 2021-11-22 16:02:34.969
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+symtable.c:
+#  Implicit rule search has been done.
+#  Last modified 2021-11-22 19:41:26.88
+#  File has been updated.
+#  Successfully updated.
+
+run:
+#  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
-#  Modification time never checked.
+#  File does not exist.
 #  File has not been updated.
+#  recipe to execute (from 'Makefile', line 30):
+	@ $(MAKE) --no-print-directory
+	@ ./semantic > _out.txt
+	@ echo "Make run done"
 
 clean:
+#  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 14):
-	rm -f *.o lexikon
-
-lexikon: lexikon.c
-#  Implicit rule search has not been done.
-#  Implicit/static pattern stem: ''
 #  File does not exist.
-#  File has been updated.
-#  Needs to be updated (-q is set).
-# automatic
-# @ := lexikon
-# automatic
-# % := 
-# automatic
-# * := 
-# automatic
-# + := lexikon.c
-# automatic
-# | := 
-# automatic
-# < := lexikon.c
-# automatic
-# ^ := lexikon.c
-# automatic
-# ? := lexikon.c
-# variable set hash-table stats:
-# Load=8/32=25%, Rehash=0, Collisions=2/15=13%
-#  recipe to execute (from 'Makefile', line 11):
-	$(CC) $(CFLAGS) -o $@ $(PRJ).c
-
-# Not a target:
+#  File has not been updated.
  
+#  recipe to execute (from 'Makefile', line 52):
+	@ rm -f *.o *.zip semantic _out.txt _val.valgrind vgcore.*
+	@ echo "Files successfully removed"
+	
+
+# Not a target:
 tree.h:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+#  Implicit rule search has been done.
+#  Last modified 2021-11-22 19:41:26.88
+#  File has been updated.
+#  Successfully updated.
 
 # Not a target:
-code-generation/code-generator.c:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-
-code-generator.o: code-generation/code-generator.c code-generation/code-generator.h
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 20):
-	$(CC) $(CFLAGS) $^ $(LDFLAG) -o $@
-
-code-generator: code-generator.o tree.o, mystring.o
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 26):
-	$(CC) $(CFLAGS) $^ $(LDFLAG) -o $@
+symtable.h:
+#  Implicit rule search has been done.
+#  Last modified 2021-11-22 19:41:26.88
+#  File has been updated.
+#  Successfully updated.
 
 # Not a target:
-code-generation/code-generator.h:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+semantic.c:
+#  Implicit rule search has been done.
+#  Last modified 2021-11-22 19:46:05.01
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+semantic.h:
+#  Implicit rule search has been done.
+#  Last modified 2021-11-22 19:41:26.88
+#  File has been updated.
+#  Successfully updated.
 
 # files hash-table stats:
-# Load=18/1024=2%, Rehash=0, Collisions=1/42=2%
+# Load=19/1024=2%, Rehash=0, Collisions=2/58=3%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 38 / storage = 463 B / avg = 12 B
-# current buf: size = 8162 B / used = 463 B / count = 38 / avg = 12 B
+# strcache buffers: 1 (0) / strings = 32 / storage = 255 B / avg = 7 B
+# current buf: size = 8162 B / used = 255 B / count = 32 / avg = 7 B
 
-# strcache performance: lookups = 55 / hit rate = 30%
+# strcache performance: lookups = 66 / hit rate = 51%
 # hash-table stats:
-# Load=38/8192=0%, Rehash=0, Collisions=1/55=2%
-# Finished Make data base on Thu Nov 25 01:59:12 2021
+# Load=32/8192=0%, Rehash=0, Collisions=1/66=2%
+# Finished Make data base on Mon Nov 22 19:47:33 2021
 
  

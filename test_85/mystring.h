@@ -1,15 +1,12 @@
 /**
  * @file mystring.h
- * @authors David Kocman  - xkocma08, VUT FIT
- *          Radomír Bábek - xbabek02, VUT FIT
- *          Martin Ohnút  - xohnut01, VUT FIT
- *          Přemek Janda  - xjanda28, VUT FIT
+ * @author Radomír Bábek - xbabek02, VUT FIT
  * @brief Small library of functions, that work with string buffers.
  *        Documentation was writen in english, before we have made decision to 
  *        write all together in czech.
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	25. 11. 2021 01:18:36
+ * Last Modified:	25. 11. 2021 02:22:51
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -17,6 +14,9 @@
 
 #ifndef __MY_STRING_H
 #define __MY_STRING_H
+
+//used when reading from a file I've personally written, so I know how large each rows are
+#define MAX_ROW_LENGTH 1000
 
 #include <stddef.h>
 

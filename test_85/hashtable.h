@@ -1,17 +1,8 @@
-/*
- * Hlavičkový súbor pre tabuľku s rozptýlenými položkami.
- * Tento súbor neupravujte.
- */
-
 #ifndef IAL_HASHTABLE_H
 #define IAL_HASHTABLE_H
 
 #include <stdbool.h>
 
-/*
- * Maximálna veľkosť poľa pre implementáciu tabuľky.
- * Funkcie pracujúce s tabuľkou uvažujú veľkosť HT_SIZE.
- */
 #define MAX_HT_SIZE 101
 
 /*
@@ -22,14 +13,14 @@
 extern int HT_SIZE;
 
 
-// Prvok tabuľky
+// Prvek tabulky
 typedef struct ht_item {
-  char *key;            // kľúč prvku
+  char *key;            // klíč prvku
   int value;          // hodnota prvku
-  struct ht_item *next; // ukazateľ na ďalšie synonymum
+  struct ht_item *next; // ukazatel na další synonymum
 } ht_item_t;
 
-// Tabuľka o reálnej veľkosti MAX_HT_SIZE
+// Tabulka o reálné velikosti MAX_HT_SIZE
 typedef ht_item_t *ht_table_t[MAX_HT_SIZE];
 
 int get_hash(char *key);

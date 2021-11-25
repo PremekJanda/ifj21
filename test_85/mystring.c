@@ -1,13 +1,10 @@
 /**
  * @file mystring.c
- * @authors David Kocman  - xkocma08, VUT FIT
- *          Radomír Bábek - xbabek02, VUT FIT
- *          Martin Ohnút  - xohnut01, VUT FIT
- *          Přemek Janda  - xjanda28, VUT FIT
+ * @author Radomír Bábek - xbabek02, VUT FIT
  * @brief Small library of functions, that work with string buffers
  * @version 0.1
  * @date 2021-11-13
- * Last modified:	23. 11. 2021 23:03:35
+ * Last modified:	25. 11. 2021 02:21:21
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -170,7 +167,7 @@ int strinbetween_format_realloc(buffer_t*dst, size_t index, const char *fmt, ...
         }
     } while (condition);
     
-    if (strinbetween_realloc(dst, var.data, index) == 0){
+    if (strinbetween_realloc(dst, var.data, index) == 0) {
         buffer_destroy(&var);
         return 0;
     }
@@ -178,4 +175,23 @@ int strinbetween_format_realloc(buffer_t*dst, size_t index, const char *fmt, ...
         buffer_destroy(&var);
         return 1;
     }
+}
+
+int append_file(buffer_t*buffer, char*filename) {
+    FILE*f = fopen(filename,"r");
+    if (f == NULL){
+        return 1;
+    }
+    char row[MAX_ROW_LENGTH]; row[0] = '\0'; 
+    row[MAX_ROW_LENGTH-1] = '\0';
+
+    while (fgets(row, 1000, f) != NULL)
+    {
+        if (row[MAX_ROW_LENGTH-1] != '\0') {
+            fprintf(stderr, "Error, field capacity exceeded in function append_file");
+            return 1;
+        }
+        strcat_realloc(buffer, row);
+    }
+    return 0;
 }

@@ -1,13 +1,10 @@
 /**
  * @file code-generator.c
- * @authors David Kocman  - xkocma08, VUT FIT
- *          Radomír Bábek - xbabek02, VUT FIT
- *          Martin Ohnút  - xohnut01, VUT FIT
- *          Přemek Janda  - xjanda28, VUT FIT
+ * @authors Radomír Bábek - xbabek02, VUT FIT
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	25. 11. 2021 01:22:59
+ * Last Modified:	25. 11. 2021 02:18:01
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -19,7 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "hashtable/hashtable.h"
+#include "hashtable.h"
 #include "test.h"
 
 //globální proměnné, slouží k uvolnění paměti a ukončení programu
