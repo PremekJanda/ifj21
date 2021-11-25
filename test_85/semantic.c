@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	25. 11. 2021 21:48:39
+ *  Last modified:	25. 11. 2021 23:33:39
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -393,7 +393,7 @@ int process_stmt_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
 
         } else {
             printf("assign or function call\n");
-            process_assign_or_fcall(curr->next[1], symtable, deftable);
+            process_assign_or_fcall(curr->next[1], symtable, deftable, curr->next[0]->data[1].data);
         }
 
         node = node->next[1];
@@ -489,19 +489,53 @@ int process_decl_local(t_node *node, stack_t *symtable) {
     return SEM_OK;
 }
 
-int process_assign_or_fcall(t_node *node, stack_t *symtable, def_table_t *deftable) {
-    (void)node;
+int process_assign_or_fcall(t_node *node, stack_t *symtable, def_table_t *deftable, key_t first_id) {
     (void)symtable;
     (void)deftable;
-
     // je volána funkce bez potřeby kontrolovat návratové hodnoty
-    if (!strcmp(node->next[0], "(")) {
-        f_call();
+    if (!strcmp(node->next[0]->data[0].data, "(")) {
+        // f_call();
 
     // jedná se o přiřazení
     } else {
-        
+        // alokuje se první přiřazované hodnota
+        ALLOC_STR(id, first_id)
+
+        // přidání id do seznamu
+        fce_item_t *id_list = malloc(sizeof(fce_item_t));
+        id_list = NULL;
+        fce_item_push(&id_list, id);
+
+        // zpracují se všechny id levého přiřazení
+        process_id_list(node->next[0], &id_list);
+
+        fce_item_t *assign_list = malloc(sizeof(fce_item_t));
+        id_list = NULL;
+        process_f_or_item_list(node->next[1], &assign_list);
+
+        printf("ID LIST: ");
+        fce_print(id_list, 99);
+
+        fce_free(id_list);
     }
+
+    return SEM_OK;
+}
+
+// TODO zpracování idéček
+int process_id_list(t_node *node, fce_item_t **item) {
+    if (node->next_count > 1) {
+        // nově alokované id se přidá do seznamu
+        ALLOC_STR(id, node->next[1]->data[1].data)
+        fce_item_push(item, id);
+    }
+
+    return SEM_OK;
+}
+
+int process_f_or_item_list(t_node *node, fce_item_t **item) {
+    (void)node;
+    (void)item;
 
     return SEM_OK;
 }

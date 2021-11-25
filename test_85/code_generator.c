@@ -4,13 +4,13 @@
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	25. 11. 2021 23:22:37
+ * Last Modified:	25. 11. 2021 23:46:27
  * 
  * @copyright Copyright (c) 2021
  * 
  */
 
-#include "code-generator.h"
+#include "code_generator.h"
 #include "tree.h"
 #include "mystring.h"
 #include <stdlib.h>

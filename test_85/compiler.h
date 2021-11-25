@@ -1,8 +1,8 @@
 /**
- *  Soubor: semantic.c
+ *  Soubor: compiler.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	25. 11. 2021 03:58:16
+ *  Last modified:	25. 11. 2021 23:45:47
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -20,7 +20,7 @@
 #include "semantic.h"
 
 // generování kódu
-#include "code-generator.h"
+#include "code_generator.h"
 
 // chybové návratové hodnoty
 #define LEXICAL_ERROR 1
