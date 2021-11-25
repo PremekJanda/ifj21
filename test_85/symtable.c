@@ -2,7 +2,7 @@
  *  Soubor: symtable.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	25. 11. 2021 15:42:33
+ *  Poslední změna:	25. 11. 2021 20:48:58
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -417,7 +417,7 @@ def_table_t * def_table_init() {
     return deftable;
 }
 
-int def_table_add(char * name, def_table_t *deftable, bool state) {
+int def_table_add(char *name, def_table_t *deftable, bool state) {
     if (deftable->size == deftable->capacity) {
         // rozšíření kapacity na dvojnásobek
         deftable->capacity *= 2;
@@ -509,7 +509,7 @@ void htab_print(const htab_t *t) {
 }
 
 void item_print(const htab_item_t *i) {
-    printf("\t\ta: [%s] t: [%s] v: [%s] l: [%s] rv: [%d] \t|\t ", i->key, i->type, i->value, (i->local) ? "lokální" : "globální", i->ret_values);
+    printf("\t\ta: %-10s t: %-10s v: %-10s l: %-8s rv: %-4d \t|\t ", i->key, i->type, i->value, (i->local) ? "lok" : "glob", i->ret_values);
     
     if (i->fce == NULL && i->ret_values == -1) 
         printf("není fce\n");
