@@ -2,7 +2,7 @@
  *  Soubor: compiler.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	25. 11. 2021 02:09:13
+ *  Last modified:	25. 11. 2021 02:55:02
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -18,8 +18,8 @@ int main() {
 
     // ukazatel na kořenový prvek abstraktního syntaktického stromu
     t_node *ast_root_node;
-    ast_root_node = malloc(sizeof(t_node));
-    if (!node_init(ast_root_node))
+    ast_root_node = (t_node *)malloc(sizeof(t_node));
+    if (node_init(ast_root_node))
         return ALLOC_ERROR;
 
     // zde proběhne lexikální a syntaktická analýza
@@ -34,10 +34,10 @@ int main() {
         return SYNTAX_ERROR; 
     
     // sémantická analýza
-    error_code = semantic(ast_root_node);
+    // error_code = semantic(ast_root_node);
 
     // pokud není úspěšná navrátí se její chybový kód
-    if (!error_code)
+    if (error_code)
         return error_code;
 
     // generování kódu
@@ -45,7 +45,9 @@ int main() {
     
     // uvolnění alokované paměti
     tree_print(*ast_root_node, 0);
+    // tree_delete(ast_root_node);
     node_delete(ast_root_node);
+    free(ast_root_node);
 
     return EXIT_SUCCESS;
 }

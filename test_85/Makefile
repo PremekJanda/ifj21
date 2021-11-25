@@ -1,13 +1,13 @@
 # Soubor: Makefile
 #
 # Předmět: IJC - Projekt 2
-# Datum poslední změny:	25. 11. 2021 01:50:37
+# Datum poslední změny:	25. 11. 2021 02:54:51
 # Autor: Přemek Janda - xjanda28, VUT FIT
 # Popis: Program MAKEFILE pro překlad všech potřebných souborů
 
 ##### proměnné #####
 CC = gcc
-CFLAGS = -std=c99 -pedantic -Wall -Wextra -g
+CFLAGS = -std=c11 -pedantic -Wall -Wextra -g -O2
 OBJ = compiler.o lexikon.o parser.o table.o stack.o tree.o semantic.o symtable.o #mystring.o hashtable.o code-generator.o
 
 all: compiler

@@ -188,8 +188,8 @@ int syntax_analyzer(t_node *tree)
     t_node *current_node = tree;
 
     int next_count_count = 0;
-    int *next_count_stack1 = malloc(sizeof(int) * 20);
-    int *next_count_stack2 = malloc(sizeof(int) * 20);
+    int *next_count_stack1 = malloc(sizeof(int) * 200);
+    int *next_count_stack2 = malloc(sizeof(int) * 200);
 
     while(strcmp(stack_top(stack), "$") && strcmp(token->type, "EOF"))
     {
@@ -282,5 +282,6 @@ int syntax_analyzer(t_node *tree)
     free(token->type);
     free(token);
     free(next_count_stack1);
+    free(next_count_stack2);
     return return_code;
 }
