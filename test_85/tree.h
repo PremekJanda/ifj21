@@ -1,6 +1,8 @@
 #ifndef __TREE_H__
 #define __TREE_H__
 
+#include <stddef.h>
+
 typedef struct tree_item
 {
     int length;

@@ -4,7 +4,7 @@
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	25. 11. 2021 02:16:41
+ * Last Modified:	25. 11. 2021 03:17:45
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -20,10 +20,10 @@
 #include "test.h"
 
 //globální proměnné, slouží k uvolnění paměti a ukončení programu
-t_tree*global_tree;
+t_node*global_tree;
 buffer_t*global_code_buffer;
 
-void generate_code(t_tree*tree, code_t*code){
+void generate_code(t_node*tree, code_t*code){
     //nastavení globálních proměnných
     global_tree = tree;
     global_code_buffer = &code->text;
@@ -49,14 +49,14 @@ void generate_code(t_tree*tree, code_t*code){
     int depth_total = 0;
 
     char*fc = NULL;
-    rename_all_id(tree->first, &ht_already_processed, &fc, &depth, &depth_total);
-    tree_print(*tree->first, 0);
+    rename_all_id(tree, &ht_already_processed, &fc, &depth, &depth_total);
+
     ht_delete_all(&ht_already_processed);
 
     //current_node = <prog>
-    t_node*current_node = tree->first;
+    t_node*current_node = tree;
 
-    if (strcmp(current_node->data[0].data, "<prog>") == 0){
+    if (strcmp(tree->data[0].data, "<prog>") == 0){
         current_node = check_prog_node(current_node); //current_node = <main-list>
     }
     else {
@@ -70,6 +70,7 @@ void generate_code(t_tree*tree, code_t*code){
     for (; strcmp(current_node->next[0]->data[0].data,"eps") != 0; current_node = current_node->next[1]){
         def_declare_fcall_crossroad(code, current_node->next[0]);
     }
+
 }
 
 void rename_all_id(t_node* tree, ht_table_t*ht_already_processed, char**fc, int*depth, int*depth_total) {
@@ -212,7 +213,7 @@ void def_declare_fcall_crossroad(code_t*code, t_node*main_node){ //main_node = <
 }
 
 void function_call_gen(code_t*code, t_node*fcall_node){
-    strcat_format_realloc("\n# -- call of %s\nCREATEFRAME\n", fcall_node->next[0]);
+    strcat_format_realloc(&code->text,"\n# -- call of %s\nCREATEFRAME\n", fcall_node->next[0]->data[1].data);
 
     //průchod item-listem
     bool first_went_through = true; 
@@ -279,12 +280,12 @@ void function_gen(code_t*code, t_node*function_node){
 
 void stmt_list_crossroad(code_t*code, t_node*stmt_list, char*fc_from){
     //rekurzivní podmínka
-    if (strcmp(stmt_list->next[0], "eps") == 0) {
+    if (strcmp(stmt_list->next[0]->data[0].data, "eps") == 0) {
         return;
     }
-    t_node*stmt = stmt->next[0];
+    t_node*stmt = stmt_list->next[0];
     if (strcmp(stmt->next[0]->data[0].data, "id") == 0){
-        if (strcmp(stmt->next[1]->next[0], "(") == 0){
+        if (strcmp(stmt->next[1]->next[0]->data[0].data, "(") == 0){
             function_call_gen(code, stmt);
         }
         else {
@@ -348,7 +349,6 @@ void predefine_vars_of_stmt_list(code_t*code, t_node*stmt_list){
             
         }
     }
-    
 }
 
 void generate_if(code_t*code, t_node*if_node, char*fc){
@@ -394,7 +394,7 @@ void generate_assignment(code_t*code, t_node*assignment){
 
             function_call_gen(code, aux);
             sprintf(retval, "%%%dr", var_nb++);
-            strcat_format_realloc(code, "\n# -- return values from fc\nMOVE %s@%s TF@%s\n", frame, assignment->next[0]->data[1].data, retval);
+            strcat_format_realloc(&code->text, "\n# -- return values from fc\nMOVE %s@%s TF@%s\n", frame, assignment->next[0]->data[1].data, retval);
             if (strcmp(id_list->next[0]->data[0].data, "eps") != 0){
                 do //assign other variables
                 {
@@ -406,7 +406,7 @@ void generate_assignment(code_t*code, t_node*assignment){
                     }
         
                     sprintf(retval, "%%%dr", var_nb++);
-                    strcat_format_realloc(code, "MOVE %s@%s TF@%s\n", frame, id_list->next[1]->data[1].data, retval);
+                    strcat_format_realloc(&code->text, "MOVE %s@%s TF@%s\n", frame, id_list->next[1]->data[1].data, retval);
                     END_IF_FAIL((&code->text));
                     id_list = id_list->next[2];
                 } while (strcmp(id_list->next[0]->data[0].data, "eps") != 0);
@@ -533,13 +533,13 @@ void generate_return(code_t*code, t_node*return_node){
     buffer_destroy(&temp);
 }
 
-void move_item_to_var(code_t*code, char*dest_frame, char*dest_id, t_node*item){
+void move_item_to_var(code_t*code, char*dest_frame, const char*dest_id, t_node*item){
 
     if (strcmp(item->next[0]->data[0].data, "id") == 0){
         buffer_t buffer;
         buffer_init(&buffer);
         END_IF_FAIL((&buffer));
-        strcat_format_realloc(&buffer.data, "DEFVAR GF@%s", dest_id);
+        strcat_format_realloc(&buffer, "DEFVAR GF@%s", dest_id);
         END_IF_FAIL((&buffer));
         if (strstr(code->text.data, buffer.data) != NULL) {
             strcat_format_realloc(&code->text, "MOVE %s@%s GF@%s", dest_frame, dest_id, item->next[0]->data[1].data);
@@ -579,7 +579,7 @@ char*is_global(code_t*code, char*id){
     buffer_t buffer;
     buffer_init(&buffer);
     END_IF_FAIL((&buffer));
-    strcat_format_realloc(&buffer.data, "DEFVAR GF@%s", id);
+    strcat_format_realloc(&buffer, "DEFVAR GF@%s", id);
     END_IF_FAIL((&buffer));
     char* result;
     result = strstr(code->text.data, buffer.data);
@@ -759,32 +759,14 @@ int find_label(code_t*code, char*label_id){
 
 void free_memory_then_quit(int return_code) {
     
-    node_delete(global_tree->first);
+    node_delete(global_tree);
     buffer_destroy(global_code_buffer);
     exit(return_code);
 }
 
-init_code(code_t*code){
+void init_code(code_t*code){
     buffer_init(&code->text);
+    END_IF_FAIL((&code->text));
     code->total_conditionals_count = 0;
     code->total_expr_count = 0;
-}
-
-int main(){
-    MAKE_TREE();
-
-    t_tree tree;
-    tree.first = &node1;
-    tree.active = &node1;
-
-    code_t code;
-    init_code(&code);
-
-    generate_code(&tree, &code);
-
-    printf("%s", code.text.data);
-
-    node_delete(&node1);
-    buffer_destroy(&code.text);
-    return 0;
 }
