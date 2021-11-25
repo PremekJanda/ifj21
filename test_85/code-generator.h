@@ -4,7 +4,7 @@
  * @brief Hlavičkový soubor funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	25. 11. 2021 03:18:14
+ * Last Modified:	25. 11. 2021 21:22:46
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -41,9 +41,13 @@ typedef struct{
 
 void init_code(code_t*code);
 
+void convert_strings(t_node*tree);
+
 void init_result_field(code_t*code, expr_results_t*results);
 
 void eval_expression(code_t*code, t_node*expr, expr_results_t*result_field);
+
+void fix_expr(t_node*tree);
 
 /**
  * @brief Vygeneruje kód jazyka IFJ21Code ze syntaktického stromu podrobenému syntaktické a sémantické analýze

@@ -4,7 +4,7 @@
  * @brief Small library of functions, that work with string buffers
  * @version 0.1
  * @date 2021-11-13
- * Last modified:	25. 11. 2021 12:40:21
+ * Last modified:	25. 11. 2021 15:08:39
  * 
  * @copyright Copyright (c) 2021
  * 
