@@ -183,7 +183,7 @@ int syntax_analyzer(t_node *tree)
     char *backup = "";
     return_code = scanner(token);
 
-    node_setdata(tree, "prog", 0);
+    node_setdata(tree, "<prog>", 0);
 
     t_node *current_node = tree;
 

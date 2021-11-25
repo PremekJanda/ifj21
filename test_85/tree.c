@@ -43,6 +43,14 @@ int node_setdata(t_node *node, char *data, int index)
     
     strcpy(node->data[index].data, data);
     
+    if (node->data[!index].data == NULL) {
+        node->data[!index].data = malloc(2);
+        node->data[!index].length = 2;
+        ALLOC_CHECK(node->data[index].data)
+        
+        strcpy(node->data[!index].data, "");
+    }
+    
     return 0;
 }
 
@@ -84,7 +92,7 @@ void node_print(t_node node, size_t tabs)
     for (size_t i = 0; i < tabs; i++)
         (i%2 == 1) ? printf("|\t") : printf("\t");
     
-    printf("%s | %s\n", node.data[0].data, node.data[1].data);
+    printf("%s %c %s\n", node.data[0].data, (node.data[1].data[0] != '\0') ? '|' : ' ', node.data[1].data);
 }
 
 void tree_print(t_node node, size_t tabs)

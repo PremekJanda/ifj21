@@ -2,7 +2,7 @@
  *  Soubor: lexikon.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	25. 11. 2021 01:01:15
+ *  Poslední změna:	25. 11. 2021 12:10:50
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -275,7 +275,7 @@ int scanner(tToken *token){
                 ungetc(c, stdin);
                 token->attribute[i] = '\0';
                 if (DoubleNumber){
-                    strcpy(token->type, "double");
+                    strcpy(token->type, "number");
                     DoubleNumber = false;
                 }
                 else{

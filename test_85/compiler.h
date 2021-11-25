@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	25. 11. 2021 03:53:10
+ *  Last modified:	25. 11. 2021 03:58:16
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -26,7 +26,7 @@
 #define LEXICAL_ERROR 1
 #define SYNTAX_ERROR 2
 #define SEMANTIC_ERROR 3
-#define GENERATION_ERROR 4
+#define CODE_GENERATION_ERROR 4
 #define ALLOC_ERROR 99
 
 

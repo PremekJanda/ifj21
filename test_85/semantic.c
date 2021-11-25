@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	25. 11. 2021 05:48:04
+ *  Last modified:	25. 11. 2021 11:45:42
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -243,7 +243,7 @@ int process_main_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
     // vytvoření globálního rámce
     _ERR() add_scope_to_symtable(symtable)                                      ERR_()
 
-    while (node->next_count != 1) {
+    while (node->next_count) {
         TEMP_VARS()
 
         printf("--------------------------- %s -------------------------\n", next->data[0].data);
@@ -295,10 +295,6 @@ int process_main_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
                             free(value);
                             return SEM_ASSIGN;
                         }
-
-                        // TODO !!!
-                        // ! NEVYPISUJE MI TO STRING jako type
-                        printf("todruhé -%s- -%s-", curr->next[1]->data[1].data, curr->next[3]->next[0]->next[0]->data[0].data);
                         
                         // provede se typová kontrola nad přiřazením
                         if (strcmp(type, assign_type)) {
@@ -318,6 +314,8 @@ int process_main_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
 
                     // přidání proměnné do tabulky
                     add_var_to_symtable(type, name, value, GLOBAL, symtable);
+
+                    symtable_print(symtable);
             }
 
         // VOLÁNÍ funkce
