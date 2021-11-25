@@ -4,7 +4,7 @@
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	25. 11. 2021 03:17:45
+ * Last Modified:	25. 11. 2021 13:34:19
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -40,6 +40,11 @@ void generate_code(t_node*tree, code_t*code){
         fprintf(stderr,"Nenalezen soubor built_in.fc");
         free_memory_then_quit(99);
     }
+
+    FILE*debug = fopen("debug.txt", "w");
+    
+    fprintf(debug, code->text.data);
+    fclose(debug);
     
     //změna názvů identifikátorů ve stromě na unikátní identifikátory
     ht_table_t ht_already_processed;
@@ -52,6 +57,8 @@ void generate_code(t_node*tree, code_t*code){
     rename_all_id(tree, &ht_already_processed, &fc, &depth, &depth_total);
 
     ht_delete_all(&ht_already_processed);
+    tree_print(*tree, 0);
+
 
     //current_node = <prog>
     t_node*current_node = tree;
@@ -67,7 +74,7 @@ void generate_code(t_node*tree, code_t*code){
     }
     
      //current_node = <def-declare-fcall> || eps, cyklus projde přes všechny prvky v rekurzivním listu
-    for (; strcmp(current_node->next[0]->data[0].data,"eps") != 0; current_node = current_node->next[1]){
+    for (; current_node->next[0] != NULL; current_node = current_node->next[1]){
         def_declare_fcall_crossroad(code, current_node->next[0]);
     }
 
@@ -220,7 +227,7 @@ void function_call_gen(code_t*code, t_node*fcall_node){
     int index = 0;
     buffer_t temp; //na vytvoření názvu návratové proměnné
     buffer_init(&temp);
-    for (t_node*items = fcall_node->next[1]->next[1]->next[0]; strcmp(items->next[0]->data[0].data, "eps") != 0; items = items->next[index+1])
+    for (t_node*items = fcall_node->next[1]->next[1]->next[0]; items->next[0] != NULL; items = items->next[index+1])
     {   
         int var_id = 1;
         temp.data[0] = '\0';
@@ -248,7 +255,7 @@ void function_gen(code_t*code, t_node*function_node){
     
     //zpracování argumentů
     bool first_went_through = true; 
-    for (t_node*args = function_node->next[3]; strcmp(args->next[0]->data[0].data, "eps") != 0; args = args->next[index])
+    for (t_node*args = function_node->next[3]; args->next[0] != NULL; args = args->next[index])
     {   
         int var_id = 1;
         strcat_format_realloc(&code->text, "DEFVAR LF@%s\nMOV LF@%s LF@%%%d", args->next[index]->data[1].data, args->next[index]->data[1].data, var_id++);
@@ -261,7 +268,7 @@ void function_gen(code_t*code, t_node*function_node){
     
     first_went_through = true;
     //zpracování návratových hodnot
-    for (t_node*ret_vals = function_node->next[5]; strcmp(ret_vals->next[0]->data[0].data, "eps") != 0; ret_vals = ret_vals->next[2])
+    for (t_node*ret_vals = function_node->next[5]; ret_vals->next[0] != NULL; ret_vals = ret_vals->next[2])
     {   
         int var_id = 1;
         strcat_format_realloc(&code->text, "DEFVAR LF@%%%dr\n", var_id++);
@@ -280,7 +287,7 @@ void function_gen(code_t*code, t_node*function_node){
 
 void stmt_list_crossroad(code_t*code, t_node*stmt_list, char*fc_from){
     //rekurzivní podmínka
-    if (strcmp(stmt_list->next[0]->data[0].data, "eps") == 0) {
+    if (stmt_list->next[0] == NULL) {
         return;
     }
     t_node*stmt = stmt_list->next[0];
@@ -312,7 +319,7 @@ void stmt_list_crossroad(code_t*code, t_node*stmt_list, char*fc_from){
 void generate_local_decl(code_t*code, t_node*local_dec){
     /* VŠECHNO ŠPATNĚ xddd!!! */
     strcat_format_realloc(&code->text, "DEFVAR LF@%s", local_dec->next[1]->data[1].data);
-    if (strcmp(local_dec->next[4]->next[0]->data[0].data, "eps") != 0){
+    if (local_dec->next[4]->next[0] != NULL){
         move_item_to_var(code, "LF",local_dec->next[1]->data[1].data, local_dec->next[4]->next[1]);
     }
 }
@@ -331,7 +338,7 @@ void generate_while(code_t*code, t_node*while_node, char*fc){
 
 void predefine_vars_of_stmt_list(code_t*code, t_node*stmt_list){
     t_node*declaration_node;
-    for (; strcmp(stmt_list->next[0]->data[0].data, "eps") != 0; stmt_list = stmt_list->next[1]) {
+    for (; stmt_list->next[0] != NULL; stmt_list = stmt_list->next[1]) {
         if (strcmp(stmt_list->next[0]->next[0]->data[0].data, "<declare-local>") == 0){
             generate_local_decl(code, stmt_list->next[0]);
             
@@ -395,7 +402,7 @@ void generate_assignment(code_t*code, t_node*assignment){
             function_call_gen(code, aux);
             sprintf(retval, "%%%dr", var_nb++);
             strcat_format_realloc(&code->text, "\n# -- return values from fc\nMOVE %s@%s TF@%s\n", frame, assignment->next[0]->data[1].data, retval);
-            if (strcmp(id_list->next[0]->data[0].data, "eps") != 0){
+            if (id_list->next[0] != NULL){
                 do //assign other variables
                 {
                     if (is_global(code, id_list->next[1]->data[1].data) != NULL) {
@@ -409,7 +416,7 @@ void generate_assignment(code_t*code, t_node*assignment){
                     strcat_format_realloc(&code->text, "MOVE %s@%s TF@%s\n", frame, id_list->next[1]->data[1].data, retval);
                     END_IF_FAIL((&code->text));
                     id_list = id_list->next[2];
-                } while (strcmp(id_list->next[0]->data[0].data, "eps") != 0);
+                } while (id_list->next[0] != NULL);
 
             }
             //následující sekce může pracovat stejně pro expr i id, proto return
@@ -432,7 +439,7 @@ void generate_assignment(code_t*code, t_node*assignment){
 
     //aux = <item-another>
 
-    while (strcmp(id_list->next[0]->data[0].data, "eps") != 0) {
+    while (id_list->next[0] != NULL) {
         if (is_global(code, id_list->next[1]->data[1].data) != NULL) {
             strcpy(frame, "GF");
         }
@@ -517,7 +524,7 @@ void generate_return(code_t*code, t_node*return_node){
     bool first_went_through = true; 
     buffer_t temp; //na vytvoření názvu návratové proměnné
     buffer_init(&temp);
-    for (t_node*items = return_node->next[1]; strcmp(items->next[0]->data[0].data, "eps") != 0; items = items->next[index+1])
+    for (t_node*items = return_node->next[1]; items->next[0] != NULL; items = items->next[index+1])
     {   
         int var_id = 1;
         temp.data[0] = '\0';
@@ -595,7 +602,7 @@ void create_global_variable(code_t*code,t_node*declaration_node, const char*id) 
 
         t_node*assignment_node;
         assignment_node = declaration_node->next[1]; // <declare-assign>
-        if (strcmp(assignment_node->next[0]->data[0].data,"eps") != 0) {
+        if (assignment_node->next[0] != NULL) {
             move_item_to_var(code, "GF", id, assignment_node->next[1]);
         }      
     }

@@ -246,8 +246,11 @@ int syntax_analyzer(t_node *tree)
                 return_code = bottom_up(precedence_table, current_node, token, token_backup, backup);
                 backup = "";
             }
-            if(!strcmp(token->type, stack_top(stack)))
+            if(!strcmp(token->type, stack_top(stack)) || !strcmp(token->type, "keyword"))
+            {
+                node_setdata(current_node, token->type, 0);
                 node_setdata(current_node, token->attribute, 1);
+            }
             next_count_stack2[next_count_count]++;
             while(next_count_stack1[next_count_count] == next_count_stack2[next_count_count] && current_node->prev != NULL)
             {
