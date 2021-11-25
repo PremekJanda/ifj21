@@ -4,7 +4,7 @@
  * @brief Hlavičkový soubor funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	25. 11. 2021 21:22:46
+ * Last Modified:	25. 11. 2021 23:20:04
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -33,19 +33,12 @@ typedef struct{
     buffer_t text;
 }code_t;
 
-typedef struct{
-    bool results[3];
-    char result_var_id[3][26];
-}expr_results_t;
-
-
 void init_code(code_t*code);
 
 void convert_strings(t_node*tree);
 
-void init_result_field(code_t*code, expr_results_t*results);
 
-void eval_expression(code_t*code, t_node*expr, expr_results_t*result_field);
+void eval_expression(code_t*code, t_node*expr);
 
 void fix_expr(t_node*tree);
 
@@ -56,15 +49,6 @@ void fix_expr(t_node*tree);
  * @param code Řetězcový buffer
  */
 void generate_code(t_node*tree, code_t*code);
-
-/**
- * @brief Najde hledaný label v kódu ifj21code
- * 
- * @param code code buffer
- * @param label_id Identifikátor labelu, který vyhledáváme
- * @return int index prvního znaku za odřádkováním instrukce LABEL, nebo -1 při nenalezení
- */
-int find_label(code_t*code, char*label_id);
 
 /**
  * @brief Zkontroluje první uzel syntaktického stromu a posune se dál v analýze
@@ -156,7 +140,6 @@ void field_of_visibility_id_replacement(char*id, char*new_id, t_node*tree);
  * @return Vrací 1, pokud je k nalezení v LF, jinak 0
  */
 int is_local(code_t*code, char*id);
-
 
 /**
  * @brief Zkontroluje, jestli je identifikátor k nalezení v globálním rámci GF

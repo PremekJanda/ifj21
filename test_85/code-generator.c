@@ -4,7 +4,7 @@
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	25. 11. 2021 21:20:50
+ * Last Modified:	25. 11. 2021 23:22:37
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -31,7 +31,7 @@ void generate_code(t_node*tree, code_t*code){
     strcpy(code->text.data, ".IFJcode21\n\n");
     strcat_realloc(&code->text, "# -- global variables for type checks\nDEFVAR GF@TYPE_var_1\nDEFVAR GF@TYPE_var_2\n\n");
     strcat_realloc(&code->text, "# -- result variable for conversion\nDEFVAR GF@CONVERTION_var\n\n");
-    strcat_realloc(&code->text, "# -- operand variables for expression evaluation\nDEFVAR GF@OP_EXPR1\nDEFVAR GF@OP_EXPR2\n");
+    strcat_realloc(&code->text, "# -- result variable for expression evaluation\nDEFVAR GF@EXPR_RESULT\n");
     strcat_realloc(&code->text, "# -- result variable for comparison\nDEFVAR GF@COMP_RES\nDEFVAR GF@COMP_RES2\n");
 
     strcat_realloc(&code->text, "\n\n# -- BUILT IN FUNCTIONS\n");
@@ -264,7 +264,7 @@ void function_call_gen(code_t*code, t_node*fcall_node){
     int index = 0;
     buffer_t temp; //na vytvoření názvu návratové proměnné
     buffer_init(&temp);
-    for (t_node*items = fcall_node->next[1]->next[1]->next[0]; strcmp(items->data[0].data, "eps") != 0; items = items->next[index+1])
+    for (t_node*items = fcall_node->next[2]->next[0]; strcmp(items->data[0].data, "eps") != 0; items = items->next[index+1])
     {   
         int var_id = 1;
         temp.data[0] = '\0';
@@ -315,8 +315,6 @@ void function_gen(code_t*code, t_node*function_node){
             first_went_through = false;
         }
     }
-    
-    strcat_realloc(&code->text, "\n\n");
     stmt_list_crossroad(code, function_node->next[6], function_node->next[1]->data[1].data);  
 
     strcat_realloc(&code->text, "POPFRAME\nRETURN\n");
@@ -325,9 +323,10 @@ void function_gen(code_t*code, t_node*function_node){
 void stmt_list_crossroad(code_t*code, t_node*stmt_list, char*fc_from){
     //rekurzivní podmínka
     if (stmt_list->next[0] == NULL) {
-        if (strcmp(stmt_list->next[0]->data[0].data, "eps") == 0) {
-            return;
-        }
+        return;
+    }
+    if (strcmp(stmt_list->next[0]->data[0].data, "eps") == 0) {
+        return;
     }
     t_node*stmt = stmt_list->next[0];
     if (strcmp(stmt->next[0]->data[0].data, "id") == 0){
@@ -363,12 +362,11 @@ void generate_local_decl(code_t*code, t_node*local_dec){
     char*type = local_dec->next[3]->next[0]->data[1].data; //for the type check later
     
 
-    if (strcmp(local_dec->next[4]->data[0].data, "eps") != 0) {
+    if (strcmp(local_dec->next[4]->next[0]->data[0].data, "eps") != 0) {
         t_node*aux_node = local_dec->next[4]->next[1]; //<f_or_item>
         if (strcmp(aux_node->next[0]->data[0].data, "expr") == 0) {
-            expr_results_t results; init_result_field(code, &results);
-            eval_expression(code, aux_node->next[0], &results);
-            strcat_format_realloc(&code->text, "MOVE LF@%s LF@%s\n", local_dec->next[1]->data[1].data, results.result_var_id[0]);
+            eval_expression(code, aux_node->next[0]);
+            strcat_format_realloc(&code->text, "MOVE LF@%s GF@EXPR_RESULT\n", local_dec->next[1]->data[1].data);
             END_IF_FAIL((&code->text));
         }
         else if (strcmp(aux_node->next[1]->next[0]->data[0].data, "eps") == 0) { //id copy
@@ -519,16 +517,13 @@ void generate_assignment(code_t*code, t_node*assignment){
 }
 
 void eval_condition(code_t*code, t_node*condition) {
-    expr_results_t result1; init_result_field(code, &result1);
-    expr_results_t result2; init_result_field(code ,&result2);
-
-    char*id[2];
+    char id[2][30];
     char frame[2][3];
     int op = 0; //nabyde hodnoty 2 při druhém průchodu cyklu
     for (int i = 0; i < 2; i++)
     {
         if (strcmp(condition->next[op]->next[0]->data[0].data, "id") == 0){
-            id[i] = condition->next[0]->next[0]->data[1].data;
+            strcpy(id[i], condition->next[0]->next[0]->data[1].data);
             if (is_global(code, condition->next[op]->next[0]->data[1].data) != NULL){
                 strcpy(frame[i], "GF");
             }
@@ -537,8 +532,9 @@ void eval_condition(code_t*code, t_node*condition) {
             }
         }
         else {
-            eval_expression(code, condition->next[op]->next[0], &result1);
-            id[i] = result1.result_var_id[0];
+            eval_expression(code, condition->next[op]->next[0]);
+            strcat_format_realloc(&code->text, "MOVE LF@EXPR%d GF@EXPR_RESULT\n", i+1);
+            sprintf(id[i], "EXPR%d", i+1);
             strcpy(frame[i], "LF");
         }
         op = 2;
@@ -582,7 +578,6 @@ void eval_condition(code_t*code, t_node*condition) {
     }
 }
 
-
 void generate_return(code_t*code, t_node*return_node){
     int index = 0;
     
@@ -625,27 +620,10 @@ void move_item_to_var(code_t*code, char*dest_frame, const char*dest_id, t_node*i
         buffer_destroy(&buffer);
     }
     else {
-        expr_results_t results;
-        init_result_field(code, &results);
-
-        eval_expression(code, item->next[0], &results);
-        
-        strcat_format_realloc(&code->text, "MOVE %s@%s LF@%s", dest_frame, dest_id ,results.result_var_id[1]);
+        eval_expression(code, item->next[0]);
+        strcat_format_realloc(&code->text, "MOVE %s@%s GF@EXPR_RESULT", dest_frame, dest_id);
         END_IF_FAIL((&code->text));
-        results.results[0] = false;
     }
-}
-
-void init_result_field(code_t*code, expr_results_t*results) {
-    for (int i = 0; i < 3; i++)
-    {
-        results->results[i] = false;
-        results->result_var_id[i][0] = '\0';
-
-        sprintf(results->result_var_id[i], "result%d_e%d", i+1, code->total_expr_count);
-        strcat_format_realloc(&code->text, "DEFVAR LF@%s\n", results->result_var_id[i]);
-    }
-    code->total_expr_count++;
 }
 
 char*is_global(code_t*code, char*id){
@@ -734,102 +712,50 @@ void convert_strings(t_node*tree){
     }
 }
 
-char *first_free_result(expr_results_t*result_field)
-{
-    for (int i = 0; i < 3; i++)
-    {
-        if (result_field->results[i] == false){
-            return result_field->result_var_id[i];
-        }
-    }   
-    return NULL;
-}
-
-void was_result_then_free_it(t_node*node, expr_results_t*results){
-    for (int i = 0; i < 3; i++) {
-       if (strcmp(node->data[1].data,results->result_var_id[i]) == 0){
-           results->results[i] = false; //false means free
-           return;
-        }
-    }
-}
-
-void eval_expression(code_t*code, t_node*expr, expr_results_t*result_field) {
+void eval_expression(code_t*code, t_node*expr) {
     if (expr->next_count != 1){
         if (expr->next_count == 3){ //binární operátory
-            eval_expression(code, expr->next[0], result_field);
-            eval_expression(code, expr->next[2], result_field);
+            eval_expression(code, expr->next[0]);
+            eval_expression(code, expr->next[2]);
 
-            if (expr->next[1]->data[1].data[0] == '+'){ 
-                implicite_retyping(expr->next[0], expr->next[2]);
-                strcat_format_realloc(&code->text, "MOVE GF@OP_EXPR1 nil@nil");
-                strcat_format_realloc(&code->text, "MOVE GF@OP_EXPR2 nil@nil");
-
-                
-                move_item_to_var(code, "GF", "OP_EXPR1", expr->next[0]);
-                move_item_to_var(code, "GF", "OP_EXPR2", expr->next[2]);
-
-                was_result_then_free_it(expr->next[0], result_field);
-                was_result_then_free_it(expr->next[2], result_field);
-
-                char*result = first_free_result(result_field);
-
-                strcat_format_realloc(&code->text, "ADD LF@%s GF@OP_EXPR1 GF@OP_EXPR2", result);
-                node_setdata(expr, "id", 0);
-                node_setdata(expr, result, 1);
-                node_delete(expr->next[0]);
-                node_delete(expr->next[1]);
-                node_delete(expr->next[2]);
-
-                for (int i = 0; i < 3; i++) {
-                    if (strcmp(result, result_field->result_var_id[i]) == 0) {
-                        result_field->results[i] = true; //true means used
-                    }
-                }
-                
-            }
-            else if (expr->next[1]->data[1].data[0] == '-'){
-                implicite_retyping( expr->next[0], expr->next[2]);
-            }
-            else if (expr->next[1]->data[1].data[0] == '*'){
-                implicite_retyping(expr->next[0], expr->next[2]);
-            }
-            else if (expr->next[1]->data[1].data[0] == '/'){
-                implicite_retyping(expr->next[0], expr->next[2]);
-            }
-            else if (strcmp(expr->next[1]->data[1].data, "..") == 0){
-                
-            }
+            
         }
         else if (expr->next_count == 2) { //unární operátory
-            eval_expression(code, expr->next[0], result_field);
-            if (expr->next[1]->data[1].data[0] == '#'){
-                
-            }
+            eval_expression(code, expr->next[0]);
+            
         }
     }
-    else {
-        t_tree_item*aux;
-        aux = expr->data;
-        expr->data = expr->next[0]->data;
-        expr->next[0]->data = aux;
-
-        node_delete(expr->next[0]);
-    }
-}
-
-int find_label(code_t*code, char*label_id){
-    char*label = malloc(strlen(label_id) + 7); //LABEL label_id'\0'
-    strcpy(label, "LABEL ");
-    strcat(label, label_id);
-    char*label_location = strstr(code->text.data, label);
-    free(label); //we don't need it anymore
-
-    if (label_location == NULL)
-        return -1;
-    else{
-        return label_location - code->text.data + strlen(label_id) + 7; //index of next char after \n of label
-    } 
+    else { 
+        if (strcmp(expr->next[0]->data[0].data, "id") == 0) { //na nejspodnější úrovni je identifikátor
+            char frame[3];
+            if (is_global(code, expr->next[0]->data[1].data) != NULL) {
+                strcpy(frame, "GF");
+            }
+            else {
+                strcpy(frame, "LF");
+            }
+            strcat_format_realloc(&code->text, "PUSHS %s@%s\n", frame, expr->next[0]->data[1].data); 
+            END_IF_FAIL((&code->text));
+        }
+        else { //na nejspodnější úrovni je hodnota
+            if (strcmp(expr->next[0]->data[1].data, "nil") == 0) {
+                strcat_format_realloc(&code->text, "PUSHS nil@nil\n"); 
+                END_IF_FAIL((&code->text));
+            }
+            else if (strcmp(expr->next[0]->data[0].data, "integer") == 0) {
+                strcat_format_realloc(&code->text, "PUSHS int@%s", expr->next[0]->data[1].data);
+                END_IF_FAIL((&code->text));
+            } 
+            else if (strcmp(expr->next[0]->data[0].data, "number") == 0){
+                strcat_format_realloc(&code->text, "PUSHS float@%a", strtof(expr->next[0]->data[1].data, NULL));
+                END_IF_FAIL((&code->text));
+            }
+            else if (strcmp(expr->next[0]->data[0].data, "string") == 0){
+                strcat_format_realloc(&code->text, "PUSHS string@%s", expr->next[0]->data[1].data);
+                END_IF_FAIL((&code->text));
+            }
+        }
+    }   
 }
 
 void free_memory_then_quit(int return_code) {
