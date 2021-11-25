@@ -2,7 +2,7 @@
  *  Soubor: semantic.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	25. 11. 2021 16:13:11
+ *  Poslední změna:	25. 11. 2021 20:59:40
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -207,7 +207,7 @@ int process_cond(t_node *node, stack_t *symtable);
  */
 int process_decl_local(t_node *node, stack_t *symtable);
 
-int process_f_or_item_list();
+int process_assign_or_fcall(t_node *node, stack_t *symtable, def_table_t *deftable);
 
 
 int process_types(t_node *node, fce_item_t **item);
@@ -248,6 +248,102 @@ int add_var_to_symtable(key_t type, key_t attribute, key_t value, bool local, st
 int add_scope_to_symtable(stack_t *symtable);
 
 int add_f_to_table();
+
+
+#define GENERATE_BUILTIN_FUNCTIONS() \
+    htab_item_t *item; \
+    \
+    /* function reads() : string */ \
+    ALLOC_STR(type_reads_string, "") \
+    ALLOC_STR(value_reads_string, "") \
+    ALLOC_STR(reads, "reads") \
+    ALLOC_STR(reads_string, "string") \
+    def_table_add("reads", deftable, 1); \
+    item = htab_lookup_add(symtable->stack[0], type_reads_string, reads, value_reads_string, 0, 0); \
+    fce_item_push(&(item->fce), reads_string); \
+    item->ret_values = 1; \
+    \
+    /* function readi() : integer */ \
+    ALLOC_STR(type_readi_integer, "") \
+    ALLOC_STR(value_readi_integer, "") \
+    ALLOC_STR(readi, "readi") \
+    ALLOC_STR(readi_integer, "integer") \
+    def_table_add("readi", deftable, 1); \
+    item = htab_lookup_add(symtable->stack[0], type_readi_integer, readi, value_readi_integer, 0, 0); \
+    fce_item_push(&(item->fce), readi_integer); \
+    item->ret_values = 1; \
+    \
+    /* function readn() : number */ \
+    ALLOC_STR(type_readn_number, "") \
+    ALLOC_STR(value_readn_number, "") \
+    ALLOC_STR(readn, "readn") \
+    ALLOC_STR(readn_number, "number") \
+    def_table_add("readn", deftable, 1); \
+    item = htab_lookup_add(symtable->stack[0], type_readn_number, readn, value_readn_number, 0, 0); \
+    fce_item_push(&(item->fce), readn_number); \
+    item->ret_values = 1; \
+    \
+    /* function write ( term 1 , term 2 , ... , term n ) */ \
+    ALLOC_STR(type_write_, "") \
+    ALLOC_STR(value_write_, "") \
+    ALLOC_STR(write, "write") \
+    def_table_add("write", deftable, 1); \
+    item = htab_lookup_add(symtable->stack[0], type_write_, write, value_write_, 0, 0); \
+    item->ret_values = 0; \
+    \
+    /* function tointeger( f : number) : integer */ \
+    ALLOC_STR(type_tointeger_integer, "") \
+    ALLOC_STR(value_tointeger_integer, "") \
+    ALLOC_STR(tointeger, "tointeger") \
+    ALLOC_STR(tointeger_integer, "integer") \
+    ALLOC_STR(tointeger_f, "number") \
+    def_table_add("tointeger", deftable, 1); \
+    item = htab_lookup_add(symtable->stack[0], type_tointeger_integer, tointeger, value_tointeger_integer, 0, 0); \
+    fce_item_push(&(item->fce), tointeger_integer); \
+    fce_item_push(&(item->fce), tointeger_f); \
+    item->ret_values = 1; \
+    \
+    /* function substr( s : string, i : number, j : number) : string */ \
+    ALLOC_STR(type_substr_string, "") \
+    ALLOC_STR(value_substr_string, "") \
+    ALLOC_STR(substr, "substr") \
+    ALLOC_STR(substr_string, "string") \
+    ALLOC_STR(substr_s, "string") \
+    ALLOC_STR(substr_i, "number") \
+    ALLOC_STR(substr_j, "number") \
+    def_table_add("substr", deftable, 1); \
+    item = htab_lookup_add(symtable->stack[0], type_substr_string, substr, value_substr_string, 0, 0); \
+    fce_item_push(&(item->fce), substr_string); \
+    fce_item_push(&(item->fce), substr_s); \
+    fce_item_push(&(item->fce), substr_i); \
+    fce_item_push(&(item->fce), substr_j); \
+    item->ret_values = 1; \
+    \
+    /* function ord( s : string, i : integer) : integer */ \
+    ALLOC_STR(type_ord_integer, "") \
+    ALLOC_STR(value_ord_integer, "") \
+    ALLOC_STR(ord, "ord") \
+    ALLOC_STR(ord_integer, "integer") \
+    ALLOC_STR(ord_s, "string") \
+    ALLOC_STR(ord_i, "integer") \
+    def_table_add("ord", deftable, 1); \
+    item = htab_lookup_add(symtable->stack[0], type_ord_integer, ord, value_ord_integer, 0, 0); \
+    fce_item_push(&(item->fce), ord_integer); \
+    fce_item_push(&(item->fce), ord_s); \
+    fce_item_push(&(item->fce), ord_i); \
+    item->ret_values = 1; \
+    \
+    /* function chr( i : integer) : string */ \
+    ALLOC_STR(type_chr_string, "") \
+    ALLOC_STR(value_chr_string, "") \
+    ALLOC_STR(chr, "chr") \
+    ALLOC_STR(chr_string, "string") \
+    ALLOC_STR(chr_i, "integer") \
+    def_table_add("chr", deftable, 1); \
+    item = htab_lookup_add(symtable->stack[0], type_chr_string, chr, value_chr_string, 0, 0); \
+    fce_item_push(&(item->fce), chr_string); \
+    fce_item_push(&(item->fce), chr_i); \
+    item->ret_values = 1;
 
 
 #endif // __SEMANTIC_H__

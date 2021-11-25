@@ -180,6 +180,8 @@ int syntax_analyzer(t_node *tree)
     
     tToken *token = token_init();
     tToken *token_backup = token_init();
+    if (token_backup == NULL)
+        return 99;
     char *backup = "";
     return_code = scanner(token);
 
