@@ -1,0 +1,29 @@
+<prog>
+	<main-list>
+	|	<main-list>
+	|		eps
+	|	<def-decl-fcall>
+	|		<f-or-type>
+	|		|	<decl-assign>
+	|		|		<item>
+	|		|		=
+	|		|		|	expr
+	|		|	<type>
+	|		|		string
+	|		:
+	|		jméno_proměnné
+	|		global
+	ifj21
+	require
+
+
+(((<def-decl-fcall>))) ((()))
+(((keyword))) (((global)))
+global var initialization
+[36 33][36 m m 33]
+ERRCODE: 1
+
+ERRCODE: 1
+
+Table of DEFINED or DECLARED FUNCTIONS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

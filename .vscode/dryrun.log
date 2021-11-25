@@ -1,5 +1,5 @@
-make lexikon --dry-run --keep-going --print-directory
-make: Entering directory '/home/koci/Projekty/IFJ'
-make: 'lexikon' is up to date.
-make: Leaving directory '/home/koci/Projekty/IFJ'
+make all --dry-run --keep-going --print-directory
+make: Entering directory '/home/rbabek/IFJ/ifj21'
+gcc -std=c99 -g -Wall -Wextra -pedantic -lm -o lexikon lexikon.c
+make: Leaving directory '/home/rbabek/IFJ/ifj21'
  

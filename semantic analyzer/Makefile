@@ -1,7 +1,7 @@
 # Soubor: Makefile
 #
 # Předmět: IJC - Projekt 2
-# Datum poslední změny:17. 11. 2021 14:03:29
+# Datum poslední změny:	22. 11. 2021 19:47:01
 # Autor: Přemek Janda - xjanda28, VUT FIT
 # Popis: Program MAKEFILE pro překlad všech potřebných souborů
 
@@ -33,7 +33,7 @@ run:
 
 test:
 	@ $(MAKE) --no-print-directory
-	@ valgrind --leak-check=full --show-leak-kinds=all ./semantic < ../tests/test_sem_1.tl >_out.txt 2> _val.valgrind
+	@ valgrind --leak-check=full --show-leak-kinds=all ./semantic >_out.txt 2> _val.valgrind
 # multiple files at once
 # @ valgrind ./semantic < cat(../test/test_sem_1 ../test/test_sem_2 ../test/test_sem_3) >_out.txt 2> _val.valgrind
 

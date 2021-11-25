@@ -1,13 +1,10 @@
 /**
  * @file mystring.c
- * @authors David Kocman  - xkocma08, VUT FIT
- *          Radomír Bábek - xbabek02, VUT FIT
- *          Martin Ohnút  - xohnut01, VUT FIT
- *          Přemek Janda  - xjanda28, VUT FIT
+ * @author Radomír Bábek - xbabek02, VUT FIT
  * @brief Small library of functions, that work with string buffers
  * @version 0.1
  * @date 2021-11-13
- * Last modified:	25. 11. 2021 01:52:26
+ * Last modified:	25. 11. 2021 02:21:18
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -197,5 +194,5 @@ int append_file(buffer_t*buffer, char*filename) {
         strcat_realloc(buffer, row);
     }
 
-    
+    return 0;    
 }

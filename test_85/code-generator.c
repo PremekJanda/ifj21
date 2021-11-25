@@ -1,13 +1,10 @@
 /**
  * @file code-generator.c
- * @authors David Kocman  - xkocma08, VUT FIT
- *          Radomír Bábek - xbabek02, VUT FIT
- *          Martin Ohnút  - xohnut01, VUT FIT
- *          Přemek Janda  - xjanda28, VUT FIT
+ * @authors Radomír Bábek - xbabek02, VUT FIT
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	25. 11. 2021 01:45:17
+ * Last Modified:	25. 11. 2021 02:16:41
  * 
  * @copyright Copyright (c) 2021
  * 

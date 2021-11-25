@@ -1,0 +1,14 @@
+{
+    "makefile.extensionOutputFolder": "./.vscode",
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/rbabek/IFJ/ifj21/semantic analyzer",
+            "binaryPath": "/home/rbabek/IFJ/ifj21/semantic analyzer/semantic",
+            "binaryArgs": []
+        }
+    ],
+    "files.associations": {
+        "*.vhd": "c",
+        "type_traits": "c"
+    }
+}

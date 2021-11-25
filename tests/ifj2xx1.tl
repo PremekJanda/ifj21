@@ -94,4 +94,11 @@ function chr(i : integer) : string
 end
 
 -- Zde bude nasledovat program jazyka IFJ21
+require "ifj21"
 
+global c : integer = 5
+function foo ()
+  write(c)
+end
+
+foo()
