@@ -7,7 +7,7 @@
  * @brief Small library of functions, that work with string buffers
  * @version 0.1
  * @date 2021-11-13
- * Last modified:	23. 11. 2021 01:35:47
+ * Last modified:	23. 11. 2021 23:03:35
  * 
  * @copyright Copyright (c) 2021
  * 

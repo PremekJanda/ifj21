@@ -1,0 +1,5 @@
+/usr/bin/make --dry-run --keep-going --print-directory
+make: Entering directory '/home/premekjanda/School/2BIT_1/IFJ/ifj21/test_85'
+gcc -std=c99 -pedantic -Wall -Wextra -g compiler.o lexikon.o parser.o table.o stack.o tree.o semantic.o symtable.o -o compiler
+make: Leaving directory '/home/premekjanda/School/2BIT_1/IFJ/ifj21/test_85'
+ 
