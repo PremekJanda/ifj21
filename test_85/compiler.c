@@ -2,7 +2,7 @@
  *  Soubor: compiler.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	25. 11. 2021 01:11:58
+ *  Last modified:	25. 11. 2021 02:09:13
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -40,7 +40,7 @@ int main() {
     if (!error_code)
         return error_code;
 
-    // TODO
+    // generování kódu
     // code_generation();
     
     // uvolnění alokované paměti
