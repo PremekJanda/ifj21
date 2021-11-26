@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	26. 11. 2021 05:35:06
+ *  Last modified:	26. 11. 2021 06:43:43
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -258,9 +258,7 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
         return sem_type;
         
     } else if (node->next_count == 1) {
-        eval_expr_type(node->next[0], value, type, symtable);
-        return SEM_OK;
-
+        return eval_expr_type(node->next[0], value, type, symtable);
     } else if (node->next_count == 0) {
         free(*value);
         free(*type);
@@ -279,7 +277,6 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
                 ALLOC_STR(t, item->type)
                 ALLOC_STR(v, item->value)
 
-
                 UPDATE_EXPR(SEM_OK)
 
             // proměnná nebyla nalezena -> chyba
@@ -296,9 +293,13 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
 }
 
 
-// TODO eval_list_eq(fce_item_t **dest, fce_item_t **src)
+int eval_list_eq(fce_item_t *dest, fce_item_t *src) {
+    (void *)dest;    (void *)src;
+}
 
-// TODO eval_list_ret_assign(fce_item_t **dest, fce_item_t **src)
+int eval_list_ret_assign(fce_item_t *dest, fce_item_t *src) {
+    (void *)dest;    (void *)src;
+}
 
 
 // - - - - - - - - - - - - - - - - - - - //
@@ -527,7 +528,16 @@ int process_assign_or_fcall(t_node *node, stack_t *symtable, def_table_t *deftab
     
     // je volána funkce bez potřeby kontrolovat návratové hodnoty
     if (!strcmp(node->next[0]->data[0].data, "(")) {
-        // f_call();
+        fce_item_t *param_list = malloc(sizeof(fce_item_t));
+        param_list = NULL;
+
+        return_signal = process_param_list(node->next[1], &param_list, symtable);
+        
+        fce_free(param_list);
+        return return_signal;
+        
+
+        fce_print(param_list, 99);
 
     // jedná se o přiřazení
     } else {
@@ -608,7 +618,6 @@ int process_id_list(t_node *node, fce_item_t **item, stack_t *symtable) {
         (i) = (i)->next_f_item;
     } 
 
-    fce_print(*item, 99);
 
     printf("%s", "success id-list\n");
     
@@ -618,7 +627,6 @@ int process_id_list(t_node *node, fce_item_t **item, stack_t *symtable) {
 int process_f_or_item_list(t_node *node, fce_item_t **item, stack_t *symtable) {
     printf("%s", "process f-or-item-list\n");
     
-    tree_print(*node, 0);
     // printf("ROOTNODE: %s %s %d ~~~\n", node->data[0].data, node->data[1].data, node->next_count);
     // printf("NEXT: %s %s %d ~~~\n", node->next[0]->data[0].data, node->next[0]->data[1].data, node->next[0]->next_count);
 
@@ -658,12 +666,10 @@ int process_f_or_item_list(t_node *node, fce_item_t **item, stack_t *symtable) {
 
             free(value);
             
-            fce_print(*item, 99);
             // pokračuje se dalšími prvky
             _ERR() process_item_another(node->next[1], item, symtable)              ERR_()
     }
 
-    fce_print(*item, 99);
     printf("%s", "success f-or-item-list\n");
     
     return SEM_OK;
@@ -674,20 +680,31 @@ int process_param_list(t_node *node, fce_item_t **item, stack_t *symtable) {
     // parametry funkce jsou prázdné
     if (!strcmp(node->next[0]->data[0].data, "eps"))
         return SEM_OK;
-
-    tree_print(*node->next[0]->next[0]->next[0], 10);
-    key_t id;
-    if ((id = get_var_type((key_t)node->next[0]->next[0]->next[0]->data[1].data, symtable)) != NULL) {
-        ALLOC_STR(type, id)
+    
+    if (!strcmp(node->next[0]->next[0]->next[0]->data[0].data, "expr")) {
+        key_t value = NULL, type = NULL;
+        if ((return_signal = eval_expr_type(node->next[0]->next[0]->next[0], &value, &type, symtable))) {
+            free(value);
+            free(type);
+            return return_signal;
+        }
+        free(value);
         fce_item_push(item, type);
+        
     } else {
-        return SEM_DEFINE;
+        key_t id;
+        if ((id = get_var_type((key_t)node->next[0]->next[0]->next[0]->data[1].data, symtable)) != NULL) {
+            ALLOC_STR(type, id)
+            fce_item_push(item, type);
+        } else {
+            return SEM_DEFINE;
+        }
     }
+
     
     // pokračuje se na item another
     _ERR() process_item_another(node->next[0]->next[1], item, symtable)        ERR_()
 
-    fce_print(*item, 99);
     printf("%s", "success param-list\n");
     
     return SEM_OK;
@@ -712,14 +729,11 @@ int process_item_another(t_node *node, fce_item_t **item, stack_t *symtable) {
             key_t type = NULL;
             key_t value = NULL;
 
-            int err_code;
-            // TODO z nějakého důvodu se nevrací hodnota
-            if ((err_code = eval_expr_type(node->next[1]->next[0], &value, &type, symtable)) != 0 || !strcmp(type, "id")) {
-                err_code = (!strcmp(type, "id")) ? SEM_DEFINE : err_code;
+            if ((return_signal = eval_expr_type(node->next[1]->next[0], &value, &type, symtable)) != 0) {
                 free(type);
                 free(value);
                 
-                return err_code;
+                return return_signal;
             }
 
             fce_item_push(item, type);
@@ -729,7 +743,6 @@ int process_item_another(t_node *node, fce_item_t **item, stack_t *symtable) {
         node = node->next[2];
     }
     
-    fce_print(*item, 99);
     printf("%s", "success item-another\n");
     
     return SEM_OK;
