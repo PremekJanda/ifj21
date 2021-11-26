@@ -1,7 +1,7 @@
 # Soubor: Makefile
 #
 # Předmět: IJC - Projekt 2
-# Datum poslední změny:	25. 11. 2021 23:43:07
+# Datum poslední změny:	26. 11. 2021 09:16:28
 # Autor: Přemek Janda - xjanda28, VUT FIT
 # Popis: Program MAKEFILE pro překlad všech potřebných souborů
 
@@ -35,7 +35,7 @@ test:
 	@ echo "Make test done"
 	
 zip:
-	zip xkocma08.zip *.c *.h precedence.txt rules.txt tabulka.txt Makefile
+	zip xkocma08.zip *.c *.h precedence.txt rules.txt tabulka.txt Makefile built_in.fc
 
 clean:
 	@ rm -f *.o *.zip compiler _out.txt _val.valgrind vgcore.*
