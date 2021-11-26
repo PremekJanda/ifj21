@@ -4,7 +4,7 @@
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	26. 11. 2021 09:11:57
+ * Last Modified:	26. 11. 2021 10:05:42
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -45,7 +45,7 @@ void generate_code(t_node*tree, code_t*code){
     ht_table_t ht_already_processed;
     ht_init(&ht_already_processed);
 
-    fix_expr(tree);
+    //fix_expr(tree);
     convert_strings(tree);
 
     int depth = 0;
@@ -54,7 +54,7 @@ void generate_code(t_node*tree, code_t*code){
     char*fc = NULL;
 
     rename_all_id(tree, &ht_already_processed, &fc, &depth, &depth_total);
-
+    //convert_write(code, tree);
 
     ht_delete_all(&ht_already_processed);
 
@@ -423,8 +423,8 @@ void generate_while(code_t*code, t_node*while_node, char*fc){
     buffer_t while_label; buffer_init(&while_label);
     buffer_t end_label; buffer_init(&end_label);
 
-    strcat_format_realloc(&while_label, "WHILE%d_%s\n", code->total_conditionals_count, fc);
-    strcat_format_realloc(&end_label, "END_WHILE%d_%s\n", code->total_conditionals_count, fc);
+    strcat_format_realloc(&while_label, "WHILE%d_%s", code->total_conditionals_count, fc);
+    strcat_format_realloc(&end_label, "END_WHILE%d_%s", code->total_conditionals_count, fc);
 
     code->total_conditionals_count++;
 
@@ -432,7 +432,7 @@ void generate_while(code_t*code, t_node*while_node, char*fc){
 
     strcat_format_realloc(&code->text, "\n # --- while start\nLABEL %s\n", while_label.data);
     eval_condition(code, while_node->next[1]);
-    strcat_format_realloc(&code->text, "JUMPIFNEQ %s GF@COMP_RER bool@true\n", end_label.data);
+    strcat_format_realloc(&code->text, "JUMPIFNEQ %s GF@COMP_RES bool@true\n", end_label.data);
     stmt_list_crossroad(code, while_node->next[3], fc);
     
     strcat_format_realloc(&code->text, "\n\nJUMP %s\nLABEL %s\n", while_label.data, end_label.data);

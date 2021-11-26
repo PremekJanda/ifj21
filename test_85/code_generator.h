@@ -4,7 +4,7 @@
  * @brief Hlavičkový soubor funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	26. 11. 2021 09:12:03
+ * Last Modified:	26. 11. 2021 10:07:30
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -150,6 +150,8 @@ int is_local(code_t*code, char*id);
  * @return booleovskou hodnotu
  */
 bool is_global(char*id);
+
+//convert_write(code_t*code, t_node*tree);
 
 void generate_assignment(code_t*code, t_node*assignment);
 
