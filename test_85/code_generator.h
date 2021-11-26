@@ -4,7 +4,7 @@
  * @brief Hlavičkový soubor funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	25. 11. 2021 23:39:28
+ * Last Modified:	26. 11. 2021 09:12:03
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -128,8 +128,10 @@ void rename_all_id(t_node* tree, ht_table_t*ht_already_processed, char**fc, int*
  * @param id Název identifikátoru k nalezení v syntaktickém stromu
  * @param new_id Nový unikátní identifikátor
  * @param tree Syntaktický strom
+ * 
+ * @return -1 pokud má přestat rekurzivní volání funkce nad všemi potomky
  */
-void field_of_visibility_id_replacement(char*id, char*new_id, t_node*tree);
+int field_of_visibility_id_replacement(char*id, char*new_id, t_node*tree);
 
 /**
  * @brief Zkontroluje, jestli je identifikátor k nalezení v lokální rámci LF
@@ -141,13 +143,13 @@ void field_of_visibility_id_replacement(char*id, char*new_id, t_node*tree);
 int is_local(code_t*code, char*id);
 
 /**
- * @brief Zkontroluje, jestli je identifikátor k nalezení v globálním rámci GF
+ * @brief Zjistí, jestli je proměnná globální, funguje pouze na názvy proměnných ze syntaktického stromu
  * 
  * @param code Ifj21Code kód
  * @param id Identifikátor proměnné
- * @return Ukazatel na definici proměnné, nebo NULL pokud není proměnná k nalezení v GF
+ * @return booleovskou hodnotu
  */
-char*is_global(code_t*code, char*id);
+bool is_global(char*id);
 
 void generate_assignment(code_t*code, t_node*assignment);
 
