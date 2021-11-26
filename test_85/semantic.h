@@ -2,7 +2,7 @@
  *  Soubor: semantic.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	26. 11. 2021 08:39:26
+ *  Poslední změna:	26. 11. 2021 09:13:15
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -95,6 +95,8 @@
 #define TEMP_VARS() \
     t_node *curr = node->next[0]; \
     t_node *next = node->next[0]->next[0]; \
+    (void)curr; \
+    (void)next;
 
     // printf("curr: %s\n", curr->data[1].data);
     // printf("next: %s\n", next->data[1].data);
