@@ -4,7 +4,7 @@
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	26. 11. 2021 10:19:46
+ * Last Modified:	27. 11. 2021 12:49:48
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -45,13 +45,9 @@ void generate_code(t_node*tree, code_t*code){
     ht_table_t ht_already_processed;
     ht_init(&ht_already_processed);
 
-    tree_print(*tree, 0);
-
     fix_expr(tree);
     convert_strings(tree);
-
-    tree_print(*tree, 0);
-
+    
     int depth = 0;
     int depth_total = 0;
 

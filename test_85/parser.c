@@ -290,5 +290,6 @@ int syntax_analyzer(t_node *tree)
     free(token);
     free(next_count_stack1);
     free(next_count_stack2);
+    if (return_code) printf("ERRCODE: %d\n", return_code);
     return return_code;
 }

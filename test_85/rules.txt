@@ -15,7 +15,7 @@ expr <item-another>
 id <fcall-or-item-list>
 ( <param-list> )
 <item-another>
-id <id-list>
+, id <id-list>
 eps
 id
 expr

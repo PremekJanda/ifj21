@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	26. 11. 2021 09:17:29
+ *  Last modified:	26. 11. 2021 23:36:07
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -40,6 +40,15 @@ int return_signal = SEM_OK;
     
 //     return SEM_OK;
 // }
+
+// TODO po dělení je výsledek number
+// TODO 
+// TODO 
+// TODO 
+// TODO 
+// TODO 
+// TODO 
+// TODO 
 
 
 
@@ -456,7 +465,7 @@ int process_stmt_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
 
     while (node->next_count != 1 && node->next_count != 0) {
         TEMP_VARS()
-
+        
         if (!strcmp(next->data[0].data, "<decl-local>")) {
             // printf("local variable declaration/initialization\n");
             _ERR() is_id_used_locally(next->next[1]->data[1].data, symtable, *deftable)     ERR_()
@@ -469,12 +478,12 @@ int process_stmt_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
             // printf("while\n");
 
             _ERR() process_cond(curr->next[0]->next[1], symtable)                                               ERR_()
-            _ERR() process_while(curr, symtable, deftable)                          ERR_()
+            _ERR() process_while(curr->next[0], symtable, deftable)                          ERR_()
             
         } else if (!strcmp(next->data[0].data, "<if>")) {
             // printf("if\n");
             _ERR() process_cond(curr->next[0]->next[1], symtable)                   ERR_()
-            _ERR() process_if(curr, symtable, deftable)                             ERR_()
+            _ERR() process_if(curr->next[0], symtable, deftable)                             ERR_()
 
         } else if (!strcmp(next->data[0].data, "<return>")) {
             // printf("function returns\n");
@@ -492,9 +501,7 @@ int process_stmt_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
 
 // TODO
 int process_while(t_node *node, stack_t *symtable, def_table_t *deftable) {
-    (void)node;
-    (void)symtable;
-    (void)deftable;
+    _ERR() process_stmt_list(node->next[3], symtable, deftable)         ERR_()
 
     // _ERR() add_scope_to_symtable(symtable)                                      ERR_()
 
@@ -503,9 +510,8 @@ int process_while(t_node *node, stack_t *symtable, def_table_t *deftable) {
 
 // TODO
 int process_if(t_node *node, stack_t *symtable, def_table_t *deftable) {
-    (void)node;
-    (void)symtable;
-    (void)deftable;
+    _ERR() process_stmt_list(node->next[3], symtable, deftable)         ERR_()
+    _ERR() process_stmt_list(node->next[5], symtable, deftable)         ERR_()
 
     // _ERR() add_scope_to_symtable(symtable)                                      ERR_()
 
@@ -550,12 +556,13 @@ int process_decl_local(t_node *node, stack_t *symtable) {
         // vyhodnocení, zda jsou všechny prvky expr stejného typu
         key_t assign_type = NULL;
         
+        // TODOHNED
         // vyhodnocení typů přiřazovaných hodnot
         if (eval_expr_type(next->next[4]->next[1]->next[0], &value, &assign_type, symtable)) {
             FREE_VAR_DECL()
             return SEM_TYPE;
         }
-
+        
         // provede se typová kontrola nad přiřazením
         if (strcmp(type, assign_type)) {
             FREE_VAR_DECL()
@@ -722,6 +729,7 @@ int process_f_or_item_list(t_node *node, fce_item_t **item, stack_t *symtable, d
             key_t type = NULL;
             key_t value = NULL;
 
+            // TODOHNED
             if (eval_expr_type(node->next[0], &value, &type, symtable)) {
                 free(type);
                 free(value);
@@ -1039,7 +1047,8 @@ int semantic(t_node *root_node) {
         if (!return_signal)
             return_signal = eval_fcall(*deftable);
 
-        // printf("\nERRCODE: %d\n", return_signal);
+        if (return_signal) 
+            printf("ERRCODE: %d\n", return_signal);
 
         // * PRINT
         //def_table_print(*deftable);

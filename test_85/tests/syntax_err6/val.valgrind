@@ -1,0 +1,303 @@
+==1026361== Memcheck, a memory error detector
+==1026361== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1026361== Using Valgrind-3.16.1 and LibVEX; rerun with -h for copyright info
+==1026361== Command: ./compiler
+==1026361== 
+==1026361== Conditional jump or move depends on uninitialised value(s)
+==1026361==    at 0x409C29: fix_expr.part.0 (code_generator.c:95)
+==1026361==    by 0x409BF3: fix_expr (code_generator.c:86)
+==1026361==    by 0x409BF3: fix_expr.part.0 (code_generator.c:108)
+==1026361==    by 0x409BF3: fix_expr (code_generator.c:86)
+==1026361==    by 0x409BF3: fix_expr.part.0 (code_generator.c:108)
+==1026361==    by 0x409BF3: fix_expr (code_generator.c:86)
+==1026361==    by 0x409BF3: fix_expr.part.0 (code_generator.c:108)
+==1026361==    by 0x409BF3: fix_expr (code_generator.c:86)
+==1026361==    by 0x409BF3: fix_expr.part.0 (code_generator.c:108)
+==1026361==    by 0x409BF3: fix_expr (code_generator.c:86)
+==1026361==    by 0x409BF3: fix_expr.part.0 (code_generator.c:108)
+==1026361==    by 0x409BF3: fix_expr (code_generator.c:86)
+==1026361==    by 0x409BF3: fix_expr.part.0 (code_generator.c:108)
+==1026361==    by 0x409BF3: fix_expr (code_generator.c:86)
+==1026361==    by 0x409BF3: fix_expr.part.0 (code_generator.c:108)
+==1026361==    by 0x409BF3: fix_expr (code_generator.c:86)
+==1026361==    by 0x409BF3: fix_expr.part.0 (code_generator.c:108)
+==1026361==    by 0x409BF3: fix_expr (code_generator.c:86)
+==1026361==    by 0x409BF3: fix_expr.part.0 (code_generator.c:108)
+==1026361==    by 0x409BF3: fix_expr (code_generator.c:86)
+==1026361==    by 0x409BF3: fix_expr.part.0 (code_generator.c:108)
+==1026361==    by 0x409BF3: fix_expr (code_generator.c:86)
+==1026361==    by 0x409BF3: fix_expr.part.0 (code_generator.c:108)
+==1026361== 
+==1026361== Invalid read of size 1
+==1026361==    at 0x483DB86: strlen (vg_replace_strmem.c:459)
+==1026361==    by 0x48E574D: __vfprintf_internal (in /usr/lib64/libc-2.31.so)
+==1026361==    by 0x48F7809: __vsnprintf_internal (in /usr/lib64/libc-2.31.so)
+==1026361==    by 0x409511: strcat_format_realloc (mystring.c:124)
+==1026361==    by 0x40A3CD: rename_all_id (code_generator.c:151)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40C5AC: generate_code (code_generator.c:56)
+==1026361==  Address 0x4ac13e0 is 0 bytes inside a block of size 5 free'd
+==1026361==    at 0x483B9F5: free (vg_replace_malloc.c:538)
+==1026361==    by 0x4045F2: node_setdata (tree.c:37)
+==1026361==    by 0x40A1EF: rename_all_id (code_generator.c:158)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40C5AC: generate_code (code_generator.c:56)
+==1026361==    by 0x40127A: main (compiler.c:44)
+==1026361==  Block was alloc'd at
+==1026361==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==1026361==    by 0x40460A: node_setdata (tree.c:40)
+==1026361==    by 0x403173: syntax_analyzer (parser.c:255)
+==1026361==    by 0x40123D: main (compiler.c:26)
+==1026361== 
+==1026361== Invalid read of size 1
+==1026361==    at 0x483DB94: strlen (vg_replace_strmem.c:459)
+==1026361==    by 0x48E574D: __vfprintf_internal (in /usr/lib64/libc-2.31.so)
+==1026361==    by 0x48F7809: __vsnprintf_internal (in /usr/lib64/libc-2.31.so)
+==1026361==    by 0x409511: strcat_format_realloc (mystring.c:124)
+==1026361==    by 0x40A3CD: rename_all_id (code_generator.c:151)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40C5AC: generate_code (code_generator.c:56)
+==1026361==  Address 0x4ac13e1 is 1 bytes inside a block of size 5 free'd
+==1026361==    at 0x483B9F5: free (vg_replace_malloc.c:538)
+==1026361==    by 0x4045F2: node_setdata (tree.c:37)
+==1026361==    by 0x40A1EF: rename_all_id (code_generator.c:158)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40C5AC: generate_code (code_generator.c:56)
+==1026361==    by 0x40127A: main (compiler.c:44)
+==1026361==  Block was alloc'd at
+==1026361==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==1026361==    by 0x40460A: node_setdata (tree.c:40)
+==1026361==    by 0x403173: syntax_analyzer (parser.c:255)
+==1026361==    by 0x40123D: main (compiler.c:26)
+==1026361== 
+==1026361== Invalid read of size 1
+==1026361==    at 0x48FCC50: _IO_default_xsputn (in /usr/lib64/libc-2.31.so)
+==1026361==    by 0x48E3C16: __vfprintf_internal (in /usr/lib64/libc-2.31.so)
+==1026361==    by 0x48F7809: __vsnprintf_internal (in /usr/lib64/libc-2.31.so)
+==1026361==    by 0x409511: strcat_format_realloc (mystring.c:124)
+==1026361==    by 0x40A3CD: rename_all_id (code_generator.c:151)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40C5AC: generate_code (code_generator.c:56)
+==1026361==  Address 0x4ac13e0 is 0 bytes inside a block of size 5 free'd
+==1026361==    at 0x483B9F5: free (vg_replace_malloc.c:538)
+==1026361==    by 0x4045F2: node_setdata (tree.c:37)
+==1026361==    by 0x40A1EF: rename_all_id (code_generator.c:158)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40C5AC: generate_code (code_generator.c:56)
+==1026361==    by 0x40127A: main (compiler.c:44)
+==1026361==  Block was alloc'd at
+==1026361==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==1026361==    by 0x40460A: node_setdata (tree.c:40)
+==1026361==    by 0x403173: syntax_analyzer (parser.c:255)
+==1026361==    by 0x40123D: main (compiler.c:26)
+==1026361== 
+==1026361== Invalid read of size 1
+==1026361==    at 0x48FCC5F: _IO_default_xsputn (in /usr/lib64/libc-2.31.so)
+==1026361==    by 0x48E3C16: __vfprintf_internal (in /usr/lib64/libc-2.31.so)
+==1026361==    by 0x48F7809: __vsnprintf_internal (in /usr/lib64/libc-2.31.so)
+==1026361==    by 0x409511: strcat_format_realloc (mystring.c:124)
+==1026361==    by 0x40A3CD: rename_all_id (code_generator.c:151)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40C5AC: generate_code (code_generator.c:56)
+==1026361==  Address 0x4ac13e2 is 2 bytes inside a block of size 5 free'd
+==1026361==    at 0x483B9F5: free (vg_replace_malloc.c:538)
+==1026361==    by 0x4045F2: node_setdata (tree.c:37)
+==1026361==    by 0x40A1EF: rename_all_id (code_generator.c:158)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40C5AC: generate_code (code_generator.c:56)
+==1026361==    by 0x40127A: main (compiler.c:44)
+==1026361==  Block was alloc'd at
+==1026361==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==1026361==    by 0x40460A: node_setdata (tree.c:40)
+==1026361==    by 0x403173: syntax_analyzer (parser.c:255)
+==1026361==    by 0x40123D: main (compiler.c:26)
+==1026361== 
+==1026361== Conditional jump or move depends on uninitialised value(s)
+==1026361==    at 0x40C60A: generate_code (code_generator.c:75)
+==1026361==    by 0x40127A: main (compiler.c:44)
+==1026361== 
+==1026361== 
+==1026361== HEAP SUMMARY:
+==1026361==     in use at exit: 9,304 bytes in 19 blocks
+==1026361==   total heap usage: 5,945 allocs, 5,926 frees, 251,183 bytes allocated
+==1026361== 
+==1026361== 2 bytes in 1 blocks are indirectly lost in loss record 1 of 13
+==1026361==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==1026361==    by 0x404661: node_setdata (tree.c:47)
+==1026361==    by 0x4028B3: bottom_up (parser.c:130)
+==1026361==    by 0x403286: syntax_analyzer (parser.c:250)
+==1026361==    by 0x40123D: main (compiler.c:26)
+==1026361== 
+==1026361== 5 bytes in 1 blocks are indirectly lost in loss record 2 of 13
+==1026361==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==1026361==    by 0x40460A: node_setdata (tree.c:40)
+==1026361==    by 0x4028B3: bottom_up (parser.c:130)
+==1026361==    by 0x403286: syntax_analyzer (parser.c:250)
+==1026361==    by 0x40123D: main (compiler.c:26)
+==1026361== 
+==1026361== 18 bytes in 1 blocks are definitely lost in loss record 3 of 13
+==1026361==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==1026361==    by 0x40A118: rename_all_id (code_generator.c:114)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40C5AC: generate_code (code_generator.c:56)
+==1026361==    by 0x40127A: main (compiler.c:44)
+==1026361== 
+==1026361== 19 bytes in 1 blocks are definitely lost in loss record 4 of 13
+==1026361==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==1026361==    by 0x40A118: rename_all_id (code_generator.c:114)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40C5AC: generate_code (code_generator.c:56)
+==1026361== 
+==1026361== 39 (32 direct, 7 indirect) bytes in 1 blocks are definitely lost in loss record 5 of 13
+==1026361==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==1026361==    by 0x40457F: node_init (tree.c:22)
+==1026361==    by 0x4028A4: bottom_up (parser.c:129)
+==1026361==    by 0x403286: syntax_analyzer (parser.c:250)
+==1026361==    by 0x40123D: main (compiler.c:26)
+==1026361== 
+==1026361== 45 bytes in 1 blocks are definitely lost in loss record 6 of 13
+==1026361==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==1026361==    by 0x4090C3: buffer_init (mystring.c:22)
+==1026361==    by 0x40A697: convert_strings.part.0 (code_generator.c:749)
+==1026361==    by 0x40AA9F: convert_strings (code_generator.c:771)
+==1026361==    by 0x40AA9F: convert_strings (code_generator.c:767)
+==1026361==    by 0x40AA9F: convert_strings (code_generator.c:767)
+==1026361==    by 0x40AA9F: convert_strings (code_generator.c:767)
+==1026361==    by 0x40AA9F: convert_strings (code_generator.c:767)
+==1026361==    by 0x40AA9F: convert_strings (code_generator.c:767)
+==1026361==    by 0x40AA9F: convert_strings (code_generator.c:767)
+==1026361==    by 0x40AA9F: convert_strings (code_generator.c:767)
+==1026361==    by 0x40AA9F: convert_strings (code_generator.c:767)
+==1026361==    by 0x40C64D: convert_strings (code_generator.c:767)
+==1026361==    by 0x40C64D: generate_code (code_generator.c:49)
+==1026361==    by 0x40127A: main (compiler.c:44)
+==1026361== 
+==1026361== 45 bytes in 1 blocks are definitely lost in loss record 7 of 13
+==1026361==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==1026361==    by 0x4090C3: buffer_init (mystring.c:22)
+==1026361==    by 0x40BFEE: generate_while (code_generator.c:427)
+==1026361==    by 0x40BFAD: stmt_list_crossroad (code_generator.c:379)
+==1026361==    by 0x40C311: function_gen (code_generator.c:353)
+==1026361==    by 0x40C454: def_declare_fcall_crossroad (code_generator.c:277)
+==1026361==    by 0x40C5F7: generate_code (code_generator.c:76)
+==1026361==    by 0x40127A: main (compiler.c:44)
+==1026361== 
+==1026361== 45 bytes in 1 blocks are definitely lost in loss record 8 of 13
+==1026361==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==1026361==    by 0x4090C3: buffer_init (mystring.c:22)
+==1026361==    by 0x40BFF8: generate_while (code_generator.c:428)
+==1026361==    by 0x40BFAD: stmt_list_crossroad (code_generator.c:379)
+==1026361==    by 0x40C311: function_gen (code_generator.c:353)
+==1026361==    by 0x40C454: def_declare_fcall_crossroad (code_generator.c:277)
+==1026361==    by 0x40C5F7: generate_code (code_generator.c:76)
+==1026361==    by 0x40127A: main (compiler.c:44)
+==1026361== 
+==1026361== 80 bytes in 1 blocks are definitely lost in loss record 9 of 13
+==1026361==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==1026361==    by 0x40456C: node_init (tree.c:19)
+==1026361==    by 0x4028A4: bottom_up (parser.c:129)
+==1026361==    by 0x403286: syntax_analyzer (parser.c:250)
+==1026361==    by 0x40123D: main (compiler.c:26)
+==1026361== 
+==1026361== 90 bytes in 5 blocks are definitely lost in loss record 10 of 13
+==1026361==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==1026361==    by 0x40A118: rename_all_id (code_generator.c:114)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361==    by 0x40A0C7: rename_all_id (code_generator.c:183)
+==1026361== 
+==1026361== 135 bytes in 3 blocks are definitely lost in loss record 11 of 13
+==1026361==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==1026361==    by 0x4090C3: buffer_init (mystring.c:22)
+==1026361==    by 0x40A697: convert_strings.part.0 (code_generator.c:749)
+==1026361==    by 0x40AA3F: convert_strings (code_generator.c:771)
+==1026361==    by 0x40AA3F: convert_strings (code_generator.c:767)
+==1026361==    by 0x40AA3F: convert_strings (code_generator.c:767)
+==1026361==    by 0x40A953: convert_strings (code_generator.c:767)
+==1026361==    by 0x40A953: convert_strings (code_generator.c:767)
+==1026361==    by 0x40A953: convert_strings (code_generator.c:767)
+==1026361==    by 0x40A953: convert_strings (code_generator.c:767)
+==1026361==    by 0x40A953: convert_strings (code_generator.c:767)
+==1026361==    by 0x40A953: convert_strings (code_generator.c:767)
+==1026361==    by 0x40A953: convert_strings (code_generator.c:767)
+==1026361==    by 0x40A953: convert_strings (code_generator.c:767)
+==1026361==    by 0x40A953: convert_strings (code_generator.c:767)
+==1026361==    by 0x40C64D: convert_strings (code_generator.c:767)
+==1026361==    by 0x40C64D: generate_code (code_generator.c:49)
+==1026361==    by 0x40127A: main (compiler.c:44)
+==1026361== 
+==1026361== 472 bytes in 1 blocks are still reachable in loss record 12 of 13
+==1026361==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==1026361==    by 0x48EE7AE: __fopen_internal (in /usr/lib64/libc-2.31.so)
+==1026361==    by 0x4096D8: append_file (mystring.c:181)
+==1026361==    by 0x40C53E: generate_code (code_generator.c:39)
+==1026361==    by 0x40127A: main (compiler.c:44)
+==1026361== 
+==1026361== 8,316 bytes in 1 blocks are definitely lost in loss record 13 of 13
+==1026361==    at 0x483CCE8: realloc (vg_replace_malloc.c:834)
+==1026361==    by 0x40918E: resize_if_needed (mystring.c:37)
+==1026361==    by 0x40918E: resize_if_needed (mystring.c:35)
+==1026361==    by 0x40918E: strcat_realloc (mystring.c:44)
+==1026361==    by 0x409704: append_file (mystring.c:194)
+==1026361==    by 0x40C53E: generate_code (code_generator.c:39)
+==1026361==    by 0x40127A: main (compiler.c:44)
+==1026361== 
+==1026361== LEAK SUMMARY:
+==1026361==    definitely lost: 8,825 bytes in 16 blocks
+==1026361==    indirectly lost: 7 bytes in 2 blocks
+==1026361==      possibly lost: 0 bytes in 0 blocks
+==1026361==    still reachable: 472 bytes in 1 blocks
+==1026361==         suppressed: 0 bytes in 0 blocks
+==1026361== 
+==1026361== Use --track-origins=yes to see where uninitialised values come from
+==1026361== For lists of detected and suppressed errors, rerun with: -s
+==1026361== ERROR SUMMARY: 30 errors from 16 contexts (suppressed: 0 from 0)

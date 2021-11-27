@@ -2,7 +2,7 @@
  *  Soubor: symtable.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	25. 11. 2021 23:32:58
+ *  Poslední změna:	26. 11. 2021 21:09:48
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -350,7 +350,7 @@ void htab_free(htab_t *t) {
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - //
-// - - - - Funkce pro operace nad rámci funkcí - - - - //
+// - - - - Funkce pro operace nad rámci funkcí - - ;- - //
 // - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
 void fce_item_push(fce_item_t **i, key_t key) {

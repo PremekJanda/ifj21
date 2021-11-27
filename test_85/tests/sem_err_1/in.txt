@@ -1,0 +1,18 @@
+require "ifj21"
+
+function main()
+    local s1 : string = "Text"
+    local a : integer = 1 / 6
+    a, s1 = 1, "ahoj"
+    write(s2)
+    if "sss" == "tt" then 
+        write(1)
+    else
+        write(a, s1)
+    end
+    while a > 0 do
+        write()
+    end
+end
+
+main()
