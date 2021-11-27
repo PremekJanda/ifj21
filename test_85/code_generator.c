@@ -4,7 +4,7 @@
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	26. 11. 2021 10:19:46
+ * Last Modified:	28. 11. 2021 00:39:34
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -44,13 +44,9 @@ void generate_code(t_node*tree, code_t*code){
     //změna názvů identifikátorů ve stromě na unikátní identifikátory
     ht_table_t ht_already_processed;
     ht_init(&ht_already_processed);
-
-    tree_print(*tree, 0);
-
+    
     fix_expr(tree);
     convert_strings(tree);
-
-    tree_print(*tree, 0);
 
     int depth = 0;
     int depth_total = 0;
@@ -58,7 +54,8 @@ void generate_code(t_node*tree, code_t*code){
     char*fc = NULL;
 
     rename_all_id(tree, &ht_already_processed, &fc, &depth, &depth_total);
-    //convert_write(code, tree);
+    convert_write(tree);
+    tree_print(*tree, 0);
 
     ht_delete_all(&ht_already_processed);
 
@@ -81,6 +78,73 @@ void generate_code(t_node*tree, code_t*code){
     }
 
     printf("%s", code->text.data);
+}
+
+void convert_write(t_node*tree) {
+    if (tree == NULL) {
+        return;
+    }
+    
+    for (int i = 0; i < tree->next_count; i++) {
+        convert_write(tree->next[i]);
+    }
+    if (strcmp(tree->data[0].data, "<stmt>") == 0){
+        if (strcmp(tree->next[0]->data[1].data, "write") ==  0){
+            int index = 0; //where the item_another is stored to be checked for eps
+            t_node*insert_after = tree->prev;
+            //count the arguments
+            if (strcmp(tree->next[1]->next[1]->next[0]->data[0].data, "eps") == 0){
+                node_setdata(tree->next[0], "write_fc", 1);
+            }
+            t_node*new_nodes[12]; //new nodes to create a node with function call
+            t_node*item_list = tree->next[1]->next[1]->next[0];
+            for (int i = 0; strcmp(item_list->next[0]->data[0].data, "eps") != 0; i++){
+                for(int k = 0; k < 12; k++){
+                    new_nodes[k] = malloc(sizeof(t_node));
+                    if (new_nodes[k] == NULL) {
+                        free_memory_then_quit(99);
+                    }
+                    node_init(new_nodes[k]);
+                }
+                //init new function call, blank item will be on number 8
+                CREATE_NEW_WRITE_CALL(new_nodes);
+                if (i == 1){ //podmínka pro průchod cyklem
+                    index++;
+                }
+
+                new_nodes[8]->next[0] = item_list->next[index]->next[0];
+                new_nodes[8]->next[0]->prev = new_nodes[8];
+                new_nodes[8]->next_count++;
+
+                //musíme něco přiřadit do nahrazeného itemu, jinak na jeho místě NULL nebo nechtěná reference
+                node_setdata(new_nodes[11], "eps", 0);
+                node_setdata(new_nodes[11], "", 1);
+                item_list->next[index]->next[0] = new_nodes[11];
+
+                new_nodes[0]->next[1] = insert_after->next[1];
+                new_nodes[0]->next[1]->prev = new_nodes[0];
+                new_nodes[0]->next_count++;
+                insert_after->next[1] = new_nodes[0];
+
+                insert_after = new_nodes[0];
+                item_list = item_list->next[index+1];
+            }
+            //najití ukazatele na nezkonvertovaný write
+            t_node**pointer_to_write_node;
+            insert_after = tree->prev;
+            for (int k = 0; k < insert_after->prev->next_count; k++){
+                if (insert_after == insert_after->prev->next[k]){
+                    pointer_to_write_node = &insert_after->prev->next[k];
+                }
+            }
+            //nahrazení přechůdce volání funkce
+            *pointer_to_write_node = tree->prev->next[1];
+            tree->next[1]->prev = *pointer_to_write_node;
+
+            node_delete(tree);
+        }
+    }
+    
 }
 
 void fix_expr(t_node*tree) {
@@ -144,6 +208,9 @@ void rename_all_id(t_node* tree, ht_table_t*ht_already_processed, char**fc, int*
             else{
                 if (strcmp(tree->prev->data[0].data, "<stmt>") == 0){
                     if (strcmp(tree->prev->next[1]->next[0]->data[0].data, "(") == 0) {
+                        if (strcmp(tree->data[1].data, "write") == 0){
+                            return;
+                        }
                         strcat_format_realloc(&new_id, "%s_fc", id);
                     }
                 }
@@ -287,6 +354,7 @@ void def_declare_fcall_crossroad(code_t*code, t_node*main_node){ //main_node = <
 }
 
 void function_call_gen(code_t*code, t_node*fcall_node){
+    //funkce která byla překonvertovaná se nevolá
     strcat_format_realloc(&code->text,"\n# -- call of %s\nCREATEFRAME\n", fcall_node->next[0]->data[1].data);
 
     //průchod item-listem
