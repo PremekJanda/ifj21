@@ -2,7 +2,7 @@
  *  Soubor: lexicon.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:17. 11. 2021 13:59:30
+ *  Poslední změna:	25. 11. 2021 01:02:38
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -88,5 +88,7 @@ void STokenFinish(tToken *token, int *i, char *string, char c);
  * @return Vrací 0 pokud nenastane chyba, jiank 1
  */
 int scanner(tToken *token);
+
+tToken *token_init();
 
 #endif // __LEXIKON__

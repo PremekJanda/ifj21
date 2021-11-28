@@ -1,57 +1,85 @@
-(1)	<prog> → require "ifj21" <main-list>
-(2)	<main-list> → <def-decl-fcall> <main-list>
-(3)	<main-list> → ε
-(4)	<stmt-list> → <stmt> <stmt-list>
-(5)	<stmt-list> → ε
-(6)	<stmt> → id <assign-or-fcall>
-(7)	<stmt> → <decl-local>
-(8)	<stmt> → <while>
-(9)	<stmt> → <if>
-(10)	<stmt> → <return>
-(11)	<assign-or-fcall> → ( <param-list> )
-(12)	<assign-or-fcall> → <id_list> = <f-or-item-list>
-(13)	<f-or-item-list> → expr <item-another>
-(14)	<f-or-item-list> → id <fcall-or-item-list>
-(15)	<fcall-or-item-list> → ( <param_list> )
-(16)	<fcall-or-item-list> → <item_another>
-(17)	<id-list> → , id <id_list>
-(18)	<id-list> → ε
-(19)	<item> → id
-(20)	<item> → expr
-(21)	<return> → return <item-list>
-(22)	<param-list> → ε
-(23)	<param-list> → <item-list>
-(24)	<item-list> → <item> <item-another>
-(25)	<item-another> → , <item> <item-another>
-(26)	<item-another> → ε
-(27)	<def-decl-fcall> → global id : <f-or-type>
-(28)	<def-decl-fcall> → function id ( <f-arg-list> ) <return-types> <stmt-list> end
-(29)	<def-decl-fcall> → id ( <param-list> )
-(30)	<decl-local> → local id : <type> <decl-assign>
-(31)	<f-or-type> → function ( <types> ) <return_types>
-(32)	<f-or-type> → <type> <decl-assign>
-(33)	<decl-assign> → = <f-or-item-list>
-(34)	<decl-assign> → ε
-(35)	<f-arg-list> → <f-arg> f-arg-another
-(36)	<f-arg-list> → ε
-(37)	<f-arg-another> → , <f-arg> <f-arg-another>
-(38)	<f-arg-another> → ε
-(39)	<f-arg> → id : <type>
-(40)	<return-types> → ε
-(41)	<return-types> → : <type> <type-list>
-(42)	<type-list> → , <type> <type-list>
-(43)	<type-list> → ε
-(44)	<types> → <type> <type-list>
-(45)	<types> → ε
-(46)	<if> → if <cond> then <stmt-list> else <stmt-list> end
-(47)	<while> → while <cond> do <stmt-list> end
-(48)	<cond> → <item> <cond-oper> <item>
-(49)	<type> → integer
-(50)	<type> → string
-(51)	<type> → number
-(52)	<cond-oper> → <
-(53)	<cond-oper> → >
-(54)	<cond-oper> → ==
-(55)	<cond-oper> → ~=
-(56)	<cond-oper> → <=
-(57)	<cond-oper> → >=
+<prog> → require "ifj21" <main-list>
+<main-list> → <def-decl-fcall> <main-list>
+<main-list> → ε
+<stmt-list> → <stmt> <stmt-list>
+<stmt-list> → ε
+<stmt> → id <assign-or-fcall>
+<stmt> → <decl-local>
+<stmt> → <while>
+<stmt> → <if>
+<stmt> → <return>
+
+<assign-or-fcall> → ( <param-list> )
+<assign-or-fcall> → <id-list> = <f-or-item-list>
+<f-or-item-list> → expr <item-another>
+<f-or-item-list> → id <fcall-or-item-list>
+<fcall-or-item-list> → ( <param-list> )
+<fcall-or-item-list> → <item-another>
+<id-list> → , id <id-list>
+<id-list> → ε
+
+<item> → id
+<item> → expr
+
+<return> → return <return-list>
+<return-list> → ε
+<return-list> → <return-f-or-items>
+<return-f-or-items> → expr <return-f-or-items'>
+<return-f-or-items> → id <f-or-return-list>
+<f-or-return-list> → ( <param-list> ) <return-f-or-items'>
+<f-or-return-list> → <return-f-or-items'>
+<return-f-or-items'> → , <return-f-or-items>
+<return-f-or-items'> → ε
+
+<param-list> → ε
+<param-list> → <item-list>
+<item-list> → <item> <item-another>
+
+<item-another> → , <item> <item-another>
+<item-another> → ε
+
+<def-decl-fcall> → global id : <f-or-type>
+<def-decl-fcall> → function id ( f-arg-list ) <return-types> <stmt-list> end
+<def-decl-fcall> → id ( <param-list> )
+<decl-local> → local id : <type> <decl-assign>
+
+<f-or-type> → function ( <types> ) <return-types>
+<f-or-type> → <type> <decl-assign>
+
+<decl-assign> → = <f-or-item>
+<decl-assign> → ε
+
+<f-or-item> → expr
+<f-or-item> → id <id-or-fcall>
+
+<id-or-fcall> → ε
+<id-or-fcall> → ( <param-list> )
+
+<f-arg-list> → <f-arg> <f-arg-another>
+<f-arg-list> → ε
+<f-arg-another> → , <f-arg> <f-arg-another>
+<f-arg-another> → ε
+<f-arg> → id : <type>
+
+<return-types> → ε
+<return-types> → : <type> <type-list>
+<type-list> → , <type> <type-list>
+<type-list> → ε
+<types> → <type> <type-list>
+<types> → ε
+
+<if> → if <cond> then <stmt-list> else <stmt-list> end
+<while> → while <cond> do <stmt-list> end
+<cond> → <item> <cond-oper> <item>
+
+<type> → integer
+<type> → string
+<type> → number
+<type> → nil
+
+<cond-oper> → <
+<cond-oper> → >
+<cond-oper> → ==
+<cond-oper> → ~=
+<cond-oper> → <=
+<cond-oper> → >=

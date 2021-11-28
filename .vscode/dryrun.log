@@ -1,5 +1,16 @@
-make all --dry-run --keep-going --print-directory
-make: Entering directory '/home/rbabek/IFJ/ifj21'
-gcc -std=c99 -g -Wall -Wextra -pedantic -lm -o lexikon lexikon.c
-make: Leaving directory '/home/rbabek/IFJ/ifj21'
+/usr/bin/make all --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/premekjanda/School/2BIT_1/IFJ/ifj21'
+gcc -std=c11 -pedantic -Wall -Wextra -g -O2 -c -o compiler.o compiler.c
+gcc -std=c11 -pedantic -Wall -Wextra -g -O2 -c -o lexikon.o lexikon.c
+gcc -std=c11 -pedantic -Wall -Wextra -g -O2 -c -o parser.o parser.c
+gcc -std=c11 -pedantic -Wall -Wextra -g -O2 -c -o table.o table.c
+gcc -std=c11 -pedantic -Wall -Wextra -g -O2 -c -o stack.o stack.c
+gcc -std=c11 -pedantic -Wall -Wextra -g -O2 -c -o tree.o tree.c
+gcc -std=c11 -pedantic -Wall -Wextra -g -O2 -c -o semantic.o semantic.c
+gcc -std=c11 -pedantic -Wall -Wextra -g -O2 -c -o symtable.o symtable.c
+gcc -std=c11 -pedantic -Wall -Wextra -g -O2 -c -o mystring.o mystring.c
+gcc -std=c11 -pedantic -Wall -Wextra -g -O2 -c -o hashtable.o hashtable.c
+gcc -std=c11 -pedantic -Wall -Wextra -g -O2 -c -o code_generator.o code_generator.c
+gcc -std=c11 -pedantic -Wall -Wextra -g -O2 compiler.o lexikon.o parser.o table.o stack.o tree.o semantic.o symtable.o mystring.o hashtable.o code_generator.o -o compiler
+make: Leaving directory '/home/premekjanda/School/2BIT_1/IFJ/ifj21'
  

@@ -1,26 +1,46 @@
-PRJ=lexikon
+# Soubor: Makefile
 #
-PROGS=$(PRJ)
-CC=gcc
-CFLAGS=-std=c99 -g -Wall -Wextra -pedantic -lm
-LDFLAG=-lm
+# Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
+# Datum poslední změny:	28. 11. 2021 18:43:09
+# Autor: Přemek Janda - xjanda28, VUT FIT
+# Popis: Program MAKEFILE pro překlad všech potřebných souborů
 
-all: $(PROGS)
+##### proměnné #####
+CC = gcc
+CFLAGS = -std=c11 -pedantic -Wall -Wextra -g -O2
+OBJ = compiler.o lexikon.o parser.o table.o stack.o tree.o semantic.o symtable.o mystring.o hashtable.o code_generator.o
 
-$(PRJ): $(PRJ).c
-	$(CC) $(CFLAGS) -o $@ $(PRJ).c
+all: compiler
 
-clean: 
-	rm -f *.o lexikon
+##### programy #####
+# semantic
+compiler: $(OBJ)
+	$(CC) $(CFLAGS) $^ -o $@
 
-tree.o: tree.c tree.h
-	$(CC) $(CFLAGS) $^ $(LDFLAG) -o $@
+
+##### objektové soubory #####
+%.o: %.c %.h
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+
+.PHONY: run test zip clean
+run:
+	@ ./compiler < program.txt > _out.txt
+	@ echo "Make run done"
+
+test:
+	@ $(MAKE) clean --no-print-directory
+	@ $(MAKE) --no-print-directory
+	@ valgrind --leak-check=full --show-leak-kinds=all ./compiler < program.txt >_out.txt 2> _val.valgrind
+	@ echo "Make test done"
 	
-code-generator.o: code-generation/code-generator.c code-generation/code-generator.h
-	$(CC) $(CFLAGS) $^ $(LDFLAG) -o $@
+zip:
+	zip xkocma08.zip *.c *.h precedence.txt rules.txt tabulka.txt Makefile built_in.fc
+	
+zip_test:
+	@ $(MAKE) clean --no-print-directory
+	zip -r test_compiler.zip *
 
-mystring.o: code-generation/mystring.c code-generation/mystring.h
-	$(CC) $(CFLAGS) $^ $(LDFLAG) -o $@
-
-code-generator: code-generator.o tree.o, mystring.o
-	$(CC) $(CFLAGS) $^ $(LDFLAG) -o $@
+clean:
+	@ rm -f *.o *.zip compiler _out.txt _val.valgrind vgcore.*
+	@ echo "Files successfully removed"

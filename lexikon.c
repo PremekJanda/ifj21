@@ -2,7 +2,7 @@
  *  Soubor: lexikon.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	24. 11. 2021 01:06:13
+ *  Poslední změna:	26. 11. 2021 09:09:57
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -247,46 +247,100 @@ int scanner(tToken *token){
             }
         break;
 
-        //tvorba Integeru/doublu/exponentu
-        case '2':
-            if ((c >= '0' && c <= '9')){
-                token->attribute[i] = c;
-                i++;
-                //realloc při nedostatečné délce
-                if (i > (length - 1))
-                {
-                    length += REALL_TOKEN_LEN;
-                    token->attribute = realloc(token->attribute, length * sizeof(char));
+            //tvorba Integeru/doublu/exponentu
+            case '2':
+                if ((c >= '0' && c <= '9')){
+                    token->attribute[i] = c;
+                    i++;
+                    //realloc při nedostatečné délce
+                    if (i > (length - 1))
+                    {
+                        length += REALL_TOKEN_LEN;
+                        token->attribute = realloc(token->attribute, length * sizeof(char));
+                    }
                 }
-            }
-            //exponent
-            else if(c == 'E' || c == 'e' || c == '.' || c == '+' || c == '-'){
-                token->attribute[i] = c;
-                i++;
-                if (i > (length - 1))
-                {
-                    length += REALL_TOKEN_LEN;
-                    token->attribute = realloc(token->attribute, length * sizeof(char));
+                //exponent
+                else if(c == 'E' || c == 'e'){
+                    token->attribute[i] = c;
+                    i++;
+                    if (i > (length - 1))
+                    {
+                        length += REALL_TOKEN_LEN;
+                        token->attribute = realloc(token->attribute, length * sizeof(char));
+                    }
+                    c = getc(stdin);
+                    if (c == '+' || c == '-')
+                    {
+                        token->attribute[i] = c;
+                        i++;
+                        if (i > (length - 1))
+                        {
+                            length += REALL_TOKEN_LEN;
+                            token->attribute = realloc(token->attribute, length * sizeof(char));
+                        }
+                        c = getc(stdin);
+                        if(c <= '0' || c >= '9'){
+                            ungetc(c, stdin);
+                            fprintf(stderr, "ERROR: picus on line %d!\n", token->line);
+                            return 1;
+                        }
+                        else{
+                            ungetc(c, stdin);
+                        }
+                    }
+                    else if(c <= '0' || c >= '9'){
+                        ungetc(c, stdin);
+                        fprintf(stderr, "ERROR: Wrong format of an exponent on line %d!\n", token->line);
+                        return 1;
+                    }
+                    else{
+                        ungetc(c, stdin);
+                    }
+                    DoubleNumber = true;
                 }
-                DoubleNumber = true;
-            }
-            //rozlišení double/int a dokončení tokenu
-            else{
-                ungetc(c, stdin);
-                token->attribute[i] = '\0';
-                if (DoubleNumber){
-                    strcpy(token->type, "double");
-                    DoubleNumber = false;
+                else if(c == '.'){
+                    token->attribute[i] = c;
+                    i++;
+                    if (i > (length - 1))
+                    {
+                        length += REALL_TOKEN_LEN;
+                        token->attribute = realloc(token->attribute, length * sizeof(char));
+                    }
+                    c = getc(stdin);
+                    if (c >= '0' && c <= '9')
+                    {
+                        token->attribute[i] = c;
+                        i++;
+                        if (i > (length - 1))
+                        {
+                            length += REALL_TOKEN_LEN;
+                            token->attribute = realloc(token->attribute, length * sizeof(char));
+                        }
+                    }
+                    else{
+                        ungetc(c, stdin);
+                        fprintf(stderr, "ERROR: Wrong format of a number on line %d!\n", token->line);
+                        return 1;
+                    }
+                    DoubleNumber = true;
                 }
+                //rozlišení double/int a dokončení tokenu
                 else{
-                    strcpy(token->type, "integer");
-                }
+                    ungetc(c, stdin);
+                    token->attribute[i] = '\0';
+                    if (DoubleNumber){
+                        strcpy(token->type, "number");
+                        DoubleNumber = false;
+                    }
+                    else{
+                        strcpy(token->type, "integer");
+                    }
                 
-                i = 0;
-                state = states[0];
-                return 0;
-            }
-        break;
+                    i = 0;
+                    state = states[0];
+                    return 0;
+                }
+            break;
         
         //stav pro rovná se nebo porovnání
         case '3':
@@ -323,6 +377,8 @@ int scanner(tToken *token){
             }
             //escape sekvence
             if(c == '\\'){
+                token->attribute[i] = c;
+                i++;
                 c = getc(stdin);
                 --i;
                 if(c == '"'){
@@ -342,22 +398,24 @@ int scanner(tToken *token){
                     i++;
                 }
                 //escape sekvence která vytvoří znak
-                else if(c >= '0' && c <='2'){
+                else if(c >= '0' && c <='9'){
                     char escaped[4];
                     escaped[0] = c;
+                    token->attribute[i] = c;
+                    i++;
                     c = getc(stdin);
                     if (c >= '0' && c <='9'){
                         escaped[1] = c;
+                        token->attribute[i] = c;
+                        i++;
                         c = getc(stdin);
                         if (c >= '0' && c <='9'){
                             escaped[2] = c;
                             escaped[3] = '\0';
+                            token->attribute[i] = c;
+                            i++;
                             int aux = atoi(escaped);
-                            if(aux >= 1 && aux <= 255){
-                                token->attribute[i] = aux;
-                                i++;
-                            }
-                            else{
+                            if(aux <= 1 || aux >= 255){
                                 fprintf(stderr, "ERROR: Wrong format of escape expression on line %d!\n", token->line);
                                 return 1;
                             }
@@ -380,8 +438,14 @@ int scanner(tToken *token){
             //dokončení stringu
             else if (c == '"')
             {
-                
-                token->attribute[i] = '\0';
+                if (strcmp(token->attribute, "\"ifj21\"")) {
+                    token->attribute[i] = '\0';
+                    for (int s = 0; token->attribute[s] != '\0'; s++){
+                        token->attribute[s] = token->attribute[s+1];
+                    }
+                    
+                    token->attribute[strlen(token->attribute)-1] = '\0';
+                }
                 strcpy(token->type, "string");
                 i = 0;
                 
@@ -596,43 +660,25 @@ void STokenFinish(tToken *token, int *i, char *string, char c){
     strcpy(token->type, string);
     *i = 0;
 }
-/*
-int main(int argc, char const *argv[])
-{   
-    
-    tToken *token = NULL;
-    
-    token = malloc(sizeof(struct Token));
+
+tToken *token_init()
+{
+    tToken *token = malloc(sizeof(struct Token));
     if(token == NULL){
         fprintf(stderr, "ERROR: Failed malloc");
-        return 1;
+        return NULL;
     } 
-    
-    initToken(token);
-
     int length = TOKEN_LENGTH;
     token->attribute = malloc(length * sizeof(char));
     if(token->attribute == NULL){
         fprintf(stderr, "ERROR: Failed malloc");
-        return 1;
+        return NULL;
     }
-
     token->type = malloc(15 * sizeof(char));
     if(token->type == NULL){
         fprintf(stderr, "ERROR: Failed malloc");
-        return 1;
+        return NULL;
     }
     token->line = 1;
-    
-    
-    while(c!=EOF){
-        if(!scanner(token)){
-            printToken(token);
-        }
-    }
-    deleteToken(token);
-    
-    (void)argc;
-    (void)argv;
-    return 0;
-}*/
+    return token;
+}

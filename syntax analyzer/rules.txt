@@ -1,5 +1,0 @@
-error
-require:ifj21:<stat-list>:end
-<stat>:<stat-list>
-stat
-end
