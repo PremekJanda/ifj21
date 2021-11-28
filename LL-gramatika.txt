@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <prog> → require "ifj21" <main-list>
 <main-list> → <def-decl-fcall> <main-list>
 <main-list> → ε
@@ -83,3 +84,75 @@
 <cond-oper> → ~=
 <cond-oper> → <=
 <cond-oper> → >=
+=======
+(1)	<prog> → require "ifj21" <main-list>
+(2)	<main-list> → <def-decl-fcall> <main-list>
+(3)	<main-list> → ε
+(4)	<stmt-list> → <stmt> <stmt-list>
+(5)	<stmt-list> → ε
+(6)	<stmt> → id <assign-or-fcall>
+(7)	<stmt> → <decl-local>
+(8)	<stmt> → <while>
+(9)	<stmt> → <if>
+(10)	<stmt> → <return>
+(11)	<assign-or-fcall> → ( <param-list> )
+(12)	<assign-or-fcall> → <id-list> = <f-or-item-list>
+(13)	<f-or-item-list> → expr <item-another>
+(14)	<f-or-item-list> → id <fcall-or-item-list>
+(15)	<fcall-or-item-list> → ( <param-list> )
+(16)	<fcall-or-item-list> → <item-another>
+(17)	<id-list> → , id <id-list>
+(18)	<id-list> → ε
+(19)	<item> → id
+(20)	<item> → expr
+(21)	<return> → return <return-list>
+(22)	<return-list> → ε
+(23)	<return-list> → <return-f-or-items>
+(24)	<return-f-or-items> → expr <return-f-or-items'>
+(25)	<return-f-or-items> → id <f-or-return-list>
+(26)	<f-or-return-list> → ( <param-list> ) <return-f-or-items'>
+(27)	<f-or-return-list> → <return-f-or-items'>
+(28)	<return-f-or-items'> → , <return-f-or-items>
+(29)	<return-f-or-items'> → ε
+(30)	<param-list> → ε
+(31)	<param-list> → <item-list>
+(32)	<item-list> → <item> <item-another>
+(33)	<item-another> → , <item> <item-another>
+(34)	<item-another> → ε
+(35)	<def-decl-fcall> → global id : <f-or-type>
+(36)	<def-decl-fcall> → function id ( f-arg-list ) <return-types> <stmt-list> end
+(37)	<def-decl-fcall> → id ( <param-list> )
+(38)	<decl-local> → local id : <type> <decl-assign>
+(39)	<f-or-type> → function ( <types> ) <return-types>
+(40)	<f-or-type> → <type> <decl-assign>
+(41)	<decl-assign> → = <f-or-item>
+(42)	<decl-assign> → ε
+(43)	<f-or-item> → expr
+(44)	<f-or-item> → id <id-or-fcall>
+(45)	<id-or-fcall> → ε
+(46)	<id-or-fcall> → ( <param-list> )
+(47)	<f-arg-list> → <f-arg> <f-arg-another>
+(48)	<f-arg-list> → ε
+(49)	<f-arg-another> → , <f-arg> <f-arg-another>
+(50)	<f-arg-another> → ε
+(51)	<f-arg> → id : <type>
+(52)	<return-types> → ε
+(53)	<return-types> → : <type> <type-list>
+(54)	<type-list> → , <type> <type-list>
+(55)	<type-list> → ε
+(56)	<types> → <type> <type-list>
+(57)	<types> → ε
+(58)	<if> → if <cond> then <stmt-list> else <stmt-list> end
+(59)	<while> → while <cond> do <stmt-list> end
+(60)	<cond> → <item> <cond-oper> <item>
+(61)	<type> → integer
+(62)	<type> → string
+(63)	<type> → number
+(64)	<type> → nil
+(65)	<cond-oper> → <
+(66)	<cond-oper> → >
+(67)	<cond-oper> → ==
+(68)	<cond-oper> → ~=
+(69)	<cond-oper> → <=
+(70)	<cond-oper> → >=
+>>>>>>> cdb59f822f848ae489b3a70d73a196e47db1bd1e
