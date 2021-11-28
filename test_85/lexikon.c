@@ -661,45 +661,24 @@ void STokenFinish(tToken *token, int *i, char *string, char c){
     *i = 0;
 }
 
-int main(int argc, char const *argv[])
-{   
-    
-    tToken *token = NULL;
-    
-    token = malloc(sizeof(struct Token));
+tToken *token_init()
+{
+    tToken *token = malloc(sizeof(struct Token));
     if(token == NULL){
         fprintf(stderr, "ERROR: Failed malloc");
-        return 1;
+        return NULL;
     } 
-    
-    initToken(token);
-
     int length = TOKEN_LENGTH;
     token->attribute = malloc(length * sizeof(char));
     if(token->attribute == NULL){
         fprintf(stderr, "ERROR: Failed malloc");
-        return 1;
+        return NULL;
     }
-
     token->type = malloc(15 * sizeof(char));
     if(token->type == NULL){
         fprintf(stderr, "ERROR: Failed malloc");
-        return 1;
+        return NULL;
     }
     token->line = 1;
-    
-    
-    while(c!=EOF){
-        if(!scanner(token)){
-            printToken(token);
-        }
-        else{
-            return 1;
-        }
-    }
-    deleteToken(token);
-    
-    (void)argc;
-    (void)argv;
-    return 0;
+    return token;
 }
