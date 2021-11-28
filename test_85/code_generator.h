@@ -4,7 +4,7 @@
  * @brief Hlavičkový soubor funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	28. 11. 2021 00:39:33
+ * Last Modified:	28. 11. 2021 15:20:23
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -41,6 +41,7 @@ void eval_expression(code_t*code, t_node*expr);
 
 void fix_expr(t_node*tree);
 
+#define NEW_NODES_FOR_ASSIGNMENT 6
 
 // macro to create new write function call with one argument item, item will be blank and at index 9
 #define CREATE_NEW_WRITE_CALL(new_nodes) \
