@@ -1,0 +1,79 @@
+<prog> → require "ifj21" <main-list>
+
+<main-list> → <def-decl-fcall> <main-list>
+<main-list> → ε
+
+<stmt-list> → <stmt> <stmt-list>
+<stmt-list> → ε
+
+<stmt> → id <assign-or-fcall>
+<stmt> → <decl-local>
+<stmt> → <while>
+<stmt> → <if>
+<stmt> → <return>
+
+<assign-or-fcall> → ( <param-list> )
+<assign-or-fcall> → <id-list> = <f-or-item-list>
+
+<f-or-item-list> → expr <item-another>
+<f-or-item-list> → id <fcall-or-item-list>
+
+<fcall-or-item-list> → ( <param-list> )
+<fcall-or-item-list> → <item-another>
+
+<id-list> → , id <id-list>
+<id-list> → ε
+
+<item> → id
+<item> → expr
+
+<return> → return <item-list>
+
+<param-list> → ε
+<param-list> → <item-list>
+
+<item-list> → <item> <item-another>
+<item-another> → , <item> <item-another>
+<item-another> → ε
+
+<def-decl-fcall> → global id : <f-or-type>
+<def-decl-fcall> → function id ( <f-arg-list> ) <return-types> <stmt-list> end
+<def-decl-fcall> → id ( <param-list> )
+<decl-local> → local id : <type> <decl-assign>
+
+<f-or-type> → function ( <types> ) <return-types>
+<f-or-type> → <type> <decl-assign>
+
+<decl-assign> → = <f-or-item-list>
+<decl-assign> → ε
+
+<f-arg-list> → <f-arg> <f-arg-another>
+<f-arg-list> → ε
+<f-arg-another> → , <f-arg> <f-arg-another>
+<f-arg-another> → ε
+<f-arg> → id : <type>
+
+<return-types> → ε
+<return-types> → : <type> <type-list>
+
+<type-list> → , <type> <type-list>
+<type-list> → ε
+
+<types> → <type> <type-list>
+<types> → ε
+
+<type> → integer
+<type> → string
+<type> → number
+<type> → nil
+
+<if> → if <cond> then <stmt-list> else <stmt-list> end
+<while> → while <cond> do <stmt-list> end
+<cond> → <item> <cond-oper> <item>
+
+<cond-oper> → <
+<cond-oper> → >
+<cond-oper> → ==
+<cond-oper> → ~=
+<cond-oper> → <=
+<cond-oper> → >=

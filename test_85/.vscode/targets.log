@@ -5,9 +5,8 @@
 # License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
- 
 
-# Make data base, printed on Thu Nov 25 01:16:39 2021
+# Make data base, printed on Sun Nov 28 18:43:20 2021
 
 # Variables
 
@@ -50,17 +49,15 @@ SHELL = /bin/sh
 # environment
 GDM_LANG = en_GB.UTF-8
 # environment
-VTE_VERSION = 6004
-# environment
 LMOD_DIR = /usr/share/lmod/lmod/libexec
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en-gb","availableLanguages":{},"_languagePackSupport":true}
 # environment
 _ = /usr/bin/make
 # makefile (from 'Makefile', line 10)
-CFLAGS = -std=c99 -pedantic -Wall -Wextra -g
+CFLAGS = -std=c11 -pedantic -Wall -Wextra -g -O2
 # environment
-JOURNAL_STREAM = 8:66668
+JOURNAL_STREAM = 8:54075
 # environment
 LESSOPEN = ||/usr/bin/lesspipe.sh %s
 # makefile (from 'Makefile', line 1)
@@ -80,23 +77,23 @@ DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-MANAGERPID = 5430
+MANAGERPID = 5232
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-e796ccd5-3fcd-467a-8998-b38b01364e87.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-3fda49ff-c147-49cf-b490-6e448ec25e33.sock
 # environment
 MAIL = /var/spool/mail/premekjanda
 # environment
-VSCODE_CWD = /home/premekjanda/School/2BIT_1/IFJ/ifj21/test_85
+VSCODE_CWD = /home/premekjanda
 # environment
 ANDROID_SDK = /home/premekjanda/Android/Sdk
 # default
 MAKE_HOST := x86_64-redhat-linux-gnu
 # environment
-PATH = /home/premekjanda/School/android-studio-2020.3.1.25-linux/android-studio/bin:/home/premekjanda/School/android-studio-2020.3.1.25-linux/android-studio/bin:/home/premekjanda/.local/bin:/home/premekjanda/bin:/usr/lib64/qt-3.3/bin:/usr/lib64/ccache:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/home/premekjanda/.composer/vendor/bin:/var/lib/snapd/snap/bin:/home/premekjanda/Android/Sdk/platform-tools:/home/premekjanda/Android/Sdk/platform-tools:/home/premekjanda/Android/Sdk/platform-tools
+PATH = /home/premekjanda/School/android-studio-2020.3.1.25-linux/android-studio/bin:/home/premekjanda/School/android-studio-2020.3.1.25-linux/android-studio/bin:/home/premekjanda/.local/bin:/home/premekjanda/bin:/usr/lib64/qt-3.3/bin:/usr/lib64/ccache:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/home/premekjanda/.composer/vendor/bin:/var/lib/snapd/snap/bin:/home/premekjanda/Android/Sdk/platform-tools:/home/premekjanda/Android/Sdk/platform-tools:/home/premekjanda/Android/Sdk/platform-tools:/home/premekjanda/Android/Sdk/platform-tools
 # environment
 LMOD_CMD = /usr/share/lmod/lmod/libexec/lmod
 # environment
-SESSION_MANAGER = local/unix:@/tmp/.ICE-unix/5727,unix/unix:/tmp/.ICE-unix/5727
+SESSION_MANAGER = local/unix:@/tmp/.ICE-unix/5530,unix/unix:/tmp/.ICE-unix/5530
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -108,17 +105,15 @@ VSCODE_LOG_STACK = false
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-INVOCATION_ID = 6d6fb84484054c458fefaceb25d143ea
+INVOCATION_ID = 5f8c195c071d40b7a184d2143680049b
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink guile load
-# environment
-LS_COLORS = rs=0:di=38;5;33:ln=38;5;51:mh=00:pi=40;38;5;11:so=38;5;13:do=38;5;5:bd=48;5;232;38;5;11:cd=48;5;232;38;5;3:or=48;5;232;38;5;9:mi=01;37;41:su=48;5;196;38;5;15:sg=48;5;11;38;5;16:ca=48;5;196;38;5;226:tw=48;5;10;38;5;16:ow=48;5;10;38;5;21:st=48;5;21;38;5;15:ex=38;5;40:*.tar=38;5;9:*.tgz=38;5;9:*.arc=38;5;9:*.arj=38;5;9:*.taz=38;5;9:*.lha=38;5;9:*.lz4=38;5;9:*.lzh=38;5;9:*.lzma=38;5;9:*.tlz=38;5;9:*.txz=38;5;9:*.tzo=38;5;9:*.t7z=38;5;9:*.zip=38;5;9:*.z=38;5;9:*.dz=38;5;9:*.gz=38;5;9:*.lrz=38;5;9:*.lz=38;5;9:*.lzo=38;5;9:*.xz=38;5;9:*.zst=38;5;9:*.tzst=38;5;9:*.bz2=38;5;9:*.bz=38;5;9:*.tbz=38;5;9:*.tbz2=38;5;9:*.tz=38;5;9:*.deb=38;5;9:*.rpm=38;5;9:*.jar=38;5;9:*.war=38;5;9:*.ear=38;5;9:*.sar=38;5;9:*.rar=38;5;9:*.alz=38;5;9:*.ace=38;5;9:*.zoo=38;5;9:*.cpio=38;5;9:*.7z=38;5;9:*.rz=38;5;9:*.cab=38;5;9:*.wim=38;5;9:*.swm=38;5;9:*.dwm=38;5;9:*.esd=38;5;9:*.jpg=38;5;13:*.jpeg=38;5;13:*.mjpg=38;5;13:*.mjpeg=38;5;13:*.gif=38;5;13:*.bmp=38;5;13:*.pbm=38;5;13:*.pgm=38;5;13:*.ppm=38;5;13:*.tga=38;5;13:*.xbm=38;5;13:*.xpm=38;5;13:*.tif=38;5;13:*.tiff=38;5;13:*.png=38;5;13:*.svg=38;5;13:*.svgz=38;5;13:*.mng=38;5;13:*.pcx=38;5;13:*.mov=38;5;13:*.mpg=38;5;13:*.mpeg=38;5;13:*.m2v=38;5;13:*.mkv=38;5;13:*.webm=38;5;13:*.webp=38;5;13:*.ogm=38;5;13:*.mp4=38;5;13:*.m4v=38;5;13:*.mp4v=38;5;13:*.vob=38;5;13:*.qt=38;5;13:*.nuv=38;5;13:*.wmv=38;5;13:*.asf=38;5;13:*.rm=38;5;13:*.rmvb=38;5;13:*.flc=38;5;13:*.avi=38;5;13:*.fli=38;5;13:*.flv=38;5;13:*.gl=38;5;13:*.dl=38;5;13:*.xcf=38;5;13:*.xwd=38;5;13:*.yuv=38;5;13:*.cgm=38;5;13:*.emf=38;5;13:*.ogv=38;5;13:*.ogx=38;5;13:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
 # environment
 XDG_SESSION_DESKTOP = gnome
 # environment
 SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 8356
+GIO_LAUNCHED_DESKTOP_FILE_PID = 6949
 # automatic
 %F = $(notdir $%)
 # environment
@@ -132,7 +127,7 @@ PWD = /home/premekjanda/School/2BIT_1/IFJ/ifj21/test_85
 # default
 .LOADED := 
 # environment
-SSH_AGENT_PID = 5670
+SSH_AGENT_PID = 5473
 # environment
 define BASH_FUNC_ml%%
 () {  eval $($LMOD_DIR/ml_cmd "$@")
@@ -147,8 +142,6 @@ VSCODE_AMD_ENTRYPOINT = vs/workbench/services/extensions/node/extensionHostProce
 # environment
 HOME = /home/premekjanda
 # environment
-VSCODE_CLI = 1
-# environment
 MODULESHOME = /usr/share/lmod/lmod
 # environment
 LOGNAME = premekjanda
@@ -156,8 +149,6 @@ LOGNAME = premekjanda
 APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
 # automatic
 +F = $(notdir $+)
-# environment
-ELECTRON_NO_ATTACH_CONSOLE = 1
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # environment
@@ -170,8 +161,6 @@ HOSTNAME = premek
 LC_TIME = cs_CZ.UTF-8
 # environment
 SSH_ASKPASS = /usr/libexec/openssh/gnome-ssh-askpass
-# environment
-COLORTERM = truecolor
 # default
 MAKE = $(MAKE_COMMAND)
 # default
@@ -179,7 +168,7 @@ MAKECMDGOALS := all
 # environment
 QT_IM_MODULE = xim
 # environment
-SHLVL = 2
+SHLVL = 0
 # makefile (from 'Makefile', line 9)
 CC = gcc
 # default
@@ -195,7 +184,7 @@ XDG_CURRENT_DESKTOP = GNOME
 # automatic
 %D = $(patsubst %/,%,$(dir $%))
 # makefile (from 'Makefile', line 11)
-OBJ = compiler.o lexikon.o parser.o table.o stack.o tree.o semantic.o symtable.o
+OBJ = compiler.o lexikon.o parser.o table.o stack.o tree.o semantic.o symtable.o mystring.o hashtable.o code_generator.o
 # environment
 MODULEPATH_ROOT = /usr/share/modulefiles
 # default
@@ -249,12 +238,8 @@ LC_ALL = C
 VSCODE_CRASH_REPORTER_START_OPTIONS = {"companyName":"Microsoft","productName":"VSCode","submitURL":"appcenter://code?aid=fba07a4d-84bd-4fc8-a125-9640fc8ce171&uid=98730d63-e139-4077-be8e-be57a215d5fb&iid=98730d63-e139-4077-be8e-be57a215d5fb&sid=98730d63-e139-4077-be8e-be57a215d5fb","uploadToServer":true}
 # environment
 GJS_DEBUG_TOPICS = JS ERROR;JS LOG
-# environment
-GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/57246378_edf8_4aba_94ec_8f575e88f286
 # automatic
 ^F = $(notdir $^)
-# environment
-GNOME_TERMINAL_SERVICE = :1.2451
 # default
 SUFFIXES := 
 # environment
@@ -284,23 +269,24 @@ GIO_LAUNCHED_DESKTOP_FILE = /usr/share/applications/code.desktop
 # environment
 LANG = C
 # environment
-TERM = xterm-256color
+TERM = dumb
 # environment
 SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS = 0
 # environment
-VSCODE_PID = 8356
+VSCODE_PID = 6949
 # variable set hash-table stats:
-# Load=136/1024=13%, Rehash=0, Collisions=33/167=20%
+# Load=129/1024=13%, Rehash=0, Collisions=30/160=19%
 
 # Pattern-specific Variable Values
+ 
 
 # No pattern-specific variable values.
 
 # Directories
 
-# . (device 64768, inode 5361266): 33 files, no impossibilities.
+# . (device 64768, inode 5361266): 53 files, no impossibilities.
 
-# 33 files, no impossibilities in 1 directories.
+# 53 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -313,23 +299,29 @@ VSCODE_PID = 8356
 # Files
 
 # Not a target:
+code_generator.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
 parser.h:
 #  Implicit rule search has been done.
-#  Last modified 2021-11-25 01:04:34.048567605
+#  Last modified 2021-11-25 01:17:14.364088438
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
 lexikon.c:
 #  Implicit rule search has been done.
-#  Last modified 2021-11-25 01:01:15.419341512
+#  Last modified 2021-11-26 09:18:55.610903995
 #  File has been updated.
 #  Successfully updated.
 
 table.o: table.c table.h
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'table'
-#  Last modified 2021-11-25 01:16:28.717577096
+#  Last modified 2021-11-28 13:35:15.217099416
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 23):
@@ -354,8 +346,9 @@ zip:
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 39):
-	zip compiler.zip *.c *.h Makefile
+#  recipe to execute (from 'Makefile', line 38):
+	zip xkocma08.zip *.c *.h precedence.txt rules.txt tabulka.txt Makefile built_in.fc
+	
 
 # Not a target:
 lexikon.h:
@@ -372,24 +365,36 @@ stack.c:
 #  Successfully updated.
 
 # Not a target:
-.SUFFIXES:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-
-# Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2021-11-25 01:16:20.343483239
+#  Last modified 2021-11-28 18:43:09.093611568
 #  File has been updated.
 #  Successfully updated.
 
 symtable.o: symtable.c symtable.h
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'symtable'
-#  Last modified 2021-11-25 01:16:28.820578251
+#  Last modified 2021-11-28 13:35:15.240099829
 #  File has been updated.
-#  Successfully updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := symtable.o
+# automatic
+# % := 
+# automatic
+# * := symtable
+# automatic
+# + := symtable.c symtable.h
+# automatic
+# | := 
+# automatic
+# < := symtable.c
+# automatic
+# ^ := symtable.c symtable.h
+# automatic
+# ? := symtable.h
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=1/15=7%
 #  recipe to execute (from 'Makefile', line 23):
 	$(CC) $(CFLAGS) -c -o $@ $<
 
@@ -398,7 +403,8 @@ test:
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 34):
+#  recipe to execute (from 'Makefile', line 32):
+	@ $(MAKE) clean --no-print-directory
 	@ $(MAKE) --no-print-directory
 	@ valgrind --leak-check=full --show-leak-kinds=all ./compiler < program.txt >_out.txt 2> _val.valgrind
 	@ echo "Make test done"
@@ -407,7 +413,7 @@ test:
 # Not a target:
 compiler.c:
 #  Implicit rule search has been done.
-#  Last modified 2021-11-25 01:11:58.298546435
+#  Last modified 2021-11-26 09:51:32.871377675
 #  File has been updated.
 #  Successfully updated.
 
@@ -419,6 +425,12 @@ stack.h:
 #  Successfully updated.
 
 # Not a target:
+hashtable.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
 table.c:
 #  Implicit rule search has been done.
 #  Last modified 2021-11-23 20:51:15.144196
@@ -428,19 +440,24 @@ table.c:
 semantic.o: semantic.c semantic.h
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'semantic'
-#  Last modified 2021-11-25 01:16:28.728577219
+#  Last modified 2021-11-28 13:35:15.234099722
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 23):
 	$(CC) $(CFLAGS) -c -o $@ $<
 
- 
 # Not a target:
 compiler.h:
 #  Implicit rule search has been done.
-#  Last modified 2021-11-25 00:28:57.137676805
+#  Last modified 2021-11-25 23:45:47.676734347
 #  File has been updated.
 #  Successfully updated.
+
+# Not a target:
+mystring.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 # Not a target:
 table.h:
@@ -452,7 +469,7 @@ table.h:
 parser.o: parser.c parser.h
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'parser'
-#  Last modified 2021-11-25 01:16:28.713577052
+#  Last modified 2021-11-28 13:35:15.21009929
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 23):
@@ -467,7 +484,7 @@ parser.o: parser.c parser.h
 tree.o: tree.c tree.h
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'tree'
-#  Last modified 2021-11-25 01:16:28.725577186
+#  Last modified 2021-11-28 13:35:15.226099578
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 23):
@@ -476,14 +493,14 @@ tree.o: tree.c tree.h
 # Not a target:
 tree.c:
 #  Implicit rule search has been done.
-#  Last modified 2021-11-23 20:51:15.146196
+#  Last modified 2021-11-25 04:07:02.615544295
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
 symtable.c:
 #  Implicit rule search has been done.
-#  Last modified 2021-11-25 01:14:18.427116888
+#  Last modified 2021-11-26 21:09:48.437403054
 #  File has been updated.
 #  Successfully updated.
 
@@ -493,8 +510,6 @@ run:
 #  File does not exist.
 #  File has not been updated.
 #  recipe to execute (from 'Makefile', line 28):
-	@ $(MAKE) clean --no-print-directory
-	@ $(MAKE) test --no-print-directory
 	@ ./compiler < program.txt > _out.txt
 	@ echo "Make run done"
 
@@ -503,14 +518,14 @@ clean:
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 42):
+#  recipe to execute (from 'Makefile', line 45):
 	@ rm -f *.o *.zip compiler _out.txt _val.valgrind vgcore.*
 	@ echo "Files successfully removed"
 
 lexikon.o: lexikon.c lexikon.h
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'lexikon'
-#  Last modified 2021-11-25 01:16:28.710577018
+#  Last modified 2021-11-28 13:35:15.202099147
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 23):
@@ -519,97 +534,89 @@ lexikon.o: lexikon.c lexikon.h
 # Not a target:
 tree.h:
 #  Implicit rule search has been done.
-#  Last modified 2021-11-23 20:51:15.147196
+#  Last modified 2021-11-25 03:25:28.084492006
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
 symtable.h:
 #  Implicit rule search has been done.
-#  Last modified 2021-11-25 01:10:37.977646255
+#  Last modified 2021-11-28 16:15:56.170079484
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
 semantic.c:
 #  Implicit rule search has been done.
-#  Last modified 2021-11-25 01:10:12.850364639
+#  Last modified 2021-11-26 23:36:07.72998709
 #  File has been updated.
 #  Successfully updated.
 
 stack.o: stack.c stack.h
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'stack'
-#  Last modified 2021-11-25 01:16:28.721577141
+#  Last modified 2021-11-28 13:35:15.221099488
 #  File has been updated.
 #  Successfully updated.
+ 
 #  recipe to execute (from 'Makefile', line 23):
 	$(CC) $(CFLAGS) -c -o $@ $<
+
+zip_test:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 41):
+	@ $(MAKE) clean --no-print-directory
+	zip -r test_compiler.zip *
 
 # Not a target:
 parser.c:
 #  Implicit rule search has been done.
-#  Last modified 2021-11-25 01:04:47.939723286
+#  Last modified 2021-11-26 22:19:22.909182617
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
 semantic.h:
 #  Implicit rule search has been done.
-#  Last modified 2021-11-24 11:57:53.291763
+#  Last modified 2021-11-26 09:13:15.831973964
 #  File has been updated.
 #  Successfully updated.
 
 compiler.o: compiler.c compiler.h
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'compiler'
-#  Last modified 2021-11-25 01:16:28.705576962
+#  Last modified 2021-11-28 13:35:15.196099039
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 23):
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-compiler: compiler.o lexikon.o parser.o table.o stack.o tree.o semantic.o symtable.o
+compiler: compiler.o lexikon.o parser.o table.o stack.o tree.o semantic.o symtable.o mystring.o hashtable.o code_generator.o
 #  Implicit rule search has not been done.
-#  Implicit/static pattern stem: ''
-#  File does not exist.
+#  Last modified 2021-11-28 13:35:15.295100817
 #  File has been updated.
 #  Needs to be updated (-q is set).
-# automatic
-# @ := compiler
-# automatic
-# % := 
-# automatic
-# * := 
-# automatic
-# + := compiler.o lexikon.o parser.o table.o stack.o tree.o semantic.o symtable.o
-# automatic
-# | := 
-# automatic
-# < := compiler.o
-# automatic
-# ^ := compiler.o lexikon.o parser.o table.o stack.o tree.o semantic.o symtable.o
-# automatic
-# ? := compiler.o lexikon.o parser.o table.o stack.o tree.o semantic.o symtable.o
 # variable set hash-table stats:
-# Load=8/32=25%, Rehash=0, Collisions=1/15=7%
+# Load=0/32=0%, Rehash=0, Collisions=0/5=0%
 #  recipe to execute (from 'Makefile', line 18):
 	$(CC) $(CFLAGS) $^ -o $@
 
 # files hash-table stats:
-# Load=34/1024=3%, Rehash=0, Collisions=2/104=2%
+# Load=38/1024=4%, Rehash=0, Collisions=2/110=2%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 54 / storage = 455 B / avg = 8 B
-# current buf: size = 8162 B / used = 455 B / count = 54 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 74 / storage = 707 B / avg = 9 B
+# current buf: size = 8162 B / used = 707 B / count = 74 / avg = 9 B
 
-# strcache performance: lookups = 113 / hit rate = 52%
+# strcache performance: lookups = 137 / hit rate = 45%
 # hash-table stats:
-# Load=54/8192=1%, Rehash=0, Collisions=1/113=1%
-# Finished Make data base on Thu Nov 25 01:16:39 2021
+# Load=74/8192=1%, Rehash=0, Collisions=1/137=1%
+# Finished Make data base on Sun Nov 28 18:43:20 2021
 
  

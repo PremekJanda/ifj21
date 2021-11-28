@@ -12,6 +12,7 @@ int bottom_up(t_table precedence_table, t_node *return_node, tToken *token, tTok
     stack_init(&stack);
     stack_push(&stack, "$");
 
+
     t_stack nonterminals;
     stack_init(&nonterminals);
 

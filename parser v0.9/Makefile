@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std=c11 -pedantic -Wall -Wextra -g -O2
+CFLAGS=-std=c99 -pedantic -Wall -Wextra -g -O2
 LDFLAG=-lm
 
 all: parser

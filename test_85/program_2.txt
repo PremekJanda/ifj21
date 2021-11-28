@@ -1,0 +1,15 @@
+require "ifj21"
+
+global fce : function(string, number) : integer, number
+
+function fce(x : string, y : number) : integer, number
+    write(5)
+end
+
+function main()
+    local c : number = 1.0
+
+    fce("string", 5.0)
+end
+
+main()

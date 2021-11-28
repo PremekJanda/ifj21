@@ -1,0 +1,103 @@
+#!/bin/bash
+
+# pro kopírování na merlina se nejdřív příkazem make zip_test vytvoří zip na zkopírování
+# 
+# pokud chcete testovat na merlinovi:
+# 	./test_compiler --merlin
+# tím se přidají do každého testovacího souboru (in.txt) vestavěné funkce a odebere řádek require "ifj21"
+# 
+# testovací soubory přidávejte do nových složek
+# po spuštění na merlinovi, by se měly samy vygenerovat expected_output.txt
+# pokud testujete záměrně chybyný soubor, tak jej doplňte sami
+# pro kopletní testování i s výpisem:
+# 	./test_compiler --detail
+
+tests="tests/*"
+code="test_zip_code.txt"
+
+red='\033[0;31m'
+ok='\033[0;32m'
+gray='\e[2m'
+endtext='\033[0m'
+
+detail=""
+[ "$1" ] && [ "$1" = "--detail" ] && detail="1"
+
+# makefile build
+make --silent
+
+# přidá vestavěné funkce
+if [ "$1" ] && [ "$1" = "--merlin" ]; then
+	for file in $tests; do
+		# přidá vestavěné funkce
+		grep -q "Zajisteni zakladni kompatibility IFJ21->Teal" "${file}/in.txt"
+		if [ $? -ne 0 ]; then
+			echo > file.txt
+			cat "$code" > file.txt
+			cat "${file}/in.txt" >> file.txt
+			cp file.txt "${file}/in.txt"
+			rm file.txt
+		fi
+
+		# odebere require "ifj"
+		grep -q "require \"ifj21\"" "${file}/in.txt"
+		[ $? -eq 0 ] && sed -i "/require \"ifj21\"/d" "${file}/in.txt"
+	done
+fi
+
+for file in $tests; do
+	expected_output="${file}/expected_output.txt"
+	in="${file}/in.txt"
+	out="${file}/out.txt"
+	val="${file}/val.valgrind"
+	icout="${file}/icout.txt"
+	icerr="${file}/icerr.txt"
+
+	if [ "$1" != "--merlin" ]; then
+		# smaže vestavěné funkce
+		grep -q "Zajisteni zakladni kompatibility IFJ21->Teal" "${file}/in.txt"
+		[ $? -eq 0 ] && sed -i -e 1,96d "${file}/in.txt"
+		# přidá řádek require "ifj"
+		grep -q "require \"ifj21\"" "${file}/in.txt"
+		if [ $? -ne 0 ]; then
+			echo "require \"ifj21\"" > file.txt
+			cat "${file}/in.txt" >> file.txt
+			cp file.txt "${file}/in.txt"
+			rm file.txt
+		fi
+	fi
+
+	valgrind --leak-check=full --show-leak-kinds=all ./compiler < "$in" > "$out" 2> "$val"
+	compiler_ret=$?
+	
+	grep -q "ERROR SUMMARY: 0 errors" "$val"
+	val_ret=$?
+
+	# úspěšná kompilace kódu
+	[ "$1" ] && [ "$1" = "--merlin" ] && tl run "$in" > "$expected_output"
+	[ $compiler_ret -eq 0 ] && ./ic21int "$out" < "$in" > "$icout" 2> "$icerr" 2>&1
+
+	[ -f "$icout" ] && diff --strip-trailing-cr "$expected_output" "$icout" > /dev/null
+
+	# porovnání souborů
+	if [ $? -eq 0 ]; then
+		echo -e "\n${ok}$(basename $file): \tOK $endtext"
+
+	else
+		failed="1"
+		if [ $val_ret -eq 0 ]; then
+			echo -e "\n${red}$(basename $file):\tFAILED $endtext"
+		else 
+			echo -e "\n${red}$(basename $file):\tFAILED - Valgrind error $endtext"
+		fi
+
+		if [ $detail ]; then
+			echo -e "Expected output:$gray \n$(cat "$expected_output")$endtext"
+			[ ! -f "$icout" ] && echo "No output - ERRCODE: "$compiler_ret || echo -e "Actual output:$gray \n$(cat "$icout")$endtext"
+		fi
+	fi
+done
+
+[ $failed ] && [ -z $detail ] && echo -e "${gray}\
+Pomocí --detail se zobrazí podrobnosti\n\
+       --merlin se připojí kód vestavěných funkcí pro testování na merlinu$endtext"

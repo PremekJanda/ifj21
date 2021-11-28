@@ -1,0 +1,27 @@
+require "ifj21"
+
+global s1 : string = "ahoj"
+
+function fce(x : string, y : number) : integer, number
+    local s4 : integer = 1 + 2 + 3
+    if y == 2.0 then
+        write(x, s4)
+    else
+        wite(x)
+    end
+end
+
+function main()
+    local s2 : string = "ahoj"
+    local s3 : number = 1.5 + 1 + 2 + 3
+    write(s2)
+    if s1 == "tt" then 
+        fce("1", 1.0)
+    else
+        fce("2", 2.0)
+    end
+end
+
+global prom : string = "ahoj"
+
+main()
