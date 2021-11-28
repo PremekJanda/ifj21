@@ -2,7 +2,7 @@
  *  Soubor: semantic.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	26. 11. 2021 09:13:15
+ *  Poslední změna:	28. 11. 2021 20:12:00
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -44,8 +44,20 @@
 //      unused function
 //      unused variable
 
-// TODO
-// operáto # očekává string
+// TODO Všechny proměnné nalevo od = již musí být definovány
+// TODO operátor # očekává string
+// TODO Neobsahuje-li tělo funkce příkaz return, vrací funkce odpovídající počet hodnot nil
+
+// TODO Každá proměnná musí být definována před jejím použitím, jinak se jedná o sémantickou chybu 3
+// TODO Definice proměnné stejného jména jako má jiná proměnná ve stejném bloku vede na chybu 3
+// TODO Každá uživatelská funkce s daným identifikátorem je definována nejvýše jednou chyba 3
+// TODO Funkce může být deklarována nejvýše jednou, jinak dochází k chybě 3
+// TODO pokud u deklarace a definice funkce neodpovídají seznamy parametrů nebo seznamy návratových typů, či pokud deklarovaná funkce není nakonec definována err 3
+// TODO deklarace nebo definice nové proměnné
+// TODO V případě, že příkaz volání funkce obsahuje jiný počet nebo typy parametrů, než funkce očekává (tedy než je uvedeno v její hlavičce, a to i u vestavěných funkcí), jedná se o chybu 5
+// TODO Pokud funkce vrací méně hodnot, než je očekáváno dle počtu proměnných id 1 až id n , dojde k chybě 5
+// TODO Typová nekompatibilita mezi návratovou hodnotou a odpovídající proměnnou pro její uložení vede na chybu 5
+// TODO Je-li počet výrazů výsledných hodnot nekompatibilní s návratovými typy dané funkce, jsou chybějící hodnoty doplněny speciální hodnotou nil a přebývající způsobí chybu 5
 
 #define SEM_OK 0
 #define SEM_DEFINE 3

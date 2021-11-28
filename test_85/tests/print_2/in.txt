@@ -1,0 +1,10 @@
+require "ifj21"
+
+function main()
+    local s1 : string = "Text1"
+    local s2 : string = "Text2"
+    s1 = s1 .. s2
+    write(s1)
+end
+
+main()

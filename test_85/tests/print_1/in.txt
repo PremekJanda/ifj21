@@ -1,0 +1,11 @@
+require "ifj21"
+
+global s1 : string = "string1"
+
+function main()
+    local s2 : string = "string2"
+    local n1 : number = 1.5 + 1 + 2 + 3
+    write(s1, s2, n1)
+end
+
+main()

@@ -1,0 +1,9 @@
+require "ifj21"
+
+function main()
+    local a : number = 4.0
+
+    write(a)
+end
+
+main()
