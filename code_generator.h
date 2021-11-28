@@ -4,7 +4,7 @@
  * @brief Hlavičkový soubor funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	26. 11. 2021 10:07:30
+ * Last Modified:	29. 11. 2021 00:32:05
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -40,6 +40,53 @@ void convert_strings(t_node*tree);
 void eval_expression(code_t*code, t_node*expr);
 
 void fix_expr(t_node*tree);
+
+#define NEW_NODES_FOR_ASSIGNMENT 6
+
+// macro to create new write function call with one argument item, item will be blank and at index 9
+#define CREATE_NEW_WRITE_CALL(new_nodes) \
+    node_setdata(new_nodes[0], "<stmt-list>", 0); \
+    node_setdata(new_nodes[0], "", 1); \
+    \
+    node_setdata(new_nodes[1], "<stmt>", 0); \
+    node_setdata(new_nodes[1], "", 1); \
+    node_addnext(new_nodes[0], new_nodes[1]); \
+    \
+    node_setdata(new_nodes[2], "id", 0); \
+    node_setdata(new_nodes[2], "write_fc", 1); \
+    node_addnext(new_nodes[1], new_nodes[2]); \
+    \
+    node_setdata(new_nodes[3], "<assign-or-fcall>", 0); \
+    node_setdata(new_nodes[3], "", 1); \
+    node_addnext(new_nodes[1], new_nodes[3]); \
+    \
+    node_setdata(new_nodes[4], "(", 0); \
+    node_setdata(new_nodes[4], "(", 1); \
+    node_addnext(new_nodes[3], new_nodes[4]);\
+    \
+    node_setdata(new_nodes[5], "<param-list>", 0); \
+    node_setdata(new_nodes[5], "", 1); \
+    node_addnext(new_nodes[3], new_nodes[5]); \
+    \
+    node_setdata(new_nodes[6], ")", 0); \
+    node_setdata(new_nodes[6], ")", 1); \
+    node_addnext(new_nodes[3], new_nodes[6]); \
+    \
+    node_setdata(new_nodes[7], "<item-list>", 0); \
+    node_setdata(new_nodes[7], "", 1); \
+    node_addnext(new_nodes[5], new_nodes[7]); \
+    \
+    node_setdata(new_nodes[8], "<item>", 0); \
+    node_setdata(new_nodes[8], "", 1); \
+    node_addnext(new_nodes[7], new_nodes[8]); \
+    \
+    node_setdata(new_nodes[9], "<item-another>", 0); \
+    node_setdata(new_nodes[9], "", 1); \
+    node_addnext(new_nodes[7], new_nodes[9]); \
+    \
+    node_setdata(new_nodes[10], "eps", 0); \
+    node_setdata(new_nodes[10], "", 1); \
+    node_addnext(new_nodes[9], new_nodes[10]);
 
 /**
  * @brief Vygeneruje kód jazyka IFJ21Code ze syntaktického stromu podrobenému syntaktické a sémantické analýze
@@ -151,7 +198,7 @@ int is_local(code_t*code, char*id);
  */
 bool is_global(char*id);
 
-//convert_write(code_t*code, t_node*tree);
+void convert_write(t_node*tree);
 
 void generate_assignment(code_t*code, t_node*assignment);
 

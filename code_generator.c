@@ -4,7 +4,7 @@
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	28. 11. 2021 23:17:58
+ * Last Modified:	29. 11. 2021 00:35:10
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -25,6 +25,7 @@ buffer_t*global_code_buffer;
 
 void generate_code(t_node*tree, code_t*code){
     //nastavení globálních proměnných
+    tree_print(*tree, 0);
     global_tree = tree;
     global_code_buffer = &code->text;
 
@@ -44,10 +45,11 @@ void generate_code(t_node*tree, code_t*code){
     //změna názvů identifikátorů ve stromě na unikátní identifikátory
     ht_table_t ht_already_processed;
     ht_init(&ht_already_processed);
-
-    fix_expr(tree);
-    convert_strings(tree);
     
+    fix_expr(tree);
+    
+    convert_strings(tree);
+
     int depth = 0;
     int depth_total = 0;
 
@@ -55,8 +57,7 @@ void generate_code(t_node*tree, code_t*code){
 
     rename_all_id(tree, &ht_already_processed, &fc, &depth, &depth_total);
     convert_write(tree);
-    tree_print(*tree, 0);
-
+    
     ht_delete_all(&ht_already_processed);
 
     //current_node = <prog>
@@ -141,7 +142,7 @@ void convert_write(t_node*tree) {
             *pointer_to_write_node = tree->prev->next[1];
             tree->next[1]->prev = *pointer_to_write_node;
 
-            node_delete(tree);
+            tree_delete(tree);
         }
     }
     
@@ -209,6 +210,7 @@ void rename_all_id(t_node* tree, ht_table_t*ht_already_processed, char**fc, int*
                 if (strcmp(tree->prev->data[0].data, "<stmt>") == 0){
                     if (strcmp(tree->prev->next[1]->next[0]->data[0].data, "(") == 0) {
                         if (strcmp(tree->data[1].data, "write") == 0){
+                            free(id);
                             return;
                         }
                         strcat_format_realloc(&new_id, "%s_fc", id);
@@ -232,9 +234,9 @@ void rename_all_id(t_node* tree, ht_table_t*ht_already_processed, char**fc, int*
             } 
             field_of_visibility_id_replacement(id, new_id.data, ref_node);
             ht_insert(ht_already_processed, new_id.data, 1);
-            buffer_destroy(&new_id);
-            free(id);
+            buffer_destroy(&new_id);  
         }
+        free(id);
     }
     else if ((strcmp(tree->data[1].data, "do") == 0) || (strcmp(tree->data[1].data, "then") == 0)){
         (*depth)++;
@@ -469,7 +471,6 @@ void generate_local_decl(code_t*code, t_node*local_dec){
     
 
     if (strcmp(local_dec->next[4]->next[0]->data[0].data, "eps") != 0) {
-        tree_print(*local_dec, 0);
         t_node*aux_node = local_dec->next[4]->next[1]; //<f_or_item>
         if (strcmp(aux_node->next[0]->data[0].data, "expr") == 0) {
             eval_expression(code, aux_node->next[0]);
@@ -540,7 +541,7 @@ void predefine_vars_of_stmt_list(code_t*code, t_node*stmt_list){
                 t_node* aux = stmt_list;
                 stmt_list = stmt_list->next[1];
                 already_shifted = true;
-                node_delete(aux);
+                tree_delete(aux);
             }
 
             else {
@@ -656,7 +657,7 @@ void predefine_vars_of_stmt_list(code_t*code, t_node*stmt_list){
                     f_or_item->next[1] = fc_assign_nodes[1];
                     f_or_item->next[1]->prev = &(*f_or_item);
                 }
-                node_delete(stmt_list->next[0]->next[0]);
+                tree_delete(stmt_list->next[0]->next[0]);
                 node_addnext(stmt_list->next[0], new_nodes[0]);
                 node_addnext(stmt_list->next[0], new_nodes[1]); 
                 
@@ -1062,7 +1063,7 @@ void eval_expression(code_t*code, t_node*expr) {
 
 void free_memory_then_quit(int return_code) {
     
-    node_delete(global_tree);
+    tree_delete(global_tree);
     buffer_destroy(global_code_buffer);
     exit(return_code);
 }

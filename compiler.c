@@ -2,7 +2,7 @@
  *  Soubor: compiler.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	26. 11. 2021 09:17:08
+ *  Last modified:	29. 11. 2021 00:34:14
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -11,6 +11,7 @@
  */
 
 #include "compiler.h"
+#include "tree.h"
 
 int main() {
     // návratový kód chyby
@@ -43,6 +44,7 @@ int main() {
 
     generate_code(ast_root_node, &code);
     RETURN_ERROR(CODE_GENERATION_ERROR)
+    buffer_destroy(&code.text);
     
     // uvolnění alokované paměti
     tree_delete(ast_root_node);
