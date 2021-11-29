@@ -289,62 +289,28 @@ PUSHFRAME
 
 # -- local declaration of variable s1_main_depth1_dt1
 DEFVAR LF@s1_main_depth1_dt1
-PUSHS string@Text
+PUSHS string@Text1
 POPS LF@s1_main_depth1_dt1
 
-# -- local declaration of variable a_main_depth1_dt1
-DEFVAR LF@a_main_depth1_dt1
-PUSHS int@1
-PUSHS int@1
-CALL ARITHMETIC_TYPE_CHECK
-ADDS
-POPS LF@a_main_depth1_dt1
-PUSHS int@10
-POPS LF@a_main_depth1_dt1
-PUSHS string@ahoj
+# -- local declaration of variable s2_main_depth1_dt1
+DEFVAR LF@s2_main_depth1_dt1
+PUSHS string@Text2
+POPS LF@s2_main_depth1_dt1
+PUSHS LF@s1_main_depth1_dt1
+PUSHS LF@s2_main_depth1_dt1
+CALL IS_STRING
+POPS GF@CONVERTION1
+CALL IS_STRING
+POPS GF@CONVERTION2
+CONCAT GF@CONVERTION1 GF@CONVERTION1 GF@CONVERTION2
+PUSHS GF@CONVERTION1
 POPS LF@s1_main_depth1_dt1
-PUSHS string@sss
-POPS GF@EXPR1
-
-PUSHS string@tt
-POPS GF@EXPR2
-
-
-# -- comparison ==
-EQ GF@COMP_RES GF@EXPR1 GF@EXPR2
-JUMPIFNEQ ELSE0_main_fc GF@COMP_RES bool@true
-PUSHS int@1
-POPS LF@a_main_depth1_dt1
-JUMP ENDIF0_main_fc
-LABEL ELSE0_main_fc
-PUSHS int@3
-POPS LF@a_main_depth1_dt1
-LABEL ENDIF0_main_fc
-
- # --- while start
-LABEL WHILE1_main_fc
-PUSHS int@0
-POPS GF@EXPR2
-
-
-# -- comparison >
-GT GF@COMP_RES LF@a_main_depth1_dt1 GF@EXPR2
-JUMPIFNEQ END_WHILE1_main_fc GF@COMP_RES bool@true
 
 # -- call of write_fc
 CREATEFRAME
 DEFVAR TF@%1
-MOVE TF@%1 LF@a_main_depth1_dt1
+MOVE TF@%1 LF@s1_main_depth1_dt1
 CALL write_fc
-PUSHS LF@a_main_depth1_dt1
-PUSHS int@1
-CALL ARITHMETIC_TYPE_CHECK
-SUBS
-POPS LF@a_main_depth1_dt1
-
-
-JUMP WHILE1_main_fc
-LABEL END_WHILE1_main_fc
 POPFRAME
 RETURN
 

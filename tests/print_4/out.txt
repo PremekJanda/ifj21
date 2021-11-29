@@ -287,14 +287,9 @@ JUMP END_main_fc
 LABEL main_fc
 PUSHFRAME
 
-# -- local declaration of variable s1_main_depth1_dt1
-DEFVAR LF@s1_main_depth1_dt1
-PUSHS string@Text
-POPS LF@s1_main_depth1_dt1
-
 # -- local declaration of variable a_main_depth1_dt1
 DEFVAR LF@a_main_depth1_dt1
-PUSHS float@0x1p+0
+PUSHS float@0x1p+2
 POPS LF@a_main_depth1_dt1
 
 # -- call of write_fc

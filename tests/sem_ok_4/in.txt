@@ -1,0 +1,15 @@
+require "ifj21"
+
+function main()
+    local i : integer = 1
+    if "a" == "a" then
+        local i : integer = 2
+        write(i)
+    else
+        local i : integer = 3
+        write(i)
+    end
+    write(i)
+end
+
+main()

@@ -1,14 +1,275 @@
-==233469== Memcheck, a memory error detector
-==233469== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==233469== Using Valgrind-3.16.1 and LibVEX; rerun with -h for copyright info
-==233469== Command: ./compiler
-==233469== 
-==233469== 
-==233469== HEAP SUMMARY:
-==233469==     in use at exit: 0 bytes in 0 blocks
-==233469==   total heap usage: 6,674 allocs, 6,674 frees, 245,547 bytes allocated
-==233469== 
-==233469== All heap blocks were freed -- no leaks are possible
-==233469== 
-==233469== For lists of detected and suppressed errors, rerun with: -s
-==233469== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==310773== Memcheck, a memory error detector
+==310773== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==310773== Using Valgrind-3.16.1 and LibVEX; rerun with -h for copyright info
+==310773== Command: ./compiler
+==310773== 
+==310773== Conditional jump or move depends on uninitialised value(s)
+==310773==    at 0x409DC9: fix_expr.part.0 (code_generator.c:164)
+==310773==    by 0x409D93: fix_expr (code_generator.c:155)
+==310773==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
+==310773==    by 0x409D93: fix_expr (code_generator.c:155)
+==310773==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
+==310773==    by 0x409D93: fix_expr (code_generator.c:155)
+==310773==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
+==310773==    by 0x409D93: fix_expr (code_generator.c:155)
+==310773==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
+==310773==    by 0x409D93: fix_expr (code_generator.c:155)
+==310773==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
+==310773==    by 0x409D93: fix_expr (code_generator.c:155)
+==310773==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
+==310773==    by 0x409D93: fix_expr (code_generator.c:155)
+==310773==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
+==310773==    by 0x409D93: fix_expr (code_generator.c:155)
+==310773==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
+==310773==    by 0x409D93: fix_expr (code_generator.c:155)
+==310773==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
+==310773==    by 0x409D93: fix_expr (code_generator.c:155)
+==310773==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
+==310773==    by 0x409D93: fix_expr (code_generator.c:155)
+==310773==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
+==310773== 
+==310773== Invalid read of size 1
+==310773==    at 0x483DB86: strlen (vg_replace_strmem.c:459)
+==310773==    by 0x48E574D: __vfprintf_internal (in /usr/lib64/libc-2.31.so)
+==310773==    by 0x48F7809: __vsnprintf_internal (in /usr/lib64/libc-2.31.so)
+==310773==    by 0x4096B1: strcat_format_realloc (mystring.c:124)
+==310773==    by 0x40AAB6: rename_all_id (code_generator.c:224)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==  Address 0x4ac3d80 is 0 bytes inside a block of size 5 free'd
+==310773==    at 0x483B9F5: free (vg_replace_malloc.c:538)
+==310773==    by 0x4047B2: node_setdata (tree.c:37)
+==310773==    by 0x40A8CF: rename_all_id (code_generator.c:231)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40D1FC: generate_code (code_generator.c:58)
+==310773==    by 0x40127A: main (compiler.c:45)
+==310773==  Block was alloc'd at
+==310773==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==310773==    by 0x4047CA: node_setdata (tree.c:40)
+==310773==    by 0x403333: syntax_analyzer (parser.c:255)
+==310773==    by 0x40123D: main (compiler.c:27)
+==310773== 
+==310773== Invalid read of size 1
+==310773==    at 0x483DB94: strlen (vg_replace_strmem.c:459)
+==310773==    by 0x48E574D: __vfprintf_internal (in /usr/lib64/libc-2.31.so)
+==310773==    by 0x48F7809: __vsnprintf_internal (in /usr/lib64/libc-2.31.so)
+==310773==    by 0x4096B1: strcat_format_realloc (mystring.c:124)
+==310773==    by 0x40AAB6: rename_all_id (code_generator.c:224)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==  Address 0x4ac3d81 is 1 bytes inside a block of size 5 free'd
+==310773==    at 0x483B9F5: free (vg_replace_malloc.c:538)
+==310773==    by 0x4047B2: node_setdata (tree.c:37)
+==310773==    by 0x40A8CF: rename_all_id (code_generator.c:231)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40D1FC: generate_code (code_generator.c:58)
+==310773==    by 0x40127A: main (compiler.c:45)
+==310773==  Block was alloc'd at
+==310773==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==310773==    by 0x4047CA: node_setdata (tree.c:40)
+==310773==    by 0x403333: syntax_analyzer (parser.c:255)
+==310773==    by 0x40123D: main (compiler.c:27)
+==310773== 
+==310773== Invalid read of size 1
+==310773==    at 0x48FCC50: _IO_default_xsputn (in /usr/lib64/libc-2.31.so)
+==310773==    by 0x48E3C16: __vfprintf_internal (in /usr/lib64/libc-2.31.so)
+==310773==    by 0x48F7809: __vsnprintf_internal (in /usr/lib64/libc-2.31.so)
+==310773==    by 0x4096B1: strcat_format_realloc (mystring.c:124)
+==310773==    by 0x40AAB6: rename_all_id (code_generator.c:224)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==  Address 0x4ac3d80 is 0 bytes inside a block of size 5 free'd
+==310773==    at 0x483B9F5: free (vg_replace_malloc.c:538)
+==310773==    by 0x4047B2: node_setdata (tree.c:37)
+==310773==    by 0x40A8CF: rename_all_id (code_generator.c:231)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40D1FC: generate_code (code_generator.c:58)
+==310773==    by 0x40127A: main (compiler.c:45)
+==310773==  Block was alloc'd at
+==310773==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==310773==    by 0x4047CA: node_setdata (tree.c:40)
+==310773==    by 0x403333: syntax_analyzer (parser.c:255)
+==310773==    by 0x40123D: main (compiler.c:27)
+==310773== 
+==310773== Invalid read of size 1
+==310773==    at 0x48FCC5F: _IO_default_xsputn (in /usr/lib64/libc-2.31.so)
+==310773==    by 0x48E3C16: __vfprintf_internal (in /usr/lib64/libc-2.31.so)
+==310773==    by 0x48F7809: __vsnprintf_internal (in /usr/lib64/libc-2.31.so)
+==310773==    by 0x4096B1: strcat_format_realloc (mystring.c:124)
+==310773==    by 0x40AAB6: rename_all_id (code_generator.c:224)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==  Address 0x4ac3d82 is 2 bytes inside a block of size 5 free'd
+==310773==    at 0x483B9F5: free (vg_replace_malloc.c:538)
+==310773==    by 0x4047B2: node_setdata (tree.c:37)
+==310773==    by 0x40A8CF: rename_all_id (code_generator.c:231)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40D1FC: generate_code (code_generator.c:58)
+==310773==    by 0x40127A: main (compiler.c:45)
+==310773==  Block was alloc'd at
+==310773==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==310773==    by 0x4047CA: node_setdata (tree.c:40)
+==310773==    by 0x403333: syntax_analyzer (parser.c:255)
+==310773==    by 0x40123D: main (compiler.c:27)
+==310773== 
+==310773== Conditional jump or move depends on uninitialised value(s)
+==310773==    at 0x40D262: generate_code (code_generator.c:77)
+==310773==    by 0x40127A: main (compiler.c:45)
+==310773== 
+==310773== 
+==310773== HEAP SUMMARY:
+==310773==     in use at exit: 884 bytes in 13 blocks
+==310773==   total heap usage: 5,716 allocs, 5,703 frees, 238,696 bytes allocated
+==310773== 
+==310773== 2 bytes in 1 blocks are indirectly lost in loss record 1 of 13
+==310773==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==310773==    by 0x404821: node_setdata (tree.c:47)
+==310773==    by 0x40316B: syntax_analyzer (parser.c:237)
+==310773==    by 0x40123D: main (compiler.c:27)
+==310773== 
+==310773== 2 bytes in 1 blocks are indirectly lost in loss record 2 of 13
+==310773==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==310773==    by 0x404821: node_setdata (tree.c:47)
+==310773==    by 0x402A73: bottom_up (parser.c:130)
+==310773==    by 0x403446: syntax_analyzer (parser.c:250)
+==310773==    by 0x40123D: main (compiler.c:27)
+==310773== 
+==310773== 5 bytes in 1 blocks are indirectly lost in loss record 3 of 13
+==310773==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==310773==    by 0x4047CA: node_setdata (tree.c:40)
+==310773==    by 0x402A73: bottom_up (parser.c:130)
+==310773==    by 0x403446: syntax_analyzer (parser.c:250)
+==310773==    by 0x40123D: main (compiler.c:27)
+==310773== 
+==310773== 12 bytes in 1 blocks are indirectly lost in loss record 4 of 13
+==310773==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==310773==    by 0x4047CA: node_setdata (tree.c:40)
+==310773==    by 0x40316B: syntax_analyzer (parser.c:237)
+==310773==    by 0x40123D: main (compiler.c:27)
+==310773== 
+==310773== 32 bytes in 1 blocks are indirectly lost in loss record 5 of 13
+==310773==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==310773==    by 0x40473F: node_init (tree.c:22)
+==310773==    by 0x403134: syntax_analyzer (parser.c:236)
+==310773==    by 0x40123D: main (compiler.c:27)
+==310773== 
+==310773== 39 (32 direct, 7 indirect) bytes in 1 blocks are definitely lost in loss record 6 of 13
+==310773==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==310773==    by 0x40473F: node_init (tree.c:22)
+==310773==    by 0x402A64: bottom_up (parser.c:129)
+==310773==    by 0x403446: syntax_analyzer (parser.c:250)
+==310773==    by 0x40123D: main (compiler.c:27)
+==310773== 
+==310773== 45 bytes in 1 blocks are definitely lost in loss record 7 of 13
+==310773==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==310773==    by 0x409263: buffer_init (mystring.c:22)
+==310773==    by 0x40AD97: convert_strings.part.0 (code_generator.c:952)
+==310773==    by 0x40B17F: convert_strings (code_generator.c:974)
+==310773==    by 0x40B17F: convert_strings (code_generator.c:970)
+==310773==    by 0x40B17F: convert_strings (code_generator.c:970)
+==310773==    by 0x40B17F: convert_strings (code_generator.c:970)
+==310773==    by 0x40B17F: convert_strings (code_generator.c:970)
+==310773==    by 0x40B17F: convert_strings (code_generator.c:970)
+==310773==    by 0x40B17F: convert_strings (code_generator.c:970)
+==310773==    by 0x40D2A5: convert_strings (code_generator.c:970)
+==310773==    by 0x40D2A5: generate_code (code_generator.c:51)
+==310773==    by 0x40127A: main (compiler.c:45)
+==310773== 
+==310773== 45 bytes in 1 blocks are definitely lost in loss record 8 of 13
+==310773==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==310773==    by 0x409263: buffer_init (mystring.c:22)
+==310773==    by 0x40AD97: convert_strings.part.0 (code_generator.c:952)
+==310773==    by 0x40B053: convert_strings (code_generator.c:970)
+==310773==    by 0x40B053: convert_strings (code_generator.c:970)
+==310773==    by 0x40B053: convert_strings (code_generator.c:970)
+==310773==    by 0x40B053: convert_strings (code_generator.c:970)
+==310773==    by 0x40B053: convert_strings (code_generator.c:970)
+==310773==    by 0x40B053: convert_strings (code_generator.c:970)
+==310773==    by 0x40B053: convert_strings (code_generator.c:970)
+==310773==    by 0x40B053: convert_strings (code_generator.c:970)
+==310773==    by 0x40B053: convert_strings (code_generator.c:970)
+==310773==    by 0x40D2A5: convert_strings (code_generator.c:970)
+==310773==    by 0x40D2A5: generate_code (code_generator.c:51)
+==310773==    by 0x40127A: main (compiler.c:45)
+==310773== 
+==310773== 45 bytes in 1 blocks are definitely lost in loss record 9 of 13
+==310773==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==310773==    by 0x409263: buffer_init (mystring.c:22)
+==310773==    by 0x40A839: rename_all_id (code_generator.c:190)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40A767: rename_all_id (code_generator.c:256)
+==310773==    by 0x40D1FC: generate_code (code_generator.c:58)
+==310773== 
+==310773== 80 bytes in 1 blocks are indirectly lost in loss record 10 of 13
+==310773==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==310773==    by 0x40472C: node_init (tree.c:19)
+==310773==    by 0x403134: syntax_analyzer (parser.c:236)
+==310773==    by 0x40123D: main (compiler.c:27)
+==310773== 
+==310773== 80 bytes in 1 blocks are definitely lost in loss record 11 of 13
+==310773==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==310773==    by 0x40472C: node_init (tree.c:19)
+==310773==    by 0x402A64: bottom_up (parser.c:129)
+==310773==    by 0x403446: syntax_analyzer (parser.c:250)
+==310773==    by 0x40123D: main (compiler.c:27)
+==310773== 
+==310773== 158 (32 direct, 126 indirect) bytes in 1 blocks are definitely lost in loss record 12 of 13
+==310773==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==310773==    by 0x403129: syntax_analyzer (parser.c:235)
+==310773==    by 0x40123D: main (compiler.c:27)
+==310773== 
+==310773== 472 bytes in 1 blocks are still reachable in loss record 13 of 13
+==310773==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==310773==    by 0x48EE7AE: __fopen_internal (in /usr/lib64/libc-2.31.so)
+==310773==    by 0x409878: append_file (mystring.c:181)
+==310773==    by 0x40D18E: generate_code (code_generator.c:40)
+==310773==    by 0x40127A: main (compiler.c:45)
+==310773== 
+==310773== LEAK SUMMARY:
+==310773==    definitely lost: 279 bytes in 6 blocks
+==310773==    indirectly lost: 133 bytes in 6 blocks
+==310773==      possibly lost: 0 bytes in 0 blocks
+==310773==    still reachable: 472 bytes in 1 blocks
+==310773==         suppressed: 0 bytes in 0 blocks
+==310773== 
+==310773== Use --track-origins=yes to see where uninitialised values come from
+==310773== For lists of detected and suppressed errors, rerun with: -s
+==310773== ERROR SUMMARY: 26 errors from 12 contexts (suppressed: 0 from 0)

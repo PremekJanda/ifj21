@@ -2,7 +2,7 @@
  *  Soubor: semantic.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	28. 11. 2021 20:12:00
+ *  Poslední změna:	29. 11. 2021 13:31:51
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -119,11 +119,18 @@
     free(assign_type); \
     free(value); \
 
+#define FREE_F_DEF() \
+    fce_free(cmp_list); \
+    fce_free(ret_list); \
+    free(empty_return_type);
+
 #define UPDATE_EXPR(__return) \
     *type = t; \
     *value = v; \
     return __return; 
 
+#define NUM_OR_INT(__type1, __type2) \
+    (!strcmp("number", __type1) && !strcmp("integer", __type2)) || (!strcmp("number", __type2) && !strcmp("integer", __type1))
 
 
 // - - - - - - - - - - - - - - - - - - //
