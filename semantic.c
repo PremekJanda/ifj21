@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	29. 11. 2021 15:20:05
+ *  Last modified:	29. 11. 2021 23:32:16
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -91,7 +91,7 @@ int is_f_set(key_t name, def_table_t *deftable, int state) {
                 // pokud je funkce již v tabulce, tak došlo k chybě
                 if (!strcmp(deftable->item[i].name, name)) {
                     if (deftable->item[i].state == DEFINED) {
-                        printf("redefinice funkce\n");
+                        // printf("redefinice funkce\n");
                         return SEM_DEFINE;
                     }
                 }
@@ -103,9 +103,9 @@ int is_f_set(key_t name, def_table_t *deftable, int state) {
             for (size_t i = 0; i < deftable->size; i++) {
                 // pokud je funkce již v tabulce, tak došlo k chybě
                 if (!strcmp(deftable->item[i].name, name)) {
-                    (deftable->item[i].state == DECLARED) ?
-                        printf("redeklarace funkce\n") :
-                        printf("definovanou funkci nelze znovu deklarovat\n");
+                    // (deftable->item[i].state == DECLARED) ?
+                        // printf("redeklarace funkce\n") :
+                        // printf("definovanou funkci nelze znovu deklarovat\n");
                     
                     return SEM_DEFINE;
                 }
@@ -118,10 +118,10 @@ int is_f_set(key_t name, def_table_t *deftable, int state) {
                 if (!strcmp(deftable->item[i].name, name)) {
                     // funkce musí být před zavoláním definována
                     if (deftable->item[i].state == DECLARED) {
-                        printf("volání funkce, která nebyla definována (což může být ok)\n");
+                        // printf("volání funkce, která nebyla definována (což může být ok)\n");
                         return SEM_OK;
                     } else {
-                        printf("call function %s\n", name);
+                        // printf("call function %s\n", name);
                         // přidá příznak do tabulky funkcí, o volání funkce
                         deftable->item[i].called = 1;
                         return SEM_OK;
@@ -130,7 +130,7 @@ int is_f_set(key_t name, def_table_t *deftable, int state) {
             }
 
         // funkce nebyla nalezena => chyba
-        printf("volání nedeklarované či nedefinované funkce\n");
+        // printf("volání nedeklarované či nedefinované funkce\n");
         return SEM_DEFINE;
     }
     
@@ -150,6 +150,19 @@ int eval_fcall(def_table_t deftable) {
     return SEM_OK;
 }
 
+int append_list(fce_item_t **dest, fce_item_t *src) {
+    fce_item_t *tmpitem = src;
+    
+    while (tmpitem != NULL) {
+        ALLOC_STR(key, tmpitem->key)
+        fce_item_push(dest, key);
+        tmpitem = tmpitem->next_f_item;
+    }
+
+    fce_free(src);
+
+    return SEM_OK;
+}
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
@@ -157,9 +170,6 @@ int eval_fcall(def_table_t deftable) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
 int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
-    // printf("[[%s %s %d]]", node->data[0].data, node->data[1].data, node->next_count);
-    // printf("ROOTNODE: %s %s %d ~~~\n", node->data[0].data, node->data[1].data, node->next_count);
-
     // unární oprátor
     if (node->next_count == 2) {
         t_node *unary_node = (strcmp(node->next[0]->data[1].data, "#")) ? node->next[0] : node->next[1];
@@ -168,6 +178,7 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
             free(*value);
             free(*type);
 
+            // alokuje se délka potřebná pro jeho hodnotu
             ALLOC_STR(t, "integer")
             size_t len = strlen(unary_node->data[1].data);
             key_t v = malloc(len / 10 + 2);
@@ -194,8 +205,6 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
 
         ALLOC_STR(type1, *type)
         ALLOC_STR(val1, *value)
-
-        // printf("~~~val1    %s %s %d ~~~\n", type1, val1, node->next_count);
         
         // pravý operand
         if ((sem_type = eval_expr_type(node->next[2], value, type, symtable))) {
@@ -206,22 +215,17 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
 
         ALLOC_STR(type2, *type)
         ALLOC_STR(val2, *value)
-
-        // printf("~~~val2    %s %s %d ~~~\n", type2, val2, node->next_count);
         
         sem_type = strcmp(type1, type2);
 
         // konverze z int na number
         if (NUM_OR_INT(type1, type2) || !strcmp(node->next[1]->data[1].data, "/")) {
-            
             *type = realloc(*type, strlen("number") + 1);
             sprintf(*type, "%s", "number");
 
             // provedení konverze bylo v pořádku
             sem_type = SEM_OK;
         }
-        
-        // printf("??? %s %s => %d ???\n", type1, type2, sem_type);
         
         // uvolnění zdrojů při chybě
         free(type1); free(type2);
@@ -231,6 +235,8 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
         
     } else if (node->next_count == 1) {
         return eval_expr_type(node->next[0], value, type, symtable);
+
+    // nejníže položený prvek ve stromě
     } else if (node->next_count == 0) {
         free(*value);
         free(*type);
@@ -253,7 +259,7 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
 
             // proměnná nebyla nalezena -> chyba
             } else {
-                printf("!! id not found !!");
+                fprintf(stderr, "Identificator \"%s\" was not found", v);
                 UPDATE_EXPR(SEM_DEFINE)
             }
         }
@@ -265,18 +271,15 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
 }
 
 int eval_list_eq(fce_item_t *dest, fce_item_t *src, int err_code) {
-
-    // fce_print(src, 99);
-    // fce_print(dest, 99);
-    // printf("%s", src->next_f_item);
-    // printf("%s", dest->next_f_item);
-
-    if ((dest == NULL && src != NULL) || (dest != NULL && src == NULL))
+    // pokud je jiný počet hodnot listů nastane chyba
+    if ((dest == NULL && src != NULL) || (dest != NULL && src == NULL)) {
+        fprintf(stderr, "Invalid number of parameters/arguments\n");    
         return err_code;
+    }
 
     while (dest != NULL && src != NULL) {
-        
-        if (strcmp(dest->key, src->key) && strcmp(dest->key, "number") && strcmp(src->key, "integer")) {
+        // porovnání typové kompatibility
+        if (strcmp(dest->key, src->key) && !(!strcmp(dest->key, "number") && !strcmp(src->key, "integer"))) {
             fprintf(stderr, "Invalid assign %s to %s\n", src->key, dest->key);
             return err_code;
         }
@@ -285,6 +288,7 @@ int eval_list_eq(fce_item_t *dest, fce_item_t *src, int err_code) {
         src = src->next_f_item;
     }
 
+    // pokud je jiný počet hodnot listů nastane chyba
     if ((dest == NULL && src != NULL) || (dest != NULL && src == NULL)) {
         fprintf(stderr, "Invalid number of parameters/arguments\n");    
         return err_code;
@@ -294,9 +298,11 @@ int eval_list_eq(fce_item_t *dest, fce_item_t *src, int err_code) {
 }
 
 int eval_param_list(key_t name, fce_item_t *dest, stack_t *symtable, def_table_t *deftable) {
+    // u funkce write není třeba kontrolovat počty a typy parametrů
     if (!strcmp(name, "write"))
         return SEM_OK;
 
+    // ověří se , zda je volaná funkce definovaná
     if (is_f_set(name, deftable, 3))
         return SEM_DEFINE;
     
@@ -307,17 +313,13 @@ int eval_param_list(key_t name, fce_item_t *dest, stack_t *symtable, def_table_t
     fce_item_t *params = item->fce;
     int counter = item->ret_values;
 
+    // posune se ukazatel na začátek listu parametrů
     while (counter != 0 && params != NULL) {
         params = params->next_f_item;
         counter--;
     }
 
-    // fce_print(params, 99);
-    // fce_print(dest, 99);
-    // printf("%s", *params);
-    // printf("%s", *dest);
-    // printf("%s", name);
-
+    // zkontroluje se správnost parametrů
     return eval_list_eq(params, dest, SEM_FCE);
 }
 
@@ -330,10 +332,13 @@ int get_f_return_list(key_t name, fce_item_t **dest, stack_t *symtable) {
     fce_item_t *params = item->fce;
     int counter = 0;
 
-    fce_free(*dest);
+    if (*dest != NULL)
+        fce_free(*dest);
+        
     *dest = malloc(sizeof(fce_item_t));
     *dest = NULL;
     
+    // vytvoří nový list návratových typů
     while (counter != item->ret_values && params != NULL) {
         ALLOC_STR(id, params->key)
         fce_item_push(dest, id);
@@ -344,6 +349,32 @@ int get_f_return_list(key_t name, fce_item_t **dest, stack_t *symtable) {
     return SEM_OK;
 }
 
+int eval_return_eq(fce_item_t *dest, fce_item_t *src) {
+    // chyba, pokud je větší počet návratových hodnot
+    if (dest == NULL && src != NULL) {
+        fprintf(stderr, "Invalid number of return values\n");  
+        return SEM_FCE;
+    }
+
+    while (dest != NULL && src != NULL) {
+        // porovnání typové kompatibility
+        if (strcmp(dest->key, src->key) && !(!strcmp(dest->key, "number") && !strcmp(src->key, "integer"))) {
+            fprintf(stderr, "Invalid assign %s to %s\n", src->key, dest->key);
+            return SEM_FCE;
+        }
+
+        dest = dest->next_f_item;
+        src = src->next_f_item;
+    }
+
+    // chyba, pokud je větší počet návratových hodnot
+    if (dest == NULL && src != NULL) {
+        fprintf(stderr, "Invalid number of return values\n");    
+        return SEM_FCE;
+    }
+
+    return SEM_OK;
+}
 
 // - - - - - - - - - - - - - - - - - - - //
 // - - - -  Zpracování gramatiky - - - - //
@@ -361,11 +392,11 @@ int process_main_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
     while (node->next_count > 1) {
         TEMP_VARS()
 
-        printf("--------------------------- %s -------------------------\n", next->data[1].data);
+        // printf("--------------------------- %s -------------------------\n", next->data[1].data);
 
         // DEFINICE funkce
         if (strcmp(next->data[1].data, "function") == 0) {
-            printf("function definition\n");
+            // printf("function definition\n");
                 
             _ERR() is_f_set(curr->next[1]->data[1].data, deftable, DEFINED)      ERR_()
 
@@ -386,7 +417,7 @@ int process_main_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
 
             // určení, že jde o funkci
             if (curr->next[3]->next_count == 5) {
-                printf("function declaration\n");
+                // printf("function declaration\n");
                 _ERR() is_f_set(curr->next[1]->data[1].data, deftable, DECLARED)     ERR_()
                 // přidání id funkce do tabulky funkcí
                 _ERR() def_table_add(curr->next[1]->data[1].data, deftable, DECLARED) ERR_()
@@ -403,7 +434,7 @@ int process_main_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
 
                     // INICIALIZACE
                     if (curr->next[3]->next[1]->next_count == 2) {
-                        printf("global var initialization\n");
+                        // printf("global var initialization\n");
                         key_t assign_type = NULL;
                         
                         // vyhodnocení typů přiřazovaných hodnot
@@ -422,7 +453,7 @@ int process_main_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
 
                     // DEKLARACE
                     } else {
-                        printf("global var declaration\n");
+                        // printf("global var declaration\n");
                     }
 
                     // přidání proměnné do tabulky
@@ -433,12 +464,13 @@ int process_main_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
 
         // VOLÁNÍ funkce
         } else {
-            printf("function call\n");
+            // printf("function call\n");
             _ERR() is_f_set(next->data[1].data, deftable, CALLED)               ERR_()
+            // TODO když je funkc evolána globálně, tak nesmí mít návratové hodnoty
             // eval_param_list(, )
         }
 
-        printf("\n");
+        // printf("\n");
 
         node = node->next[1];
     }
@@ -452,29 +484,29 @@ int process_stmt_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
         TEMP_VARS()
         
         if (!strcmp(next->data[0].data, "<decl-local>")) {
-            printf("local variable declaration/initialization\n");
-            _ERR() is_id_used_locally(next->next[1]->data[1].data, symtable, *deftable)     ERR_()
+            // printf("local variable declaration/initialization\n");
+            _ERR() is_id_used_locally(next->next[1]->data[1].data, symtable, *deftable)         ERR_()
 
             // přidání proměnné do rámce
-            _ERR() process_decl_local(node, symtable)                               ERR_()
-
+            _ERR() process_decl_local(node, symtable)                                           ERR_()
 
         } else if (!strcmp(next->data[0].data, "<while>")) {
-            printf("while\n");
+            // printf("while\n");
 
-            _ERR() process_cond(curr->next[0]->next[1], symtable)                                               ERR_()
-            _ERR() process_while(curr->next[0], symtable, deftable)                          ERR_()
+            _ERR() process_cond(curr->next[0]->next[1], symtable)                               ERR_()
+            _ERR() process_while(curr->next[0], symtable, deftable)                             ERR_()
             
         } else if (!strcmp(next->data[0].data, "<if>")) {
-            printf("if\n");
-            _ERR() process_cond(curr->next[0]->next[1], symtable)                   ERR_()
-            _ERR() process_if(curr->next[0], symtable, deftable)                             ERR_()
+            // printf("if\n");
+            _ERR() process_cond(curr->next[0]->next[1], symtable)                               ERR_()
+            _ERR() process_if(curr->next[0], symtable, deftable)                                ERR_()
 
         } else if (!strcmp(next->data[0].data, "<return>")) {
-            printf("function returns\n");
+            // printf("function returns\n");
+            _ERR() process_return_list(curr->next[0]->next[1], symtable, deftable)              ERR_()
 
         } else {
-            printf("assign or function call\n");
+            // printf("assign or function call\n");
             _ERR() process_assign_or_fcall(curr->next[1], symtable, deftable, curr->next[0]->data[1].data) ERR_()
         }
 
@@ -486,8 +518,8 @@ int process_stmt_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
 
 // TODO
 int process_while(t_node *node, stack_t *symtable, def_table_t *deftable) {
-    _ERR() add_scope_to_symtable(symtable)                              ERR_()
-    _ERR() process_stmt_list(node->next[3], symtable, deftable)         ERR_()
+    _ERR() add_scope_to_symtable(symtable)                                                      ERR_()
+    _ERR() process_stmt_list(node->next[3], symtable, deftable)                                 ERR_()
     symtable_pop(symtable);
 
     return SEM_OK;
@@ -495,19 +527,101 @@ int process_while(t_node *node, stack_t *symtable, def_table_t *deftable) {
 
 // TODO
 int process_if(t_node *node, stack_t *symtable, def_table_t *deftable) {
-    _ERR() add_scope_to_symtable(symtable)                              ERR_()
-    _ERR() process_stmt_list(node->next[3], symtable, deftable)         ERR_()
+    _ERR() add_scope_to_symtable(symtable)                                                      ERR_()
+    _ERR() process_stmt_list(node->next[3], symtable, deftable)                                 ERR_()
     symtable_pop(symtable);
 
-    _ERR() add_scope_to_symtable(symtable)                              ERR_()
-    _ERR() process_stmt_list(node->next[5], symtable, deftable)         ERR_()
+    _ERR() add_scope_to_symtable(symtable)                                                      ERR_()
+    _ERR() process_stmt_list(node->next[5], symtable, deftable)                                 ERR_()
     symtable_pop(symtable);
 
     return SEM_OK;
 }
 
+int process_f_or_return_list(t_node *node, fce_item_t **item, stack_t *symtable, def_table_t *deftable, key_t f_name) {
+    if (node->next_count > 1) {
+        // zpracuje se param list
+        fce_item_t *param_list = malloc(sizeof(fce_item_t));
+        param_list = NULL;
+
+        // porovnání argumentů s parametry funkce
+        _ERR() eval_param_list(f_name, param_list, symtable, deftable)                          ERR_()
+
+        // list návratových hodnot volané funkce se připojí k již existujícímu
+        fce_item_t *return_list = NULL;
+        // 
+        _ERR() get_f_return_list(f_name, &return_list, symtable)                                ERR_()
+        append_list(item, return_list);
+    
+        // pokračuje se dalšími prvky seznamu
+        _ERR() process_return_f_or_items__(node->next[3], item, symtable, deftable)             ERR_() 
+
+        return SEM_OK;
+    }
+
+    // přidat
+    ALLOC_STR(type, symtable_lookup_item(symtable, f_name)->type)
+    fce_item_push(item, type);
+    
+    _ERR() process_return_f_or_items__(node->next[0], item, symtable, deftable)                 ERR_()
+    
+    return SEM_OK;
+}
+
+int process_return_f_or_items(t_node *node, fce_item_t **item, stack_t *symtable, def_table_t *deftable) {
+    // provede se vyhodnocení výrazu je výrazu
+    if (!strcmp(node->next[0]->data[0].data, "expr")) {
+        ALLOC_STR(value, "");
+        ALLOC_STR(type, "");
+        eval_expr_type(node->next[0], &value, &type, symtable);
+        fce_item_push(item, type);
+        free(value);
+        
+        _ERR() process_return_f_or_items__(node->next[1], item, symtable, deftable)             ERR_()
+    } else {
+        _ERR() process_f_or_return_list(node->next[1], item, symtable, deftable, node->next[0]->data[1].data) ERR_()
+    }
+
+    return SEM_OK;
+}
+
+int process_return_f_or_items__(t_node *node, fce_item_t **item, stack_t *symtable, def_table_t *deftable) {
+    // list není prázdný, pokkračuje se v dalších prvcích
+    if (node->next_count > 1) 
+        _ERR() process_return_f_or_items(node->next[1], item, symtable, deftable)               ERR_()
+    
+    return SEM_OK;
+}
+
+int process_return_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
+    fce_item_t *return_list = malloc(sizeof(fce_item_t));
+    return_list = NULL;
+
+    // List návratových hodnot není prázdný
+    if (strcmp(node->next[0]->data[0].data, "eps")) {
+        process_return_f_or_items(node->next[0], &return_list, symtable, deftable);
+    }
+
+    fce_item_t *f_return_list = NULL;
+    
+    if ((return_signal = get_f_return_list(deftable->item[deftable->size - 1].name, &f_return_list, symtable))) {
+        fce_free(return_list);
+        return return_signal;
+    }
+    
+    return_signal = eval_return_eq(f_return_list, return_list);
+
+    // printf("f_return:  "); fce_print(f_return_list, 99);
+    // printf("return:    "); fce_print(return_list, 99);
+
+    fce_free(return_list);
+    fce_free(f_return_list);
+
+    return return_signal;
+}
+
 int process_cond(t_node *node, stack_t *symtable) {
-    printf("processing cond\n");
+    // printf("processing cond\n");
     ALLOC_STR(value1, ""); ALLOC_STR(type1, "");
     ALLOC_STR(value2, ""); ALLOC_STR(type2, "");
 
@@ -525,7 +639,7 @@ int process_cond(t_node *node, stack_t *symtable) {
     free(value1); free(type1);
     free(value2); free(type2);
     
-    printf("cond succes\n");
+    // printf("cond succes\n");
     
     return (sem_type) ? SEM_TYPE : SEM_OK;
 }
@@ -541,7 +655,7 @@ int process_decl_local(t_node *node, stack_t *symtable) {
     
     // INICIALIZACE
     if (next->next[4]->next_count != 1) {
-        printf("local var initialization\n");
+        // printf("local var initialization\n");
 
         // vyhodnocení, zda jsou všechny prvky expr stejného typu
         key_t assign_type = NULL;
@@ -562,7 +676,7 @@ int process_decl_local(t_node *node, stack_t *symtable) {
         free(assign_type);
 
     } else {
-        printf("local var declaration -> value nil\n");
+        // printf("local var declaration -> value nil\n");
         ALLOC_CHECK((value = malloc(strlen("nil") + 1)))
         sprintf(value, "%s", "nil");
     }
@@ -625,8 +739,8 @@ int process_assign_or_fcall(t_node *node, stack_t *symtable, def_table_t *deftab
             return err_code;
         }
 
-        printf("ID LIST:     "); fce_print(id_list, 99);
-        printf("ASSIGN LIST: "); fce_print(assign_list, 99);
+        // printf("ID LIST:     "); fce_print(id_list, 99);
+        // printf("ASSIGN LIST: "); fce_print(assign_list, 99);
 
         err_code = eval_list_eq(id_list, assign_list, SEM_ASSIGN);
 
@@ -639,9 +753,8 @@ int process_assign_or_fcall(t_node *node, stack_t *symtable, def_table_t *deftab
     return SEM_OK;
 }
 
-// TODO zpracování idéček
 int process_id_list(t_node *node, fce_item_t **item, stack_t *symtable) {
-    printf("%s", "process id-list\n");
+    // printf("%s", "process id-list\n");
     
     if (node->next_count > 1) {
         while (node->next_count > 1) {
@@ -652,18 +765,6 @@ int process_id_list(t_node *node, fce_item_t **item, stack_t *symtable) {
             node = node->next[2];
         }
     }
-
-    // fce_item_t *id_list = malloc(sizeof(fce_item_t));
-    // id_list = NULL;
-
-    // vyhodnocení, zda jsou všechna id existující názvy proměnných    
-    // while((*item) != NULL) {
-    //     // printf("brekeke\n");
-    //     if (get_var_type(&(*item)->key, symtable))
-    //         return SEM_DEFINE;
-    //     // printf("-----%s-----", (*item)->key);
-    //     (*item) = (*item)->next_f_item;
-    // }
     
     fce_item_t *i = *item;
     // vyhodnocení, zda jsou všechna id existující názvy proměnných    
@@ -681,13 +782,13 @@ int process_id_list(t_node *node, fce_item_t **item, stack_t *symtable) {
     } 
 
 
-    printf("%s", "success id-list\n");
+    // printf("%s", "success id-list\n");
     
     return SEM_OK;
 }
 
 int process_f_or_item_list(t_node *node, fce_item_t **item, stack_t *symtable, def_table_t *deftable) {
-    printf("%s", "process f-or-item-list\n");
+    // printf("%s", "process f-or-item-list\n");
     
     // printf("ROOTNODE: %s %s %d ~~~\n", node->data[0].data, node->data[1].data, node->next_count);
     // printf("NEXT: %s %s %d ~~~\n", node->next[0]->data[0].data, node->next[0]->data[1].data, node->next[0]->next_count);
@@ -736,13 +837,13 @@ int process_f_or_item_list(t_node *node, fce_item_t **item, stack_t *symtable, d
             _ERR() process_item_another(node->next[1], item, symtable)              ERR_()
     }
 
-    printf("%s", "success f-or-item-list\n");
+    // printf("%s", "success f-or-item-list\n");
     
     return SEM_OK;
 }
 
 int process_param_list(t_node *node, fce_item_t **item, stack_t *symtable) {
-    printf("%s", "process param-list\n");
+    // printf("%s", "process param-list\n");
     // parametry funkce jsou prázdné
     if (!strcmp(node->next[0]->data[0].data, "eps"))
         return SEM_OK;
@@ -770,13 +871,13 @@ int process_param_list(t_node *node, fce_item_t **item, stack_t *symtable) {
     // pokračuje se na item another
     _ERR() process_item_another(node->next[0]->next[1], item, symtable)        ERR_()
 
-    printf("%s", "success param-list\n");
+    // printf("%s", "success param-list\n");
     
     return SEM_OK;
 }
 
 int process_item_another(t_node *node, fce_item_t **item, stack_t *symtable) {
-    printf("%s", "process item-another\n");
+    // printf("%s", "process item-another\n");
     while (node->next_count > 1) {
         // id se přidá do seznamu
         if (!strcmp(node->next[1]->next[0]->data[0].data, "id")) {
@@ -808,13 +909,13 @@ int process_item_another(t_node *node, fce_item_t **item, stack_t *symtable) {
         node = node->next[2];
     }
     
-    printf("%s", "success item-another\n");
+    // printf("%s", "success item-another\n");
     
     return SEM_OK;
 }
 
 int process_types(t_node *node, fce_item_t **item) {
-    printf("%s", "process return-types\n");
+    // printf("%s", "process return-types\n");
     // nejprve určí první typ
     if (node->next_count != 1) {
         ALLOC_STR(item_key, node->next[0]->next[0]->data[1].data);
@@ -830,13 +931,13 @@ int process_types(t_node *node, fce_item_t **item) {
             node = node->next[2];
         }
     }
-    printf("%s", "success return-types\n");
+    // printf("%s", "success return-types\n");
     
     return SEM_OK;
 }
 
 int process_return_types(t_node *node, fce_item_t **item, int *return_values) {
-    printf("%s", "process return-types\n");
+    // printf("%s", "process return-types\n");
 
     if (node->next_count != 1) {
         ALLOC_STR(ret_key_first, node->next[1]->next[0]->data[1].data);
@@ -857,12 +958,12 @@ int process_return_types(t_node *node, fce_item_t **item, int *return_values) {
         (*return_values)++;
     }
 
-    printf("%s", "succes return-types\n");
+    // printf("%s", "succes return-types\n");
     return SEM_OK;
 }
 
 int process_f_arg_list(t_node *node, fce_item_t **item, stack_t *symtable) {
-    printf("%s", "process f-arg-list\n");
+    // printf("%s", "process f-arg-list\n");
     
     // nejprve určí první typ
     if (node->next_count != 1) {
@@ -900,7 +1001,7 @@ int process_f_arg_list(t_node *node, fce_item_t **item, stack_t *symtable) {
         }
     }
     
-    printf("%s", "success f-arg-list\n");
+    // printf("%s", "success f-arg-list\n");
     return SEM_OK;
 }
 
@@ -994,7 +1095,7 @@ int f_define(t_node *node, stack_t *symtable, def_table_t *deftable) {
     _ERR() process_stmt_list(node->next[6], symtable, deftable)         ERR_()
 
     // ! odkomentovat
-    // printf("\n+ + + + + + + + + + + + + + + + + + + + +\nZÁSOBNÍK PŘED UKONČENÍM FUNKCE %s \n", node->next[1]->data[1].data);
+    // // printf("\n+ + + + + + + + + + + + + + + + + + + + +\nZÁSOBNÍK PŘED UKONČENÍM FUNKCE %s \n", node->next[1]->data[1].data);
     //symtable_print(symtable);
     symtable_pop(symtable);
     
@@ -1066,22 +1167,22 @@ int semantic(t_node *root_node) {
         def_table_t *deftable = def_table_init();
         stack_t *symtable = symtable_init(STACK_SIZE);
 
-        tree_print(*root_node, 0);
+        // tree_print(*root_node, 0);
         
         // zpracování hlavní části syntaktického stromu stromu
         return_signal = process_main_list(root_node->next[2], symtable, deftable);
 
         // * TESTOVANI
-        printf("\n~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~\nGLOBÁLNÍ ZÁSOBNÍK\n");
-        symtable_print(symtable);
+        // printf("\n~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~\nGLOBÁLNÍ ZÁSOBNÍK\n");
+        // symtable_print(symtable);
 
-        printf("\nERRCODE: %d\n", return_signal);
+        // printf("\nERRCODE: %d\n", return_signal);
 
         // kontrola, zda volané funkce byly řádně definovány
         if (!return_signal)
             return_signal = eval_fcall(*deftable);
 
-        // if (return_signal) 
+        if (return_signal) 
             printf("ERRCODE: %d\n", return_signal);
 
         // * PRINT

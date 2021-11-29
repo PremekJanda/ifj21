@@ -2,7 +2,7 @@
  *  Soubor: semantic.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	29. 11. 2021 15:13:44
+ *  Poslední změna:	29. 11. 2021 18:13:17
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -44,12 +44,13 @@
 //      unused function
 //      unused variable
 
-// TODO Všechny proměnné nalevo od = již musí být definovány
-// operátor # očekává string
+// sem_err_1 Všechny proměnné nalevo od = již musí být definovány chyba 3
+// sem_err_2 operátor # očekává string chyba 6
+// sem_err_3 po dělení je výsledek number chyba 4
 // TODO Neobsahuje-li tělo funkce příkaz return, vrací funkce odpovídající počet hodnot nil
 
-// TODO Každá proměnná musí být definována před jejím použitím, jinak se jedná o sémantickou chybu 3
-// TODO Definice proměnné stejného jména jako má jiná proměnná ve stejném bloku vede na chybu 3
+// sem_err_4 Každá proměnná musí být definována před jejím použitím, jinak se jedná o sémantickou chybu 3
+// sem_err_5 Definice proměnné stejného jména jako má jiná proměnná ve stejném bloku vede na chybu 3
 // TODO Každá uživatelská funkce s daným identifikátorem je definována nejvýše jednou chyba 3
 // TODO Funkce může být deklarována nejvýše jednou, jinak dochází k chybě 3
 // TODO pokud u deklarace a definice funkce neodpovídají seznamy parametrů nebo seznamy návratových typů, či pokud deklarovaná funkce není nakonec definována err 3
@@ -58,15 +59,6 @@
 // TODO Pokud funkce vrací méně hodnot, než je očekáváno dle počtu proměnných id 1 až id n , dojde k chybě 5
 // TODO Typová nekompatibilita mezi návratovou hodnotou a odpovídající proměnnou pro její uložení vede na chybu 5
 // TODO Je-li počet výrazů výsledných hodnot nekompatibilní s návratovými typy dané funkce, jsou chybějící hodnoty doplněny speciální hodnotou nil a přebývající způsobí chybu 5
-
-// TODO po dělení je výsledek number
-// TODO modulo # bere jako operand pouze string
-
-// TODO Definice proměnné stejného jména jako má jiná proměnná ve stejném bloku vede na chybu 3
-// TODO Každá proměnná musí být definována před jejím použitím, jinak se jedná o sémantickou chybu 3
-// TODO Každá uživatelská funkce s daným identifikátorem je definována nejvýše jednou, jinak dochází k chybě 3
-// TODO Nově definovaná proměnná stejného jména chyba 3
-// TODO všechny výrazy nalevo u přiřazení musí být definované chyba 3
 
 // TODO Není-li typ inicializačního výrazu staticky (při překladu) kompatibilní s typem inicializované proměnné, jde o chybu 4
 
@@ -235,6 +227,14 @@ int process_while(t_node *node, stack_t *symtable, def_table_t *deftable);
 int process_if(t_node *node, stack_t *symtable, def_table_t *deftable);
 
 int process_cond(t_node *node, stack_t *symtable);
+
+int process_f_or_return_list(t_node *node, fce_item_t **item, stack_t *symtable, def_table_t *deftable, key_t f_name);
+
+int process_return_f_or_items(t_node *node, fce_item_t **item, stack_t *symtable, def_table_t *deftable);
+
+int process_return_f_or_items__(t_node *node, fce_item_t **item, stack_t *symtable, def_table_t *deftable);
+
+int process_return_list(t_node *node, stack_t *symtable, def_table_t *deftable);
 
 /**
  * @brief 
