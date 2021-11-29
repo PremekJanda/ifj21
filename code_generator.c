@@ -4,7 +4,7 @@
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	29. 11. 2021 23:41:58
+ * Last Modified:	29. 11. 2021 23:47:48
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -62,9 +62,7 @@ void generate_code(t_node*tree, code_t*code){
     ht_delete_all(&ht_already_processed);
 
     //current_node = <prog>
-    t_node*current_node = tree;
-
-    tree_print(*tree, 0);    
+    t_node*current_node = tree;   
 
     if (strcmp(tree->data[0].data, "<prog>") == 0){
         current_node = check_prog_node(current_node); //current_node = <main-list>
@@ -506,7 +504,6 @@ void generate_while(code_t*code, t_node*while_node, char*fc){
     code->total_conditionals_count++;
 
     predefine_vars_of_stmt_list(code, while_node->next[3]);
-    tree_print(*while_node, 0);
 
     strcat_format_realloc(&code->text, "\n # --- while start\nLABEL %s\n", while_label.data);
     eval_condition(code, while_node->next[1]);
