@@ -401,7 +401,7 @@ int scanner(tToken *token){
                 else if(c >= '0' && c <='9'){
                     char escaped[4];
                     escaped[0] = c;
-                     token->attribute[i] = c;
+                    token->attribute[i] = c;
                     i++;
                     if (i > (length - 1))
                     {
