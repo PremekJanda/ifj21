@@ -1,0 +1,11 @@
+require "ifj21"
+
+global j : integer
+
+function main()
+    local i : integer = 1
+    i, j = 2, 3
+    write(i,j)
+end
+
+main()

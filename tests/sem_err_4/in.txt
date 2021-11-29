@@ -1,0 +1,12 @@
+require "ifj21"
+
+function numdiv()
+    local n : integer = 1
+    if n == 2 then
+        n = 2 + a
+    else
+    end
+    write(n)
+end
+
+numdiv()

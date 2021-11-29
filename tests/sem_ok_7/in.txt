@@ -1,0 +1,8 @@
+require "ifj21"
+
+function numdiv()
+    local n : number = 1 / 2
+    write(n)
+end
+
+numdiv()
