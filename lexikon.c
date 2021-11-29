@@ -401,19 +401,34 @@ int scanner(tToken *token){
                 else if(c >= '0' && c <='9'){
                     char escaped[4];
                     escaped[0] = c;
-                    token->attribute[i] = c;
+                     token->attribute[i] = c;
                     i++;
+                    if (i > (length - 1))
+                    {
+                        length += REALL_TOKEN_LEN;
+                        token->attribute = realloc(token->attribute, length * sizeof(char));
+                    }
                     c = getc(stdin);
                     if (c >= '0' && c <='9'){
                         escaped[1] = c;
                         token->attribute[i] = c;
                         i++;
+                        if (i > (length - 1))
+                        {
+                            length += REALL_TOKEN_LEN;
+                            token->attribute = realloc(token->attribute, length * sizeof(char));
+                        }
                         c = getc(stdin);
                         if (c >= '0' && c <='9'){
                             escaped[2] = c;
                             escaped[3] = '\0';
                             token->attribute[i] = c;
                             i++;
+                            if (i > (length - 1))
+                            {
+                                length += REALL_TOKEN_LEN;
+                                token->attribute = realloc(token->attribute, length * sizeof(char));
+                            }
                             int aux = atoi(escaped);
                             if(aux <= 1 || aux >= 255){
                                 fprintf(stderr, "ERROR: Wrong format of escape expression on line %d!\n", token->line);
