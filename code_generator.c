@@ -4,7 +4,7 @@
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	30. 11. 2021 15:25:15
+ * Last Modified:	30. 11. 2021 15:54:54
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -50,6 +50,8 @@ void generate_code(t_node*tree, code_t*code){
     //aby byla funkce write ignorována zpracováním identifikátorů
     ht_insert(&ht_already_processed,  "write", 1); 
     
+    tree_print(*tree, 0);
+
     fix_expr(tree);
     
     convert_strings(tree);
@@ -168,15 +170,16 @@ void fix_expr(t_node*tree) {
 
         if (strcmp(tree->next[i]->data[0].data, "expr") == 0) {
             if ((strcmp(tree->next[i]->next[0]->data[0].data, "id") == 0) && tree->next[i]->next[1] == NULL){
-
+                tree_print(*tree, 0);
                 t_node*node = tree->next[i];
                 
                 tree->next[i] = tree->next[i]->next[0];
-                tree->next[i]->prev = node->prev;
+                tree->next[i]->prev = &(*tree);
                 tree->next[i]->next_count = 0;
-                free(node);
-
                 
+                node->next[0] = NULL;
+                node->next_count = 0;
+                node_delete(node);
             }
             return;
         }
@@ -920,7 +923,10 @@ void move_item_to_var(code_t*code, char*dest_frame, const char*dest_id, t_node*i
 }
 
 bool is_global(char*id){
-    if (strcmp("_global", id + strlen(id) + 1 - 8) == 0){
+    if (strlen(id) < 6){
+        return false;
+    }
+    if (strcmp("_global", (char*)(id + strlen(id) + 1 - 8)) == 0){
         return true;
     }
     else
