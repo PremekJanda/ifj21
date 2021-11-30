@@ -236,7 +236,7 @@ int syntax_analyzer(t_node *tree)
                 return_code = scanner(token_backup);
                 backup = token_backup->attribute;
             }
-            if(strcmp(backup, ",") && strcmp(backup, "(") && strcmp(backup, "=="))
+            if(strcmp(backup, ",") && strcmp(backup, "("))
                 rule = atoi(table_find(ll_table, stack_top(stack), "expr"));
             else
                 rule = atoi(table_find(ll_table, stack_top(stack), "id"));
