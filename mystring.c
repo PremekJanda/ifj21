@@ -4,7 +4,7 @@
  * @brief Small library of functions, that work with string buffers
  * @version 0.1
  * @date 2021-11-13
- * Last modified:	30. 11. 2021 15:26:54
+ * Last modified:	30. 11. 2021 17:51:19
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -69,28 +69,32 @@ int strcpy_realloc(buffer_t*dst, const char*src) {
 }
 int replace_all_chars_by_string(buffer_t*buffer, char c, char*string){
     char*ptr = NULL;
-    char*rest_of_string = NULL;
+    buffer_t buffy; buffer_init(&buffy);
     ptr = buffer->data;
     int index;
     while ((ptr = strchr(ptr, c)) != NULL)
     {
-        rest_of_string = ptr+1;
+        strcpy_realloc(&buffy, ptr+1);
         index = ptr - buffer->data; //index of char to be deleted
-        if (*rest_of_string != '\0') {
+        if (*(buffy.data) != '\0') {
             *ptr = '\0';
-            strcat(buffer->data, rest_of_string);
+            
+            strcat(buffer->data, buffy.data);
             if (!strinbetween_realloc(buffer, string, index)){
+                buffer_destroy(&buffy);
                 return 0;
             }
              
         }
         else {
             if (!strcat_realloc(buffer, string)){
+                buffer_destroy(&buffy);
                 return 0;
             }
         }
         ptr += strlen(string);
     }
+    buffer_destroy(&buffy);
     return 1;
 }
 

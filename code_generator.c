@@ -4,7 +4,7 @@
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	30. 11. 2021 17:05:53
+ * Last Modified:	30. 11. 2021 18:32:42
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -49,27 +49,29 @@ void generate_code(t_node*tree, code_t*code){
 
     //aby byla funkce write ignorována zpracováním identifikátorů
     ht_insert(&ht_already_processed,  "write", 1); 
+
+    //nahrazení expr -> id za id
     fix_expr(tree);
     
+    //překonvertování escape sekvencí na \xxx
     convert_strings(tree);
-
-    int depth = 0;
-    int depth_total = 0;
-
-    
-    buffer_t fc; buffer_init(&fc);
-
-    rename_all_id(tree, &ht_already_processed, &fc, &depth, &depth_total);
-    buffer_destroy(&fc);
-    
+   
     int convert_result = 0;
     do
     {
         convert_result = convert_write(tree);
     } while (convert_result != 0);
+   
+    int depth = 0;
+    int depth_total = 0;
+
+    buffer_t fc; buffer_init(&fc);
+
+    rename_all_id(tree, &ht_already_processed, &fc, &depth, &depth_total);
+    buffer_destroy(&fc);
     
     ht_delete_all(&ht_already_processed);
-
+    
     //current_node = <prog>
     t_node*current_node = tree;   
 
@@ -93,11 +95,6 @@ void generate_code(t_node*tree, code_t*code){
 int convert_write(t_node*tree) {
     if (tree == NULL) {
         return 0;
-    }
-    for (int i = 0; i < tree->next_count; i++) {
-        if (convert_write(tree->next[i]) == 1){
-            return 1;
-        }
     }
     if (strcmp(tree->data[0].data, "<stmt>") == 0){
         if (strcmp(tree->next[0]->data[1].data, "write") ==  0){
@@ -162,6 +159,11 @@ int convert_write(t_node*tree) {
             return 1;
         }      
     }
+    for (int i = 0; i < tree->next_count; i++) {
+        if (convert_write(tree->next[i]) == 1){
+            return 1;
+        }
+    }
     return 0;  
 }
 
@@ -182,11 +184,12 @@ void fix_expr(t_node*tree) {
                 t_node*node = tree->next[i];
                 
                 tree->next[i] = tree->next[i]->next[0];
-                tree->next[i]->prev = node->prev;
+                tree->next[i]->prev = &(*tree);
                 tree->next[i]->next_count = 0;
-                free(node);
-
                 
+                node->next[0] = NULL;
+                node->next_count = 0;
+                tree_delete(node);
             }
             return;
         }
@@ -341,7 +344,7 @@ t_node*check_prog_node(t_node*prog_node){
     if(strcmp(prog_node->next[0]->data[1].data, "require") != 0) {
         return NULL;
     }
-    if(strcmp(prog_node->next[1]->data[0].data, "\"ifj21\"") != 0) {
+    if(strcmp(prog_node->next[1]->data[1].data, "\"ifj21\"") != 0) {
         return NULL;
     }
     if(strcmp(prog_node->next[2]->data[0].data, "<main-list>") != 0) {
@@ -930,7 +933,10 @@ void move_item_to_var(code_t*code, char*dest_frame, const char*dest_id, t_node*i
 }
 
 bool is_global(char*id){
-    if (strcmp("_global", id + strlen(id) + 1 - 8) == 0){
+    if (strlen(id) < 6){
+        return false;
+    }
+    if (strcmp("_global", (char*)(id + strlen(id) + 1 - 8)) == 0){
         return true;
     }
     else
