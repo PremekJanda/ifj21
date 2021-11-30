@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	29. 11. 2021 23:32:16
+ *  Last modified:	30. 11. 2021 14:39:04
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -1182,8 +1182,8 @@ int semantic(t_node *root_node) {
         if (!return_signal)
             return_signal = eval_fcall(*deftable);
 
-        if (return_signal) 
-            printf("ERRCODE: %d\n", return_signal);
+        // if (return_signal) 
+        //     printf("ERRCODE: %d\n", return_signal);
 
         // * PRINT
         //def_table_print(*deftable);
