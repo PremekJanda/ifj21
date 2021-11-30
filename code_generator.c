@@ -4,7 +4,7 @@
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	30. 11. 2021 16:57:17
+ * Last Modified:	30. 11. 2021 17:01:14
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -49,8 +49,6 @@ void generate_code(t_node*tree, code_t*code){
 
     //aby byla funkce write ignorována zpracováním identifikátorů
     ht_insert(&ht_already_processed,  "write", 1); 
-    
-    tree_print(*tree, 0);
 
     fix_expr(tree);
     
