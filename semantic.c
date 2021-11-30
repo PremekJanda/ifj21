@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	30. 11. 2021 14:39:04
+ *  Last modified:	30. 11. 2021 16:59:50
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -259,7 +259,7 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
 
             // proměnná nebyla nalezena -> chyba
             } else {
-                fprintf(stderr, "Identificator \"%s\" was not found", v);
+                fprintf(stderr, "ERROR: Identificator \"%s\" was not found", v);
                 UPDATE_EXPR(SEM_DEFINE)
             }
         }
@@ -273,14 +273,14 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
 int eval_list_eq(fce_item_t *dest, fce_item_t *src, int err_code) {
     // pokud je jiný počet hodnot listů nastane chyba
     if ((dest == NULL && src != NULL) || (dest != NULL && src == NULL)) {
-        fprintf(stderr, "Invalid number of parameters/arguments\n");    
+        fprintf(stderr, "ERROR: Invalid number of parameters/arguments\n");    
         return err_code;
     }
 
     while (dest != NULL && src != NULL) {
         // porovnání typové kompatibility
         if (strcmp(dest->key, src->key) && !(!strcmp(dest->key, "number") && !strcmp(src->key, "integer"))) {
-            fprintf(stderr, "Invalid assign %s to %s\n", src->key, dest->key);
+            fprintf(stderr, "ERROR: Invalid assign %s to %s\n", src->key, dest->key);
             return err_code;
         }
 
@@ -290,7 +290,7 @@ int eval_list_eq(fce_item_t *dest, fce_item_t *src, int err_code) {
 
     // pokud je jiný počet hodnot listů nastane chyba
     if ((dest == NULL && src != NULL) || (dest != NULL && src == NULL)) {
-        fprintf(stderr, "Invalid number of parameters/arguments\n");    
+        fprintf(stderr, "ERROR: Invalid number of parameters/arguments\n");    
         return err_code;
     }
 
@@ -352,14 +352,14 @@ int get_f_return_list(key_t name, fce_item_t **dest, stack_t *symtable) {
 int eval_return_eq(fce_item_t *dest, fce_item_t *src) {
     // chyba, pokud je větší počet návratových hodnot
     if (dest == NULL && src != NULL) {
-        fprintf(stderr, "Invalid number of return values\n");  
+        fprintf(stderr, "ERROR: Invalid number of return values\n");  
         return SEM_FCE;
     }
 
     while (dest != NULL && src != NULL) {
         // porovnání typové kompatibility
         if (strcmp(dest->key, src->key) && !(!strcmp(dest->key, "number") && !strcmp(src->key, "integer"))) {
-            fprintf(stderr, "Invalid assign %s to %s\n", src->key, dest->key);
+            fprintf(stderr, "ERROR: Invalid assign %s to %s\n", src->key, dest->key);
             return SEM_FCE;
         }
 
@@ -369,7 +369,7 @@ int eval_return_eq(fce_item_t *dest, fce_item_t *src) {
 
     // chyba, pokud je větší počet návratových hodnot
     if (dest == NULL && src != NULL) {
-        fprintf(stderr, "Invalid number of return values\n");    
+        fprintf(stderr, "ERROR: Invalid number of return values\n");    
         return SEM_FCE;
     }
 
@@ -660,7 +660,6 @@ int process_decl_local(t_node *node, stack_t *symtable) {
         // vyhodnocení, zda jsou všechny prvky expr stejného typu
         key_t assign_type = NULL;
         
-        // TODOHNED
         // vyhodnocení typů přiřazovaných hodnot
         if (eval_expr_type(next->next[4]->next[1]->next[0], &value, &assign_type, symtable)) {
             FREE_VAR_DECL()
@@ -668,7 +667,8 @@ int process_decl_local(t_node *node, stack_t *symtable) {
         }
         
         // provede se typová kontrola nad přiřazením
-        if (strcmp(type, assign_type) && strcmp(type, "number") && strcmp(assign_type, "integer")) {
+        if (strcmp(type, assign_type) && !(!strcmp(type, "number") && !strcmp(assign_type, "integer"))) {
+            fprintf(stderr, "ERROR: Type incompatibility during assignment [%s] given expected [%s]\n", assign_type, type);
             FREE_VAR_DECL()
             return SEM_ASSIGN;
         }
