@@ -13,11 +13,14 @@ void tree_item_init(t_tree_item *tree_item)
 int node_init(t_node *node)
 {
     // inicializace potomků 
-    node->next_capacity = 5;
+    node->next_capacity = 10;
     node->next_count = 0;
+    node->line = 0;
     node->prev = NULL;
     node->next = malloc(10 * sizeof(t_node *));
     ALLOC_CHECK(node->next)
+    for (int i = 0; i < node->next_capacity; i++)
+        node->next[i] = NULL;    
     // inicializace atributu a typu
     node->data = malloc(sizeof(t_tree_item) * 2);
     ALLOC_CHECK(node->data)
@@ -92,7 +95,10 @@ void node_print(t_node node, size_t tabs)
     for (size_t i = 0; i < tabs; i++)
         (i%2 == 1) ? printf("|\t") : printf("\t");
     
-    printf("%s %c %s\n", node.data[0].data, (node.data[1].data[0] != '\0') ? '|' : ' ', node.data[1].data);
+    if (node.line != 0)
+        printf("%s %c %s | %d\n", node.data[0].data, (node.data[1].data[0] != '\0') ? '|' : ' ', node.data[1].data, node.line);
+    else
+        printf("%s %c %s\n", node.data[0].data, (node.data[1].data[0] != '\0') ? '|' : ' ', node.data[1].data);
 }
 
 void tree_print(t_node node, size_t tabs)

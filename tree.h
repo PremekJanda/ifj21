@@ -13,6 +13,7 @@ typedef struct node
 {
     int next_capacity;
     int next_count;
+    int line;
     struct node **next;
     struct node *prev;
     t_tree_item *data;
