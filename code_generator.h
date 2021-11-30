@@ -4,7 +4,7 @@
  * @brief Hlavičkový soubor funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	29. 11. 2021 00:32:05
+ * Last Modified:	30. 11. 2021 15:25:46
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -167,7 +167,7 @@ void create_global_variable(code_t*code,t_node*declaration_node, const char*id);
  * @param depth Úroveň zanoření
  * @param depth_total Hodnota začne na 0 a zvýší se při každém zanoření
  */
-void rename_all_id(t_node* tree, ht_table_t*ht_already_processed, char**fc, int*depth, int*depth_total);
+void rename_all_id(t_node* tree, ht_table_t*ht_already_processed, buffer_t*fc, int*depth, int*depth_total);
 
 /**
  * @brief Změní názvy identifikátorů pouze pro ty které opravdu značí stejnou proměnnou

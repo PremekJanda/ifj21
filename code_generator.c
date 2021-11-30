@@ -4,7 +4,7 @@
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	29. 11. 2021 23:47:48
+ * Last Modified:	30. 11. 2021 15:25:15
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -46,6 +46,9 @@ void generate_code(t_node*tree, code_t*code){
     //změna názvů identifikátorů ve stromě na unikátní identifikátory
     ht_table_t ht_already_processed;
     ht_init(&ht_already_processed);
+
+    //aby byla funkce write ignorována zpracováním identifikátorů
+    ht_insert(&ht_already_processed,  "write", 1); 
     
     fix_expr(tree);
     
@@ -54,9 +57,11 @@ void generate_code(t_node*tree, code_t*code){
     int depth = 0;
     int depth_total = 0;
 
-    char*fc = NULL;
+    
+    buffer_t fc; buffer_init(&fc);
 
     rename_all_id(tree, &ht_already_processed, &fc, &depth, &depth_total);
+    buffer_destroy(&fc);
     convert_write(tree);
     
     ht_delete_all(&ht_already_processed);
@@ -179,7 +184,7 @@ void fix_expr(t_node*tree) {
     }
 }
 
-void rename_all_id(t_node* tree, ht_table_t*ht_already_processed, char**fc, int*depth, int*depth_total) {
+void rename_all_id(t_node* tree, ht_table_t*ht_already_processed, buffer_t*fc, int*depth, int*depth_total) {
     if (strcmp(tree->data[0].data, "id") == 0){
         char*id = malloc(strlen(tree->data[1].data)+1);
         if (id == NULL) {
@@ -190,9 +195,9 @@ void rename_all_id(t_node* tree, ht_table_t*ht_already_processed, char**fc, int*
             buffer_t new_id;
             buffer_init(&new_id);
 
-            if(*fc == NULL) { // v globálním prostoru
+            if(strcmp(fc->data, "") == 0) { // v globálním prostoru
                 if (strcmp(tree->prev->next[0]->data[1].data, "function") == 0) {
-                    *fc = tree->prev->next[1]->data[1].data;
+                    strcpy_realloc(fc, tree->prev->next[1]->data[1].data);
                     strcat_format_realloc(&new_id, "%s_fc", id);
                     (*depth)++;
                     (*depth_total)++;
@@ -210,20 +215,15 @@ void rename_all_id(t_node* tree, ht_table_t*ht_already_processed, char**fc, int*
             else{
                 if (strcmp(tree->prev->data[0].data, "<stmt>") == 0){
                     if (strcmp(tree->prev->next[1]->next[0]->data[0].data, "(") == 0) {
-                        if (strcmp(tree->data[1].data, "write") == 0){
-                            free(id);
-                            buffer_destroy(&new_id);  
-                            return;
-                        }
                         strcat_format_realloc(&new_id, "%s_fc", id);
                     }
                 }
                 else {
                     if (strcmp(tree->prev->data[0].data, "<f-arg>") == 0 ){
-                        strcat_format_realloc(&new_id, "%s_param_%s", id, *fc);
+                        strcat_format_realloc(&new_id, "%s_param_%s", id, fc->data);
                     }
                     else{
-                        strcat_format_realloc(&new_id, "%s_%s_depth%d_dt%d", id, *fc, *depth, *depth_total);
+                        strcat_format_realloc(&new_id, "%s_%s_depth%d_dt%d", id, fc->data, *depth, *depth_total);
                     }
                 }
             }
@@ -250,7 +250,7 @@ void rename_all_id(t_node* tree, ht_table_t*ht_already_processed, char**fc, int*
     else if (strcmp(tree->data[1].data, "end") == 0) {
         (*depth)--;
         if (*depth == 0) {
-            *fc = NULL;
+            strcpy(fc->data, "");
         }
     }
     if (tree->next_count != 0) {

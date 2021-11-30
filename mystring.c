@@ -4,7 +4,7 @@
  * @brief Small library of functions, that work with string buffers
  * @version 0.1
  * @date 2021-11-13
- * Last modified:	25. 11. 2021 15:08:39
+ * Last modified:	30. 11. 2021 15:26:54
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -193,5 +193,7 @@ int append_file(buffer_t*buffer, char*filename) {
         }
         strcat_realloc(buffer, row);
     }
+
+    fclose(f);
     return 0;
 }
