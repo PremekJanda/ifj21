@@ -4,7 +4,7 @@
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	30. 11. 2021 15:54:54
+ * Last Modified:	30. 11. 2021 16:57:17
  * 
  * @copyright Copyright (c) 2021
  * 
@@ -64,7 +64,12 @@ void generate_code(t_node*tree, code_t*code){
 
     rename_all_id(tree, &ht_already_processed, &fc, &depth, &depth_total);
     buffer_destroy(&fc);
-    convert_write(tree);
+    
+    int convert_result = 0;
+    do
+    {
+        convert_result = convert_write(tree);
+    } while (convert_result != 0);
     
     ht_delete_all(&ht_already_processed);
 
@@ -88,18 +93,20 @@ void generate_code(t_node*tree, code_t*code){
     printf("%s", code->text.data);
 }
 
-void convert_write(t_node*tree) {
+int convert_write(t_node*tree) {
     if (tree == NULL) {
-        return;
+        return 0;
     }
-    
     for (int i = 0; i < tree->next_count; i++) {
-        convert_write(tree->next[i]);
+        if (convert_write(tree->next[i]) == 1){
+            return 1;
+        }
     }
     if (strcmp(tree->data[0].data, "<stmt>") == 0){
         if (strcmp(tree->next[0]->data[1].data, "write") ==  0){
             int index = 0; //where the item_another is stored to be checked for eps
             t_node*insert_after = tree->prev;
+            
             //count the arguments
             if (strcmp(tree->next[1]->next[1]->next[0]->data[0].data, "eps") == 0){
                 node_setdata(tree->next[0], "write_fc", 1);
@@ -121,7 +128,7 @@ void convert_write(t_node*tree) {
                 }
 
                 new_nodes[8]->next[0] = item_list->next[index]->next[0];
-                new_nodes[8]->next[0]->prev = new_nodes[8];
+                new_nodes[8]->next[0]->prev = &(*(new_nodes[8]));
                 new_nodes[8]->next_count++;
 
                 //musíme něco přiřadit do nahrazeného itemu, jinak na jeho místě NULL nebo nechtěná reference
@@ -150,10 +157,15 @@ void convert_write(t_node*tree) {
                 *pointer_to_write_node = tree->prev->next[1];
                 tree->next[1]->prev = *pointer_to_write_node;
             }
-            tree_delete(tree);
-        }
+
+            tree->prev->next[1] = NULL;
+            tree->prev->next_count = 1;
+            
+            tree_delete(tree->prev);
+            return 1;
+        }      
     }
-    
+    return 0;  
 }
 
 void fix_expr(t_node*tree) {
@@ -170,7 +182,6 @@ void fix_expr(t_node*tree) {
 
         if (strcmp(tree->next[i]->data[0].data, "expr") == 0) {
             if ((strcmp(tree->next[i]->next[0]->data[0].data, "id") == 0) && tree->next[i]->next[1] == NULL){
-                tree_print(*tree, 0);
                 t_node*node = tree->next[i];
                 
                 tree->next[i] = tree->next[i]->next[0];
@@ -996,6 +1007,7 @@ void convert_strings(t_node*tree){
             replace_all_chars_by_string(&buffer, '\n', "\\010");  
             replace_all_chars_by_string(&buffer, ' ', "\\032");
             replace_all_chars_by_string(&buffer, '#', "\035");
+            buffer_destroy(&buffer);
         }
     }
     else{
