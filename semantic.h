@@ -2,7 +2,7 @@
  *  Soubor: semantic.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	29. 11. 2021 18:13:17
+ *  Poslední změna:	30. 11. 2021 22:34:26
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -61,6 +61,10 @@
 // TODO Je-li počet výrazů výsledných hodnot nekompatibilní s návratovými typy dané funkce, jsou chybějící hodnoty doplněny speciální hodnotou nil a přebývající způsobí chybu 5
 
 // TODO Není-li typ inicializačního výrazu staticky (při překladu) kompatibilní s typem inicializované proměnné, jde o chybu 4
+
+// TODO Prázdná funkce chyba 7
+
+// TODO Rostik017 require "ifj20" ve stringu je povoleno mít něco jiného
 
 // TODO Pokud typy návratových hodnot neodpovídají hlavičce funkce, dojde k chybě 5
 // TODO V případě, že příkaz volání funkce obsahuje jiný počet nebo typy parametrů, než funkce očekává chyba 5
@@ -142,6 +146,8 @@
 #define NUM_OR_INT(__type1, __type2) \
     (!strcmp("number", __type1) && !strcmp("integer", __type2)) || (!strcmp("number", __type2) && !strcmp("integer", __type1))
 
+#define CMP_NIL(__type1, __type2, __operator) \
+    (!strcmp(__operator, "~=") || !strcmp(__operator, "==")) && (!strcmp(__type1, "nil") || !strcmp(__type2, "nil"))
 
 // - - - - - - - - - - - - - - - - - - //
 // - - - - Sémantické kontroly - - - - //
@@ -184,6 +190,7 @@ int is_f_set(key_t name, def_table_t *deftable, int state);
  */
 int eval_fcall(def_table_t deftable);
 
+int get_f_return_list(key_t name, fce_item_t **dest, stack_t *symtable);
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - //

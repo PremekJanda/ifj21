@@ -2,7 +2,7 @@
  *  Soubor: lexikon.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	26. 11. 2021 09:09:57
+ *  Poslední změna:	30. 11. 2021 23:42:01
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -171,14 +171,14 @@ int scanner(tToken *token){
                 i++;
             }
             //křivé závorky
-            else if(c == '{'){
+            /*else if(c == '{'){
                 STokenFinish(token, &i, "LeftCurBr", c);
                 return 0;
             }
             else if(c == '}'){
                 STokenFinish(token, &i, "RightCurBr", c);
                 return 0;
-            }
+            }*/
             //délka řetězce
             else if(c == '#'){
                 STokenFinish(token, &i, "length", c);
@@ -279,16 +279,16 @@ int scanner(tToken *token){
                             token->attribute = realloc(token->attribute, length * sizeof(char));
                         }
                         c = getc(stdin);
-                        if(c <= '0' || c >= '9'){
+                        if(c < '0' || c > '9'){
                             ungetc(c, stdin);
-                            fprintf(stderr, "ERROR: picus on line %d!\n", token->line);
+                            fprintf(stderr, "ERROR: Wrong format of an exponent on line %d", token->line);
                             return 1;
                         }
                         else{
                             ungetc(c, stdin);
                         }
                     }
-                    else if(c <= '0' || c >= '9'){
+                    else if(c < '0' || c > '9'){
                         ungetc(c, stdin);
                         fprintf(stderr, "ERROR: Wrong format of an exponent on line %d!\n", token->line);
                         return 1;
@@ -307,7 +307,7 @@ int scanner(tToken *token){
                         token->attribute = realloc(token->attribute, length * sizeof(char));
                     }
                     c = getc(stdin);
-                    if (c >= '0' && c <= '9')
+                    if ((c >= '0' && c <= '9' ) || c == 'E' || c == 'e')
                     {
                         token->attribute[i] = c;
                         i++;

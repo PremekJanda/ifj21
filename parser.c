@@ -129,7 +129,6 @@ int bottom_up(t_table precedence_table, t_node *return_node, tToken *token, tTok
         }
         else
         {
-            printf("kokokokoko");
             break;
         }
     }
@@ -217,7 +216,7 @@ int syntax_analyzer(t_node *tree)
                 fprintf(stderr, "Syntax error\nToken: %s \nLine: %d\n", token->attribute, token->line);
             break;
         }
-        if(!strcmp(token->attribute, "nil") && !strcmp(token->type, "keyword") && !strcmp(stack_top(stack), "<item>"))
+        if(!strcmp(token->attribute, "nil") && !strcmp(token->type, "keyword") && (!strcmp(stack_top(stack), "<f-or-item>") || !strcmp(stack_top(stack), "<item>") || !strcmp(stack_top(stack), "<return-list>") || !strcmp(stack_top(stack), "<param-list>")))
             strcpy(token->type, "nil");
         if(!strcmp(token->type, "id") || !strcmp(token->type, "integer") || !strcmp(token->type, "nil") || !strcmp(token->type, "string") || !strcmp(token->type, "length") || !strcmp(token->type, "number") || !strcmp(token->type, "("))
         {
@@ -299,6 +298,7 @@ int syntax_analyzer(t_node *tree)
             stack_pop(&stack);
         }
     }
+    tree_print(*tree, 0);
     table_delete(&ll_table);
     table_delete(&rules);
     table_delete(&precedence_table);

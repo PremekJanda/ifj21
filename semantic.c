@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	30. 11. 2021 16:59:50
+ *  Last modified:	30. 11. 2021 23:14:29
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -164,6 +164,13 @@ int append_list(fce_item_t **dest, fce_item_t *src) {
     return SEM_OK;
 }
 
+// int serch_line(t_node *node) {
+//     for(int i = 0; i < node->next_count; i++)
+//         if (node->line)
+//         serch_line(node->next[i]);
+// }
+
+
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 // - - - - Typová nekompatibilita výrazů - exit(6) - - - - //
@@ -252,14 +259,32 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
             if ((item = symtable_lookup_item(symtable, v)) != NULL) {
                 // nahrazení za nový typ a hodnotu
                 free(t); free(v);
-                ALLOC_STR(t, item->type)
-                ALLOC_STR(v, item->value)
 
-                UPDATE_EXPR(SEM_OK)
+                // jedná se o proměnnou
+                if (item->ret_values == -1) {
+                    ALLOC_STR(t, item->type)
+                    ALLOC_STR(v, item->value)  
+                    
+                    UPDATE_EXPR(SEM_OK) 
+                    
+                // jedná se o funkci
+                } else if (item->ret_values > 0) {
+                    fce_item_t *return_list = NULL;
+                    get_f_return_list(item->key, &return_list, symtable);
+                    
+                    ALLOC_STR(t, return_list->key)
+                    ALLOC_STR(v, item->value)   
+                    
+                    fce_free(return_list);
+                    
+                    UPDATE_EXPR(SEM_OK)
+                } else {
+                    UPDATE_EXPR(SEM_ASSIGN)
+                }
 
             // proměnná nebyla nalezena -> chyba
             } else {
-                fprintf(stderr, "ERROR: Identificator \"%s\" was not found", v);
+                fprintf(stderr, "ERROR: Identificator \"%s\" was not found\n", v);
                 UPDATE_EXPR(SEM_DEFINE)
             }
         }
@@ -376,6 +401,8 @@ int eval_return_eq(fce_item_t *dest, fce_item_t *src) {
     return SEM_OK;
 }
 
+
+
 // - - - - - - - - - - - - - - - - - - - //
 // - - - -  Zpracování gramatiky - - - - //
 // - - - - - - - - - - - - - - - - - - - //
@@ -438,9 +465,10 @@ int process_main_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
                         key_t assign_type = NULL;
                         
                         // vyhodnocení typů přiřazovaných hodnot
-                        if (eval_expr_type(curr->next[3]->next[1]->next[1], &value, &assign_type, symtable)) {
+                        if ((return_signal = eval_expr_type(curr->next[3]->next[1]->next[1], &value, &assign_type, symtable))) {
                             FREE_VAR_DECL()
-                            return SEM_TYPE;
+                            fprintf(stderr, "ERROR: Type incompatibility in expression on line %d\n", next->next[3]->next[1]->next[1]->line);
+                            return return_signal;
                         }
                         
                         // provede se typová kontrola nad přiřazením
@@ -466,8 +494,20 @@ int process_main_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
         } else {
             // printf("function call\n");
             _ERR() is_f_set(next->data[1].data, deftable, CALLED)               ERR_()
-            // TODO když je funkc evolána globálně, tak nesmí mít návratové hodnoty
-            // eval_param_list(, )
+            fce_item_t *param_list = malloc(sizeof(fce_item_t));
+            param_list = NULL;
+
+            return_signal = process_param_list(curr->next[2], &param_list, symtable);
+
+            if (return_signal) {
+                fce_free(param_list);
+                return return_signal;
+            }
+            
+            return_signal = eval_param_list(next->data[1].data, param_list, symtable, deftable);
+
+            fce_free(param_list);
+            return return_signal;
         }
 
         // printf("\n");
@@ -549,7 +589,6 @@ int process_f_or_return_list(t_node *node, fce_item_t **item, stack_t *symtable,
 
         // list návratových hodnot volané funkce se připojí k již existujícímu
         fce_item_t *return_list = NULL;
-        // 
         _ERR() get_f_return_list(f_name, &return_list, symtable)                                ERR_()
         append_list(item, return_list);
     
@@ -632,16 +671,24 @@ int process_cond(t_node *node, stack_t *symtable) {
     // obě strany musí bát stejné
     bool sem_type = strcmp(type1, type2);
 
+    // porovnání integer a number
     if (NUM_OR_INT(type1, type2)) 
+        sem_type = SEM_OK;
+
+    // porovnaní s typem nil
+    if (CMP_NIL(type1, type2, node->next[1]->next[0]->data[0].data))
         sem_type = SEM_OK;
 
     // uvolnění paměti
     free(value1); free(type1);
     free(value2); free(type2);
     
-    // printf("cond succes\n");
-    
-    return (sem_type) ? SEM_TYPE : SEM_OK;
+    if (sem_type) {
+        fprintf(stderr, "ERROR: Type incompatibility in comparison on line %d\n", node->next[0]->next[0]->line);
+        return SEM_TYPE;
+    } else {
+        return SEM_OK;
+    }
 }
 
 int process_decl_local(t_node *node, stack_t *symtable) {
@@ -661,16 +708,19 @@ int process_decl_local(t_node *node, stack_t *symtable) {
         key_t assign_type = NULL;
         
         // vyhodnocení typů přiřazovaných hodnot
-        if (eval_expr_type(next->next[4]->next[1]->next[0], &value, &assign_type, symtable)) {
+        tree_print(*next->next[4]->next[1]->next[0], 0);
+        if ((return_signal = eval_expr_type(next->next[4]->next[1]->next[0], &value, &assign_type, symtable))) {
             FREE_VAR_DECL()
-            return SEM_TYPE;
+            return return_signal;
         }
         
         // provede se typová kontrola nad přiřazením
-        if (strcmp(type, assign_type) && !(!strcmp(type, "number") && !strcmp(assign_type, "integer"))) {
-            fprintf(stderr, "ERROR: Type incompatibility during assignment [%s] given expected [%s]\n", assign_type, type);
+        if (strcmp(type, assign_type) && !(!strcmp(type, "number") && !strcmp(assign_type, "integer")) && strcmp(assign_type, "nil")) {
+            fprintf(stderr, "ERROR: Type incompatibility during assignment given [%s] expected [%s] on line %d\n", assign_type, type, next->next[4]->next[1]->next[0]->line);
+            symtable_print(symtable);
             FREE_VAR_DECL()
-            return SEM_ASSIGN;
+            return SEM_ASSIGN; 
+            // return SEM_OK;
         }
 
         free(assign_type);
@@ -1167,7 +1217,7 @@ int semantic(t_node *root_node) {
         def_table_t *deftable = def_table_init();
         stack_t *symtable = symtable_init(STACK_SIZE);
 
-        // tree_print(*root_node, 0);
+        tree_print(*root_node, 0);
         
         // zpracování hlavní části syntaktického stromu stromu
         return_signal = process_main_list(root_node->next[2], symtable, deftable);
