@@ -1,237 +1,887 @@
-==310830== Memcheck, a memory error detector
-==310830== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==310830== Using Valgrind-3.16.1 and LibVEX; rerun with -h for copyright info
-==310830== Command: ./compiler
-==310830== 
-==310830== Conditional jump or move depends on uninitialised value(s)
-==310830==    at 0x409DC9: fix_expr.part.0 (code_generator.c:164)
-==310830==    by 0x409D93: fix_expr (code_generator.c:155)
-==310830==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
-==310830==    by 0x409D93: fix_expr (code_generator.c:155)
-==310830==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
-==310830==    by 0x409D93: fix_expr (code_generator.c:155)
-==310830==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
-==310830==    by 0x409D93: fix_expr (code_generator.c:155)
-==310830==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
-==310830==    by 0x409D93: fix_expr (code_generator.c:155)
-==310830==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
-==310830==    by 0x409D93: fix_expr (code_generator.c:155)
-==310830==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
-==310830==    by 0x409D93: fix_expr (code_generator.c:155)
-==310830==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
-==310830==    by 0x409D93: fix_expr (code_generator.c:155)
-==310830==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
-==310830==    by 0x409D93: fix_expr (code_generator.c:155)
-==310830==    by 0x409D93: fix_expr.part.0 (code_generator.c:177)
-==310830==    by 0x40D1B5: fix_expr (code_generator.c:155)
-==310830==    by 0x40D1B5: generate_code (code_generator.c:49)
-==310830==    by 0x40127A: main (compiler.c:45)
-==310830== 
-==310830== Invalid read of size 1
-==310830==    at 0x483DB86: strlen (vg_replace_strmem.c:459)
-==310830==    by 0x48E574D: __vfprintf_internal (in /usr/lib64/libc-2.31.so)
-==310830==    by 0x48F7809: __vsnprintf_internal (in /usr/lib64/libc-2.31.so)
-==310830==    by 0x4096B1: strcat_format_realloc (mystring.c:124)
-==310830==    by 0x40AAB6: rename_all_id (code_generator.c:224)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40D1FC: generate_code (code_generator.c:58)
-==310830==  Address 0x4ac13e0 is 0 bytes inside a block of size 5 free'd
-==310830==    at 0x483B9F5: free (vg_replace_malloc.c:538)
-==310830==    by 0x4047B2: node_setdata (tree.c:37)
-==310830==    by 0x40A8CF: rename_all_id (code_generator.c:231)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40D1FC: generate_code (code_generator.c:58)
-==310830==    by 0x40127A: main (compiler.c:45)
-==310830==  Block was alloc'd at
-==310830==    at 0x483A809: malloc (vg_replace_malloc.c:307)
-==310830==    by 0x4047CA: node_setdata (tree.c:40)
-==310830==    by 0x403333: syntax_analyzer (parser.c:255)
-==310830==    by 0x40123D: main (compiler.c:27)
-==310830== 
-==310830== Invalid read of size 1
-==310830==    at 0x483DB94: strlen (vg_replace_strmem.c:459)
-==310830==    by 0x48E574D: __vfprintf_internal (in /usr/lib64/libc-2.31.so)
-==310830==    by 0x48F7809: __vsnprintf_internal (in /usr/lib64/libc-2.31.so)
-==310830==    by 0x4096B1: strcat_format_realloc (mystring.c:124)
-==310830==    by 0x40AAB6: rename_all_id (code_generator.c:224)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40D1FC: generate_code (code_generator.c:58)
-==310830==  Address 0x4ac13e1 is 1 bytes inside a block of size 5 free'd
-==310830==    at 0x483B9F5: free (vg_replace_malloc.c:538)
-==310830==    by 0x4047B2: node_setdata (tree.c:37)
-==310830==    by 0x40A8CF: rename_all_id (code_generator.c:231)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40D1FC: generate_code (code_generator.c:58)
-==310830==    by 0x40127A: main (compiler.c:45)
-==310830==  Block was alloc'd at
-==310830==    at 0x483A809: malloc (vg_replace_malloc.c:307)
-==310830==    by 0x4047CA: node_setdata (tree.c:40)
-==310830==    by 0x403333: syntax_analyzer (parser.c:255)
-==310830==    by 0x40123D: main (compiler.c:27)
-==310830== 
-==310830== Invalid read of size 1
-==310830==    at 0x48FCC50: _IO_default_xsputn (in /usr/lib64/libc-2.31.so)
-==310830==    by 0x48E3C16: __vfprintf_internal (in /usr/lib64/libc-2.31.so)
-==310830==    by 0x48F7809: __vsnprintf_internal (in /usr/lib64/libc-2.31.so)
-==310830==    by 0x4096B1: strcat_format_realloc (mystring.c:124)
-==310830==    by 0x40AAB6: rename_all_id (code_generator.c:224)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40D1FC: generate_code (code_generator.c:58)
-==310830==  Address 0x4ac13e0 is 0 bytes inside a block of size 5 free'd
-==310830==    at 0x483B9F5: free (vg_replace_malloc.c:538)
-==310830==    by 0x4047B2: node_setdata (tree.c:37)
-==310830==    by 0x40A8CF: rename_all_id (code_generator.c:231)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40D1FC: generate_code (code_generator.c:58)
-==310830==    by 0x40127A: main (compiler.c:45)
-==310830==  Block was alloc'd at
-==310830==    at 0x483A809: malloc (vg_replace_malloc.c:307)
-==310830==    by 0x4047CA: node_setdata (tree.c:40)
-==310830==    by 0x403333: syntax_analyzer (parser.c:255)
-==310830==    by 0x40123D: main (compiler.c:27)
-==310830== 
-==310830== Invalid read of size 1
-==310830==    at 0x48FCC5F: _IO_default_xsputn (in /usr/lib64/libc-2.31.so)
-==310830==    by 0x48E3C16: __vfprintf_internal (in /usr/lib64/libc-2.31.so)
-==310830==    by 0x48F7809: __vsnprintf_internal (in /usr/lib64/libc-2.31.so)
-==310830==    by 0x4096B1: strcat_format_realloc (mystring.c:124)
-==310830==    by 0x40AAB6: rename_all_id (code_generator.c:224)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40D1FC: generate_code (code_generator.c:58)
-==310830==  Address 0x4ac13e2 is 2 bytes inside a block of size 5 free'd
-==310830==    at 0x483B9F5: free (vg_replace_malloc.c:538)
-==310830==    by 0x4047B2: node_setdata (tree.c:37)
-==310830==    by 0x40A8CF: rename_all_id (code_generator.c:231)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40D1FC: generate_code (code_generator.c:58)
-==310830==    by 0x40127A: main (compiler.c:45)
-==310830==  Block was alloc'd at
-==310830==    at 0x483A809: malloc (vg_replace_malloc.c:307)
-==310830==    by 0x4047CA: node_setdata (tree.c:40)
-==310830==    by 0x403333: syntax_analyzer (parser.c:255)
-==310830==    by 0x40123D: main (compiler.c:27)
-==310830== 
-==310830== Conditional jump or move depends on uninitialised value(s)
-==310830==    at 0x40D262: generate_code (code_generator.c:77)
-==310830==    by 0x40127A: main (compiler.c:45)
-==310830== 
-==310830== 
-==310830== HEAP SUMMARY:
-==310830==     in use at exit: 794 bytes in 11 blocks
-==310830==   total heap usage: 5,186 allocs, 5,175 frees, 223,378 bytes allocated
-==310830== 
-==310830== 2 bytes in 1 blocks are indirectly lost in loss record 1 of 11
-==310830==    at 0x483A809: malloc (vg_replace_malloc.c:307)
-==310830==    by 0x404821: node_setdata (tree.c:47)
-==310830==    by 0x40316B: syntax_analyzer (parser.c:237)
-==310830==    by 0x40123D: main (compiler.c:27)
-==310830== 
-==310830== 2 bytes in 1 blocks are indirectly lost in loss record 2 of 11
-==310830==    at 0x483A809: malloc (vg_replace_malloc.c:307)
-==310830==    by 0x404821: node_setdata (tree.c:47)
-==310830==    by 0x402A73: bottom_up (parser.c:130)
-==310830==    by 0x403446: syntax_analyzer (parser.c:250)
-==310830==    by 0x40123D: main (compiler.c:27)
-==310830== 
-==310830== 5 bytes in 1 blocks are indirectly lost in loss record 3 of 11
-==310830==    at 0x483A809: malloc (vg_replace_malloc.c:307)
-==310830==    by 0x4047CA: node_setdata (tree.c:40)
-==310830==    by 0x402A73: bottom_up (parser.c:130)
-==310830==    by 0x403446: syntax_analyzer (parser.c:250)
-==310830==    by 0x40123D: main (compiler.c:27)
-==310830== 
-==310830== 12 bytes in 1 blocks are indirectly lost in loss record 4 of 11
-==310830==    at 0x483A809: malloc (vg_replace_malloc.c:307)
-==310830==    by 0x4047CA: node_setdata (tree.c:40)
-==310830==    by 0x40316B: syntax_analyzer (parser.c:237)
-==310830==    by 0x40123D: main (compiler.c:27)
-==310830== 
-==310830== 32 bytes in 1 blocks are indirectly lost in loss record 5 of 11
-==310830==    at 0x483A809: malloc (vg_replace_malloc.c:307)
-==310830==    by 0x40473F: node_init (tree.c:22)
-==310830==    by 0x403134: syntax_analyzer (parser.c:236)
-==310830==    by 0x40123D: main (compiler.c:27)
-==310830== 
-==310830== 39 (32 direct, 7 indirect) bytes in 1 blocks are definitely lost in loss record 6 of 11
-==310830==    at 0x483A809: malloc (vg_replace_malloc.c:307)
-==310830==    by 0x40473F: node_init (tree.c:22)
-==310830==    by 0x402A64: bottom_up (parser.c:129)
-==310830==    by 0x403446: syntax_analyzer (parser.c:250)
-==310830==    by 0x40123D: main (compiler.c:27)
-==310830== 
-==310830== 45 bytes in 1 blocks are definitely lost in loss record 7 of 11
-==310830==    at 0x483A809: malloc (vg_replace_malloc.c:307)
-==310830==    by 0x409263: buffer_init (mystring.c:22)
-==310830==    by 0x40A839: rename_all_id (code_generator.c:190)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40A767: rename_all_id (code_generator.c:256)
-==310830==    by 0x40D1FC: generate_code (code_generator.c:58)
-==310830==    by 0x40127A: main (compiler.c:45)
-==310830== 
-==310830== 80 bytes in 1 blocks are indirectly lost in loss record 8 of 11
-==310830==    at 0x483A809: malloc (vg_replace_malloc.c:307)
-==310830==    by 0x40472C: node_init (tree.c:19)
-==310830==    by 0x403134: syntax_analyzer (parser.c:236)
-==310830==    by 0x40123D: main (compiler.c:27)
-==310830== 
-==310830== 80 bytes in 1 blocks are definitely lost in loss record 9 of 11
-==310830==    at 0x483A809: malloc (vg_replace_malloc.c:307)
-==310830==    by 0x40472C: node_init (tree.c:19)
-==310830==    by 0x402A64: bottom_up (parser.c:129)
-==310830==    by 0x403446: syntax_analyzer (parser.c:250)
-==310830==    by 0x40123D: main (compiler.c:27)
-==310830== 
-==310830== 158 (32 direct, 126 indirect) bytes in 1 blocks are definitely lost in loss record 10 of 11
-==310830==    at 0x483A809: malloc (vg_replace_malloc.c:307)
-==310830==    by 0x403129: syntax_analyzer (parser.c:235)
-==310830==    by 0x40123D: main (compiler.c:27)
-==310830== 
-==310830== 472 bytes in 1 blocks are still reachable in loss record 11 of 11
-==310830==    at 0x483A809: malloc (vg_replace_malloc.c:307)
-==310830==    by 0x48EE7AE: __fopen_internal (in /usr/lib64/libc-2.31.so)
-==310830==    by 0x409878: append_file (mystring.c:181)
-==310830==    by 0x40D18E: generate_code (code_generator.c:40)
-==310830==    by 0x40127A: main (compiler.c:45)
-==310830== 
-==310830== LEAK SUMMARY:
-==310830==    definitely lost: 189 bytes in 4 blocks
-==310830==    indirectly lost: 133 bytes in 6 blocks
-==310830==      possibly lost: 0 bytes in 0 blocks
-==310830==    still reachable: 472 bytes in 1 blocks
-==310830==         suppressed: 0 bytes in 0 blocks
-==310830== 
-==310830== Use --track-origins=yes to see where uninitialised values come from
-==310830== For lists of detected and suppressed errors, rerun with: -s
-==310830== ERROR SUMMARY: 15 errors from 10 contexts (suppressed: 0 from 0)
+==904769== Memcheck, a memory error detector
+==904769== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==904769== Using Valgrind-3.16.1 and LibVEX; rerun with -h for copyright info
+==904769== Command: ./compiler
+==904769== 
+==904769== Invalid read of size 1
+==904769==    at 0x483DB86: strlen (vg_replace_strmem.c:459)
+==904769==    by 0x405EF3: eval_expr_type (semantic.c:256)
+==904769==    by 0x406960: process_item_another (semantic.c:898)
+==904769==    by 0x406A9E: process_param_list (semantic.c:872)
+==904769==    by 0x406E1A: process_assign_or_fcall (semantic.c:698)
+==904769==    by 0x40769C: process_stmt_list (semantic.c:510)
+==904769==    by 0x407A98: f_define.part.0 (semantic.c:1095)
+==904769==    by 0x408729: f_define (semantic.c:1034)
+==904769==    by 0x408729: process_main_list.part.0 (semantic.c:407)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
+==904769== 
+==904769== 
+==904769== Process terminating with default action of signal 11 (SIGSEGV): dumping core
+==904769==  Access not within mapped region at address 0x0
+==904769==    at 0x483DB86: strlen (vg_replace_strmem.c:459)
+==904769==    by 0x405EF3: eval_expr_type (semantic.c:256)
+==904769==    by 0x406960: process_item_another (semantic.c:898)
+==904769==    by 0x406A9E: process_param_list (semantic.c:872)
+==904769==    by 0x406E1A: process_assign_or_fcall (semantic.c:698)
+==904769==    by 0x40769C: process_stmt_list (semantic.c:510)
+==904769==    by 0x407A98: f_define.part.0 (semantic.c:1095)
+==904769==    by 0x408729: f_define (semantic.c:1034)
+==904769==    by 0x408729: process_main_list.part.0 (semantic.c:407)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769==  If you believe this happened as a result of a stack
+==904769==  overflow in your program's main thread (unlikely but
+==904769==  possible), you can try to increase the size of the
+==904769==  main thread stack using the --main-stacksize= flag.
+==904769==  The main thread stack size used in this run was 8388608.
+==904769== 
+==904769== HEAP SUMMARY:
+==904769==     in use at exit: 14,748 bytes in 508 blocks
+==904769==   total heap usage: 5,301 allocs, 4,793 frees, 202,843 bytes allocated
+==904769== 
+==904769== 1 bytes in 1 blocks are still reachable in loss record 1 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x407D13: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 1 bytes in 1 blocks are still reachable in loss record 2 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x407D2C: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 1 bytes in 1 blocks are still reachable in loss record 3 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x407DE0: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 1 bytes in 1 blocks are still reachable in loss record 4 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x407DF9: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 1 bytes in 1 blocks are still reachable in loss record 5 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x407EA5: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 1 bytes in 1 blocks are still reachable in loss record 6 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x407EBE: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 1 bytes in 1 blocks are still reachable in loss record 7 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x407F75: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 1 bytes in 1 blocks are still reachable in loss record 8 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x407F8E: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 1 bytes in 1 blocks are still reachable in loss record 9 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x407FFF: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 1 bytes in 1 blocks are still reachable in loss record 10 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408018: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 1 bytes in 1 blocks are still reachable in loss record 11 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408102: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 1 bytes in 1 blocks are still reachable in loss record 12 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40811D: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 1 bytes in 1 blocks are still reachable in loss record 13 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408282: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 1 bytes in 1 blocks are still reachable in loss record 14 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40829B: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 1 bytes in 1 blocks are still reachable in loss record 15 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4083A2: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 1 bytes in 1 blocks are still reachable in loss record 16 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4083BB: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 1 bytes in 1 blocks are still reachable in loss record 17 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4079DC: f_define.part.0 (semantic.c:1075)
+==904769==    by 0x408729: f_define (semantic.c:1034)
+==904769==    by 0x408729: process_main_list.part.0 (semantic.c:407)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 1 bytes in 1 blocks are still reachable in loss record 18 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4079F5: f_define.part.0 (semantic.c:1076)
+==904769==    by 0x408729: f_define (semantic.c:1034)
+==904769==    by 0x408729: process_main_list.part.0 (semantic.c:407)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 2 bytes in 1 blocks are still reachable in loss record 19 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x404871: node_setdata (tree.c:47)
+==904769==    by 0x402FA2: syntax_analyzer (parser.c:188)
+==904769==    by 0x40123D: main (compiler.c:27)
+==904769== 
+==904769== 2 bytes in 1 blocks are still reachable in loss record 20 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4085C3: process_main_list.part.0 (semantic.c:430)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 2 bytes in 1 blocks are still reachable in loss record 21 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4072CD: process_decl_local (semantic.c:651)
+==904769==    by 0x407666: process_stmt_list (semantic.c:491)
+==904769==    by 0x407A98: f_define.part.0 (semantic.c:1095)
+==904769==    by 0x408729: f_define (semantic.c:1034)
+==904769==    by 0x408729: process_main_list.part.0 (semantic.c:407)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 2 bytes in 1 blocks are still reachable in loss record 22 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x405E62: eval_expr_type (semantic.c:245)
+==904769==    by 0x407365: process_decl_local (semantic.c:665)
+==904769==    by 0x407666: process_stmt_list (semantic.c:491)
+==904769==    by 0x407A98: f_define.part.0 (semantic.c:1095)
+==904769==    by 0x408729: f_define (semantic.c:1034)
+==904769==    by 0x408729: process_main_list.part.0 (semantic.c:407)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 4 bytes in 1 blocks are still reachable in loss record 23 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4082B4: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 4 bytes in 1 blocks are still reachable in loss record 24 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40933A: def_table_add (symtable.c:443)
+==904769==    by 0x408343: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 4 bytes in 1 blocks are still reachable in loss record 25 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4083D4: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 4 bytes in 1 blocks are still reachable in loss record 26 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40933A: def_table_add (symtable.c:443)
+==904769==    by 0x408443: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 5 bytes in 1 blocks are still reachable in loss record 27 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40933A: def_table_add (symtable.c:443)
+==904769==    by 0x408825: process_main_list.part.0 (semantic.c:405)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 5 bytes in 1 blocks are still reachable in loss record 28 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4079BB: f_define.part.0 (semantic.c:1074)
+==904769==    by 0x408729: f_define (semantic.c:1034)
+==904769==    by 0x408729: process_main_list.part.0 (semantic.c:407)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 6 bytes in 1 blocks are still reachable in loss record 29 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x407D45: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 6 bytes in 1 blocks are still reachable in loss record 30 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40933A: def_table_add (symtable.c:443)
+==904769==    by 0x407D9D: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 6 bytes in 1 blocks are still reachable in loss record 31 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x407E12: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 6 bytes in 1 blocks are still reachable in loss record 32 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40933A: def_table_add (symtable.c:443)
+==904769==    by 0x407E66: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 6 bytes in 1 blocks are still reachable in loss record 33 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x407ED7: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 6 bytes in 1 blocks are still reachable in loss record 34 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40933A: def_table_add (symtable.c:443)
+==904769==    by 0x407F37: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 6 bytes in 1 blocks are still reachable in loss record 35 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x407FA7: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 6 bytes in 1 blocks are still reachable in loss record 36 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40933A: def_table_add (symtable.c:443)
+==904769==    by 0x407FD6: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 7 bytes in 1 blocks are still reachable in loss record 37 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40481A: node_setdata (tree.c:40)
+==904769==    by 0x402FA2: syntax_analyzer (parser.c:188)
+==904769==    by 0x40123D: main (compiler.c:27)
+==904769== 
+==904769== 7 bytes in 1 blocks are still reachable in loss record 38 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x407D6C: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 7 bytes in 1 blocks are still reachable in loss record 39 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x407F02: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 7 bytes in 1 blocks are still reachable in loss record 40 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40807B: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 7 bytes in 1 blocks are still reachable in loss record 41 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408138: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 7 bytes in 1 blocks are still reachable in loss record 42 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408163: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 7 bytes in 1 blocks are still reachable in loss record 43 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40818E: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 7 bytes in 1 blocks are still reachable in loss record 44 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4081B9: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 7 bytes in 1 blocks are still reachable in loss record 45 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4081E4: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 7 bytes in 1 blocks are still reachable in loss record 46 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40933A: def_table_add (symtable.c:443)
+==904769==    by 0x408218: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 7 bytes in 1 blocks are still reachable in loss record 47 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4082F5: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 7 bytes in 1 blocks are still reachable in loss record 48 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4083F0: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 8 bytes in 1 blocks are still reachable in loss record 49 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x407E39: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 8 bytes in 1 blocks are still reachable in loss record 50 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408060: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 8 bytes in 1 blocks are still reachable in loss record 51 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4082D0: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 8 bytes in 1 blocks are still reachable in loss record 52 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408320: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 8 bytes in 1 blocks are still reachable in loss record 53 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408420: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 8 bytes in 1 blocks are still reachable in loss record 54 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40860A: process_main_list.part.0 (semantic.c:431)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 8 bytes in 1 blocks are still reachable in loss record 55 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40730C: process_decl_local (semantic.c:652)
+==904769==    by 0x407666: process_stmt_list (semantic.c:491)
+==904769==    by 0x407A98: f_define.part.0 (semantic.c:1095)
+==904769==    by 0x408729: f_define (semantic.c:1034)
+==904769==    by 0x408729: process_main_list.part.0 (semantic.c:407)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 8 bytes in 1 blocks are still reachable in loss record 56 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x406B09: process_param_list (semantic.c:864)
+==904769==    by 0x406E1A: process_assign_or_fcall (semantic.c:698)
+==904769==    by 0x40769C: process_stmt_list (semantic.c:510)
+==904769==    by 0x407A98: f_define.part.0 (semantic.c:1095)
+==904769==    by 0x408729: f_define (semantic.c:1034)
+==904769==    by 0x408729: process_main_list.part.0 (semantic.c:407)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 8 bytes in 4 blocks are still reachable in loss record 57 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40481A: node_setdata (tree.c:40)
+==904769==    by 0x402D1D: bottom_up (parser.c:50)
+==904769==    by 0x4034B6: syntax_analyzer (parser.c:250)
+==904769==    by 0x40123D: main (compiler.c:27)
+==904769== 
+==904769== 8 bytes in 4 blocks are still reachable in loss record 58 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x404871: node_setdata (tree.c:47)
+==904769==    by 0x402AE3: bottom_up (parser.c:130)
+==904769==    by 0x4034B6: syntax_analyzer (parser.c:250)
+==904769==    by 0x40123D: main (compiler.c:27)
+==904769== 
+==904769== 8 bytes in 1 blocks are definitely lost in loss record 59 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x405ED3: eval_expr_type (semantic.c:255)
+==904769==    by 0x406960: process_item_another (semantic.c:898)
+==904769==    by 0x406A9E: process_param_list (semantic.c:872)
+==904769==    by 0x406E1A: process_assign_or_fcall (semantic.c:698)
+==904769==    by 0x40769C: process_stmt_list (semantic.c:510)
+==904769==    by 0x407A98: f_define.part.0 (semantic.c:1095)
+==904769==    by 0x408729: f_define (semantic.c:1034)
+==904769==    by 0x408729: process_main_list.part.0 (semantic.c:407)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 10 bytes in 1 blocks are still reachable in loss record 60 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408031: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 10 bytes in 1 blocks are still reachable in loss record 61 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40933A: def_table_add (symtable.c:443)
+==904769==    by 0x4080B0: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 16 bytes in 1 blocks are still reachable in loss record 62 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4099D4: fce_item_push (symtable.c:359)
+==904769==    by 0x4099D4: fce_item_push (symtable.c:356)
+==904769==    by 0x407DCE: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 16 bytes in 1 blocks are still reachable in loss record 63 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4099D4: fce_item_push (symtable.c:359)
+==904769==    by 0x4099D4: fce_item_push (symtable.c:356)
+==904769==    by 0x407E92: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 16 bytes in 1 blocks are still reachable in loss record 64 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4099D4: fce_item_push (symtable.c:359)
+==904769==    by 0x4099D4: fce_item_push (symtable.c:356)
+==904769==    by 0x407F63: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 16 bytes in 1 blocks are still reachable in loss record 65 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4099D4: fce_item_push (symtable.c:359)
+==904769==    by 0x4099D4: fce_item_push (symtable.c:356)
+==904769==    by 0x4080DF: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 16 bytes in 1 blocks are still reachable in loss record 66 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4099A5: fce_item_push (symtable.c:372)
+==904769==    by 0x4080EF: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 16 bytes in 1 blocks are still reachable in loss record 67 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4099D4: fce_item_push (symtable.c:359)
+==904769==    by 0x4099D4: fce_item_push (symtable.c:356)
+==904769==    by 0x408246: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 16 bytes in 1 blocks are still reachable in loss record 68 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4099A5: fce_item_push (symtable.c:372)
+==904769==    by 0x408256: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 16 bytes in 1 blocks are still reachable in loss record 69 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4099A5: fce_item_push (symtable.c:372)
+==904769==    by 0x408266: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 16 bytes in 1 blocks are still reachable in loss record 70 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4099A5: fce_item_push (symtable.c:372)
+==904769==    by 0x408271: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 16 bytes in 1 blocks are still reachable in loss record 71 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4099D4: fce_item_push (symtable.c:359)
+==904769==    by 0x4099D4: fce_item_push (symtable.c:356)
+==904769==    by 0x40836F: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 16 bytes in 1 blocks are still reachable in loss record 72 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4099A5: fce_item_push (symtable.c:372)
+==904769==    by 0x40837F: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 16 bytes in 1 blocks are still reachable in loss record 73 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4099A5: fce_item_push (symtable.c:372)
+==904769==    by 0x40838F: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 16 bytes in 1 blocks are still reachable in loss record 74 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4099D4: fce_item_push (symtable.c:359)
+==904769==    by 0x4099D4: fce_item_push (symtable.c:356)
+==904769==    by 0x408472: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 16 bytes in 1 blocks are still reachable in loss record 75 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4099A5: fce_item_push (symtable.c:372)
+==904769==    by 0x408482: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 16 bytes in 1 blocks are still reachable in loss record 76 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x4099D4: fce_item_push (symtable.c:359)
+==904769==    by 0x4099D4: fce_item_push (symtable.c:356)
+==904769==    by 0x406B24: process_param_list (semantic.c:865)
+==904769==    by 0x406E1A: process_assign_or_fcall (semantic.c:698)
+==904769==    by 0x40769C: process_stmt_list (semantic.c:510)
+==904769==    by 0x407A98: f_define.part.0 (semantic.c:1095)
+==904769==    by 0x408729: f_define (semantic.c:1034)
+==904769==    by 0x408729: process_main_list.part.0 (semantic.c:407)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 20 bytes in 4 blocks are still reachable in loss record 77 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40481A: node_setdata (tree.c:40)
+==904769==    by 0x402AE3: bottom_up (parser.c:130)
+==904769==    by 0x4034B6: syntax_analyzer (parser.c:250)
+==904769==    by 0x40123D: main (compiler.c:27)
+==904769== 
+==904769== 24 bytes in 1 blocks are still reachable in loss record 78 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40923B: def_table_init (symtable.c:401)
+==904769==    by 0x4089F5: semantic (semantic.c:1167)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 27 bytes in 4 blocks are still reachable in loss record 79 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40481A: node_setdata (tree.c:40)
+==904769==    by 0x402D0B: bottom_up (parser.c:49)
+==904769==    by 0x4034B6: syntax_analyzer (parser.c:250)
+==904769==    by 0x40123D: main (compiler.c:27)
+==904769== 
+==904769== 32 bytes in 1 blocks are still reachable in loss record 80 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x401226: main (compiler.c:22)
+==904769== 
+==904769== 32 bytes in 1 blocks are still reachable in loss record 81 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40478F: node_init (tree.c:22)
+==904769==    by 0x401231: main (compiler.c:23)
+==904769== 
+==904769== 48 bytes in 1 blocks are still reachable in loss record 82 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408D66: htab_lookup_add (symtable.c:204)
+==904769==    by 0x407DBF: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 48 bytes in 1 blocks are still reachable in loss record 83 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408D19: htab_lookup_add (symtable.c:224)
+==904769==    by 0x407E7E: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 48 bytes in 1 blocks are still reachable in loss record 84 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408D19: htab_lookup_add (symtable.c:224)
+==904769==    by 0x407F54: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 48 bytes in 1 blocks are still reachable in loss record 85 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408D66: htab_lookup_add (symtable.c:204)
+==904769==    by 0x407FEE: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 48 bytes in 1 blocks are still reachable in loss record 86 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408D66: htab_lookup_add (symtable.c:204)
+==904769==    by 0x4080C8: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 48 bytes in 1 blocks are still reachable in loss record 87 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408D66: htab_lookup_add (symtable.c:204)
+==904769==    by 0x408234: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 48 bytes in 1 blocks are still reachable in loss record 88 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408D66: htab_lookup_add (symtable.c:204)
+==904769==    by 0x40835B: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 48 bytes in 1 blocks are still reachable in loss record 89 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408D19: htab_lookup_add (symtable.c:224)
+==904769==    by 0x40845B: process_main_list.part.0 (semantic.c:390)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 48 bytes in 1 blocks are still reachable in loss record 90 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408D19: htab_lookup_add (symtable.c:224)
+==904769==    by 0x4071EE: add_var_to_symtable (semantic.c:1142)
+==904769==    by 0x408659: process_main_list.part.0 (semantic.c:460)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 48 bytes in 1 blocks are still reachable in loss record 91 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408D19: htab_lookup_add (symtable.c:224)
+==904769==    by 0x407A22: f_define.part.0 (semantic.c:1081)
+==904769==    by 0x408729: f_define (semantic.c:1034)
+==904769==    by 0x408729: process_main_list.part.0 (semantic.c:407)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 48 bytes in 1 blocks are still reachable in loss record 92 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408D66: htab_lookup_add (symtable.c:204)
+==904769==    by 0x4071EE: add_var_to_symtable (semantic.c:1142)
+==904769==    by 0x4073B8: process_decl_local (semantic.c:686)
+==904769==    by 0x407666: process_stmt_list (semantic.c:491)
+==904769==    by 0x407A98: f_define.part.0 (semantic.c:1095)
+==904769==    by 0x408729: f_define (semantic.c:1034)
+==904769==    by 0x408729: process_main_list.part.0 (semantic.c:407)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 56 bytes in 1 blocks are still reachable in loss record 93 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408AD6: symtable_init (symtable.c:57)
+==904769==    by 0x408A02: semantic (semantic.c:1168)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 80 bytes in 1 blocks are still reachable in loss record 94 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40477C: node_init (tree.c:19)
+==904769==    by 0x401231: main (compiler.c:23)
+==904769== 
+==904769== 88 bytes in 21 blocks are still reachable in loss record 95 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40481A: node_setdata (tree.c:40)
+==904769==    by 0x4033A3: syntax_analyzer (parser.c:255)
+==904769==    by 0x40123D: main (compiler.c:27)
+==904769== 
+==904769== 92 bytes in 21 blocks are still reachable in loss record 96 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40481A: node_setdata (tree.c:40)
+==904769==    by 0x4033B1: syntax_analyzer (parser.c:256)
+==904769==    by 0x40123D: main (compiler.c:27)
+==904769== 
+==904769== 108 bytes in 54 blocks are still reachable in loss record 97 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x404871: node_setdata (tree.c:47)
+==904769==    by 0x4031DB: syntax_analyzer (parser.c:237)
+==904769==    by 0x40123D: main (compiler.c:27)
+==904769== 
+==904769== 128 bytes in 4 blocks are still reachable in loss record 98 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x402CF2: bottom_up (parser.c:47)
+==904769==    by 0x4034B6: syntax_analyzer (parser.c:250)
+==904769==    by 0x40123D: main (compiler.c:27)
+==904769== 
+==904769== 128 bytes in 4 blocks are still reachable in loss record 99 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40478F: node_init (tree.c:22)
+==904769==    by 0x402CFD: bottom_up (parser.c:48)
+==904769==    by 0x4034B6: syntax_analyzer (parser.c:250)
+==904769==    by 0x40123D: main (compiler.c:27)
+==904769== 
+==904769== 128 bytes in 4 blocks are still reachable in loss record 100 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40478F: node_init (tree.c:22)
+==904769==    by 0x402AD4: bottom_up (parser.c:129)
+==904769==    by 0x4034B6: syntax_analyzer (parser.c:250)
+==904769==    by 0x40123D: main (compiler.c:27)
+==904769== 
+==904769== 160 bytes in 1 blocks are still reachable in loss record 101 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40925C: def_table_init (symtable.c:410)
+==904769==    by 0x4089F5: semantic (semantic.c:1167)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 248 bytes in 1 blocks are still reachable in loss record 102 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408B6A: htab_init (symtable.c:159)
+==904769==    by 0x408A1C: add_scope_to_symtable (semantic.c:1149)
+==904769==    by 0x408A1C: process_main_list (semantic.c:387)
+==904769==    by 0x408A1C: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 248 bytes in 1 blocks are still reachable in loss record 103 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x408B6A: htab_init (symtable.c:159)
+==904769==    by 0x4086F9: add_scope_to_symtable (semantic.c:1149)
+==904769==    by 0x4086F9: f_define (semantic.c:1034)
+==904769==    by 0x4086F9: process_main_list.part.0 (semantic.c:407)
+==904769==    by 0x408A46: process_main_list (semantic.c:387)
+==904769==    by 0x408A46: semantic (semantic.c:1173)
+==904769==    by 0x401256: main (compiler.c:36)
+==904769== 
+==904769== 320 bytes in 4 blocks are still reachable in loss record 104 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40477C: node_init (tree.c:19)
+==904769==    by 0x402CFD: bottom_up (parser.c:48)
+==904769==    by 0x4034B6: syntax_analyzer (parser.c:250)
+==904769==    by 0x40123D: main (compiler.c:27)
+==904769== 
+==904769== 320 bytes in 4 blocks are still reachable in loss record 105 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40477C: node_init (tree.c:19)
+==904769==    by 0x402AD4: bottom_up (parser.c:129)
+==904769==    by 0x4034B6: syntax_analyzer (parser.c:250)
+==904769==    by 0x40123D: main (compiler.c:27)
+==904769== 
+==904769== 521 bytes in 54 blocks are still reachable in loss record 106 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40481A: node_setdata (tree.c:40)
+==904769==    by 0x4031DB: syntax_analyzer (parser.c:237)
+==904769==    by 0x40123D: main (compiler.c:27)
+==904769== 
+==904769== 2,400 bytes in 75 blocks are still reachable in loss record 107 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40478F: node_init (tree.c:22)
+==904769==    by 0x4031A4: syntax_analyzer (parser.c:236)
+==904769==    by 0x40123D: main (compiler.c:27)
+==904769== 
+==904769== 2,528 bytes in 79 blocks are still reachable in loss record 108 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x403199: syntax_analyzer (parser.c:235)
+==904769==    by 0x40123D: main (compiler.c:27)
+==904769== 
+==904769== 6,000 bytes in 75 blocks are still reachable in loss record 109 of 109
+==904769==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904769==    by 0x40477C: node_init (tree.c:19)
+==904769==    by 0x4031A4: syntax_analyzer (parser.c:236)
+==904769==    by 0x40123D: main (compiler.c:27)
+==904769== 
+==904769== LEAK SUMMARY:
+==904769==    definitely lost: 8 bytes in 1 blocks
+==904769==    indirectly lost: 0 bytes in 0 blocks
+==904769==      possibly lost: 0 bytes in 0 blocks
+==904769==    still reachable: 14,740 bytes in 507 blocks
+==904769==         suppressed: 0 bytes in 0 blocks
+==904769== 
+==904769== For lists of detected and suppressed errors, rerun with: -s
+==904769== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)

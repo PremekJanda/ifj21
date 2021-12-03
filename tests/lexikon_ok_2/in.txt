@@ -1,0 +1,5 @@
+require "ifj21"
+global i:integer=2
+function main() local a:integer=i + 6 local b:integer=i+3 
+end
+main()

@@ -1,1 +1,2 @@
-0x1.2p+2
+Error at line: 321
+Wrong operand type!

@@ -1,0 +1,175 @@
+==904658== Memcheck, a memory error detector
+==904658== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==904658== Using Valgrind-3.16.1 and LibVEX; rerun with -h for copyright info
+==904658== Command: ./compiler
+==904658== 
+==904658== Conditional jump or move depends on uninitialised value(s)
+==904658==    at 0x40A9F9: fix_expr.part.0 (code_generator.c:170)
+==904658==    by 0x40A9C3: fix_expr (code_generator.c:161)
+==904658==    by 0x40A9C3: fix_expr.part.0 (code_generator.c:183)
+==904658==    by 0x40A9C3: fix_expr (code_generator.c:161)
+==904658==    by 0x40A9C3: fix_expr.part.0 (code_generator.c:183)
+==904658==    by 0x40A9C3: fix_expr (code_generator.c:161)
+==904658==    by 0x40A9C3: fix_expr.part.0 (code_generator.c:183)
+==904658==    by 0x40A9C3: fix_expr (code_generator.c:161)
+==904658==    by 0x40A9C3: fix_expr.part.0 (code_generator.c:183)
+==904658==    by 0x40A9C3: fix_expr (code_generator.c:161)
+==904658==    by 0x40A9C3: fix_expr.part.0 (code_generator.c:183)
+==904658==    by 0x40A9C3: fix_expr (code_generator.c:161)
+==904658==    by 0x40A9C3: fix_expr.part.0 (code_generator.c:183)
+==904658==    by 0x40A9C3: fix_expr (code_generator.c:161)
+==904658==    by 0x40A9C3: fix_expr.part.0 (code_generator.c:183)
+==904658==    by 0x40A9C3: fix_expr (code_generator.c:161)
+==904658==    by 0x40A9C3: fix_expr.part.0 (code_generator.c:183)
+==904658==    by 0x40A9C3: fix_expr (code_generator.c:161)
+==904658==    by 0x40A9C3: fix_expr.part.0 (code_generator.c:183)
+==904658==    by 0x40A9C3: fix_expr (code_generator.c:161)
+==904658==    by 0x40A9C3: fix_expr.part.0 (code_generator.c:183)
+==904658==    by 0x40A9C3: fix_expr (code_generator.c:161)
+==904658==    by 0x40A9C3: fix_expr.part.0 (code_generator.c:183)
+==904658== 
+==904658== Source and destination overlap in strcat(0x4ad6b40, 0x4ad6b46)
+==904658==    at 0x483D930: strcat (vg_replace_strmem.c:308)
+==904658==    by 0x40A173: replace_all_chars_by_string (mystring.c:81)
+==904658==    by 0x40BA15: convert_strings.part.0 (code_generator.c:991)
+==904658==    by 0x40BD3F: convert_strings (code_generator.c:1002)
+==904658==    by 0x40BD3F: convert_strings (code_generator.c:998)
+==904658==    by 0x40BD3F: convert_strings (code_generator.c:998)
+==904658==    by 0x40BD3F: convert_strings (code_generator.c:998)
+==904658==    by 0x40BD3F: convert_strings (code_generator.c:998)
+==904658==    by 0x40BD3F: convert_strings (code_generator.c:998)
+==904658==    by 0x40BD3F: convert_strings (code_generator.c:998)
+==904658==    by 0x40DF05: convert_strings (code_generator.c:998)
+==904658==    by 0x40DF05: generate_code (code_generator.c:55)
+==904658==    by 0x40127A: main (compiler.c:45)
+==904658== 
+==904658== Conditional jump or move depends on uninitialised value(s)
+==904658==    at 0x40DEC2: generate_code (code_generator.c:83)
+==904658==    by 0x40127A: main (compiler.c:45)
+==904658== 
+==904658== 
+==904658== HEAP SUMMARY:
+==904658==     in use at exit: 412 bytes in 12 blocks
+==904658==   total heap usage: 5,562 allocs, 5,550 frees, 236,637 bytes allocated
+==904658== 
+==904658== 2 bytes in 1 blocks are indirectly lost in loss record 1 of 12
+==904658==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904658==    by 0x404871: node_setdata (tree.c:47)
+==904658==    by 0x4031DB: syntax_analyzer (parser.c:237)
+==904658==    by 0x40123D: main (compiler.c:27)
+==904658== 
+==904658== 2 bytes in 1 blocks are indirectly lost in loss record 2 of 12
+==904658==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904658==    by 0x404871: node_setdata (tree.c:47)
+==904658==    by 0x402AE3: bottom_up (parser.c:130)
+==904658==    by 0x4034B6: syntax_analyzer (parser.c:250)
+==904658==    by 0x40123D: main (compiler.c:27)
+==904658== 
+==904658== 5 bytes in 1 blocks are indirectly lost in loss record 3 of 12
+==904658==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904658==    by 0x40481A: node_setdata (tree.c:40)
+==904658==    by 0x402AE3: bottom_up (parser.c:130)
+==904658==    by 0x4034B6: syntax_analyzer (parser.c:250)
+==904658==    by 0x40123D: main (compiler.c:27)
+==904658== 
+==904658== 12 bytes in 1 blocks are indirectly lost in loss record 4 of 12
+==904658==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904658==    by 0x40481A: node_setdata (tree.c:40)
+==904658==    by 0x4031DB: syntax_analyzer (parser.c:237)
+==904658==    by 0x40123D: main (compiler.c:27)
+==904658== 
+==904658== 32 bytes in 1 blocks are indirectly lost in loss record 5 of 12
+==904658==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904658==    by 0x40478F: node_init (tree.c:22)
+==904658==    by 0x4031A4: syntax_analyzer (parser.c:236)
+==904658==    by 0x40123D: main (compiler.c:27)
+==904658== 
+==904658== 39 (32 direct, 7 indirect) bytes in 1 blocks are definitely lost in loss record 6 of 12
+==904658==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904658==    by 0x40478F: node_init (tree.c:22)
+==904658==    by 0x402AD4: bottom_up (parser.c:129)
+==904658==    by 0x4034B6: syntax_analyzer (parser.c:250)
+==904658==    by 0x40123D: main (compiler.c:27)
+==904658== 
+==904658== 45 bytes in 1 blocks are definitely lost in loss record 7 of 12
+==904658==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904658==    by 0x409E83: buffer_init (mystring.c:22)
+==904658==    by 0x40B957: convert_strings.part.0 (code_generator.c:980)
+==904658==    by 0x40BD3F: convert_strings (code_generator.c:1002)
+==904658==    by 0x40BD3F: convert_strings (code_generator.c:998)
+==904658==    by 0x40BD3F: convert_strings (code_generator.c:998)
+==904658==    by 0x40BD3F: convert_strings (code_generator.c:998)
+==904658==    by 0x40BD3F: convert_strings (code_generator.c:998)
+==904658==    by 0x40BD3F: convert_strings (code_generator.c:998)
+==904658==    by 0x40BD3F: convert_strings (code_generator.c:998)
+==904658==    by 0x40DF05: convert_strings (code_generator.c:998)
+==904658==    by 0x40DF05: generate_code (code_generator.c:55)
+==904658==    by 0x40127A: main (compiler.c:45)
+==904658== 
+==904658== 45 bytes in 1 blocks are definitely lost in loss record 8 of 12
+==904658==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904658==    by 0x409E83: buffer_init (mystring.c:22)
+==904658==    by 0x40B957: convert_strings.part.0 (code_generator.c:980)
+==904658==    by 0x40BCEF: convert_strings (code_generator.c:1002)
+==904658==    by 0x40BCEF: convert_strings (code_generator.c:998)
+==904658==    by 0x40BC13: convert_strings (code_generator.c:998)
+==904658==    by 0x40BC13: convert_strings (code_generator.c:998)
+==904658==    by 0x40BC13: convert_strings (code_generator.c:998)
+==904658==    by 0x40BC13: convert_strings (code_generator.c:998)
+==904658==    by 0x40BC13: convert_strings (code_generator.c:998)
+==904658==    by 0x40BC13: convert_strings (code_generator.c:998)
+==904658==    by 0x40BC13: convert_strings (code_generator.c:998)
+==904658==    by 0x40BC13: convert_strings (code_generator.c:998)
+==904658==    by 0x40BC13: convert_strings (code_generator.c:998)
+==904658==    by 0x40DF05: convert_strings (code_generator.c:998)
+==904658==    by 0x40DF05: generate_code (code_generator.c:55)
+==904658==    by 0x40127A: main (compiler.c:45)
+==904658== 
+==904658== 45 bytes in 1 blocks are definitely lost in loss record 9 of 12
+==904658==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904658==    by 0x409E83: buffer_init (mystring.c:22)
+==904658==    by 0x40B957: convert_strings.part.0 (code_generator.c:980)
+==904658==    by 0x40BCFF: convert_strings (code_generator.c:1002)
+==904658==    by 0x40BCFF: convert_strings (code_generator.c:998)
+==904658==    by 0x40BCFF: convert_strings (code_generator.c:998)
+==904658==    by 0x40BC13: convert_strings (code_generator.c:998)
+==904658==    by 0x40BC13: convert_strings (code_generator.c:998)
+==904658==    by 0x40BC13: convert_strings (code_generator.c:998)
+==904658==    by 0x40BC13: convert_strings (code_generator.c:998)
+==904658==    by 0x40BC13: convert_strings (code_generator.c:998)
+==904658==    by 0x40BC13: convert_strings (code_generator.c:998)
+==904658==    by 0x40BC13: convert_strings (code_generator.c:998)
+==904658==    by 0x40BC13: convert_strings (code_generator.c:998)
+==904658==    by 0x40BC13: convert_strings (code_generator.c:998)
+==904658==    by 0x40DF05: convert_strings (code_generator.c:998)
+==904658==    by 0x40DF05: generate_code (code_generator.c:55)
+==904658==    by 0x40127A: main (compiler.c:45)
+==904658== 
+==904658== 80 bytes in 1 blocks are indirectly lost in loss record 10 of 12
+==904658==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904658==    by 0x40477C: node_init (tree.c:19)
+==904658==    by 0x4031A4: syntax_analyzer (parser.c:236)
+==904658==    by 0x40123D: main (compiler.c:27)
+==904658== 
+==904658== 80 bytes in 1 blocks are definitely lost in loss record 11 of 12
+==904658==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904658==    by 0x40477C: node_init (tree.c:19)
+==904658==    by 0x402AD4: bottom_up (parser.c:129)
+==904658==    by 0x4034B6: syntax_analyzer (parser.c:250)
+==904658==    by 0x40123D: main (compiler.c:27)
+==904658== 
+==904658== 158 (32 direct, 126 indirect) bytes in 1 blocks are definitely lost in loss record 12 of 12
+==904658==    at 0x483A809: malloc (vg_replace_malloc.c:307)
+==904658==    by 0x403199: syntax_analyzer (parser.c:235)
+==904658==    by 0x40123D: main (compiler.c:27)
+==904658== 
+==904658== LEAK SUMMARY:
+==904658==    definitely lost: 279 bytes in 6 blocks
+==904658==    indirectly lost: 133 bytes in 6 blocks
+==904658==      possibly lost: 0 bytes in 0 blocks
+==904658==    still reachable: 0 bytes in 0 blocks
+==904658==         suppressed: 0 bytes in 0 blocks
+==904658== 
+==904658== Use --track-origins=yes to see where uninitialised values come from
+==904658== For lists of detected and suppressed errors, rerun with: -s
+==904658== ERROR SUMMARY: 9 errors from 9 contexts (suppressed: 0 from 0)

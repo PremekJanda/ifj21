@@ -1,8 +1,8 @@
 require "ifj21"
 
 function main()
-    local s : integer = 1
-    local i : integer = #a
+    local s : integer = 10
+    local i : integer = #s
     write(i)
 end
 

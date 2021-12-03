@@ -1,0 +1,15 @@
+==904618== Memcheck, a memory error detector
+==904618== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==904618== Using Valgrind-3.16.1 and LibVEX; rerun with -h for copyright info
+==904618== Command: ./compiler
+==904618== 
+ERROR: Wrong format of an exponent on line 7!
+==904618== 
+==904618== HEAP SUMMARY:
+==904618==     in use at exit: 0 bytes in 0 blocks
+==904618==   total heap usage: 5,207 allocs, 5,207 frees, 202,185 bytes allocated
+==904618== 
+==904618== All heap blocks were freed -- no leaks are possible
+==904618== 
+==904618== For lists of detected and suppressed errors, rerun with: -s
+==904618== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

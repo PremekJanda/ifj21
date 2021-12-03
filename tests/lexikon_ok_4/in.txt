@@ -1,0 +1,10 @@
+require "ifj21"
+global i:integer=2
+function main()
+local a:string= "a".."b"
+local b: number=1.34+2000000
+b = i+b
+b = #a
+write(b, "\n")
+end
+main()

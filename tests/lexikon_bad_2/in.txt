@@ -1,0 +1,9 @@
+require "ifj21"
+global i:integer=2
+global y:integer=3
+function main()
+if i ~= y then
+write("jo) --blbost
+end 
+end
+main()

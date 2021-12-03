@@ -16,6 +16,8 @@ DEFVAR GF@EXPR2
 DEFVAR GF@COMP_RES
 DEFVAR GF@COMP_RES2
 
+# -- result variable for IS_ARITHMETIC
+DEFVAR GF@IS_ARITH_RES
 
 # -- BUILT IN FUNCTIONS
 JUMP END_BUILT_IN
@@ -217,6 +219,30 @@ EXIT int@6
 
 #----------------------------
 
+LABEL IS_ARITHMETIC
+
+POPS GF@IS_ARITH_RES
+
+TYPE GF@TYPE_var_1 GF@IS_ARITH_RES
+
+JUMPIFNEQ LBL_COULD_BE_FLOAT1_AR string@int GF@TYPE_var_1
+JUMP LBL_1OK_AR
+
+LABEL LBL_COULD_BE_FLOAT1_AR
+JUMPIFNEQ IS_NOT_AR string@float GF@TYPE_var_1
+
+LABEL LBL_1OK_AR
+PUSHS GF@IS_ARITH_RES
+MOVE GF@IS_ARITH_RES bool@true
+RETURN
+
+LABEL IS_NOT_AR
+PUSHS GF@IS_ARITH_RES
+MOVE GF@IS_ARITH_RES bool@false
+RETURN
+
+#-------------------------------
+
 LABEL ARITHMETIC_TYPE_CHECK
 
 POPS GF@CONVERTION1
@@ -282,24 +308,65 @@ LABEL END_BUILT_IN
 
 
 #------------------------------
+JUMP END_fce_global
+
+LABEL fce_global
+PUSHFRAME
+DEFVAR LF@
+MOVE LF@ LF@%1
+DEFVAR LF@
+MOVE LF@ LF@%2
+
+# -- call of write_fc
+CREATEFRAME
+DEFVAR TF@%1
+PUSHS int@5
+POPS TF@%1
+CALL write_fc
+POPFRAME
+RETURN
+
+#------------------------------
+LABEL END_fce_global
+
+#------------------------------
 JUMP END_main_fc
 
 LABEL main_fc
 PUSHFRAME
 
-# -- local declaration of variable a_main_depth1_dt1
-DEFVAR LF@a_main_depth1_dt1
-PUSHS int@3
+# -- local declaration of variable s1_main_depth0_dt1
+DEFVAR LF@s1_main_depth0_dt1
+PUSHS int@1
+POPS LF@s1_main_depth0_dt1
+
+# -- local declaration of variable s2_main_depth0_dt1
+DEFVAR LF@s2_main_depth0_dt1
 PUSHS float@0x1.8p+0
+PUSHS int@1
 CALL ARITHMETIC_TYPE_CHECK
 ADDS
-POPS LF@a_main_depth1_dt1
+PUSHS int@2
+CALL ARITHMETIC_TYPE_CHECK
+ADDS
+PUSHS int@3
+CALL ARITHMETIC_TYPE_CHECK
+ADDS
+POPS LF@s2_main_depth0_dt1
 
-# -- call of write_fc
+# -- call of fce_global
 CREATEFRAME
 DEFVAR TF@%1
-MOVE TF@%1 LF@a_main_depth1_dt1
-CALL write_fc
+PUSHS string@string
+POPS TF@%1
+DEFVAR TF@%2
+PUSHS float@0x1.4p+2
+POPS TF@%2
+CALL fce_global
+
+# -- return values from fc
+MOVE LF@s1_main_depth0_dt1 TF@%1r
+MOVE LF@s2_main_depth0_dt1 TF@%2r
 POPFRAME
 RETURN
 

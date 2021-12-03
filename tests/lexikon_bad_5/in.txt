@@ -1,0 +1,10 @@
+require "ifj21"
+global i:integer=2
+global y:integer=3
+function main()
+if i ~= y then
+write("jo")
+local b: integer=1E +34
+end 
+end
+main()

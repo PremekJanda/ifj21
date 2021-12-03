@@ -16,6 +16,8 @@ DEFVAR GF@EXPR2
 DEFVAR GF@COMP_RES
 DEFVAR GF@COMP_RES2
 
+# -- result variable for IS_ARITHMETIC
+DEFVAR GF@IS_ARITH_RES
 
 # -- BUILT IN FUNCTIONS
 JUMP END_BUILT_IN
@@ -217,6 +219,30 @@ EXIT int@6
 
 #----------------------------
 
+LABEL IS_ARITHMETIC
+
+POPS GF@IS_ARITH_RES
+
+TYPE GF@TYPE_var_1 GF@IS_ARITH_RES
+
+JUMPIFNEQ LBL_COULD_BE_FLOAT1_AR string@int GF@TYPE_var_1
+JUMP LBL_1OK_AR
+
+LABEL LBL_COULD_BE_FLOAT1_AR
+JUMPIFNEQ IS_NOT_AR string@float GF@TYPE_var_1
+
+LABEL LBL_1OK_AR
+PUSHS GF@IS_ARITH_RES
+MOVE GF@IS_ARITH_RES bool@true
+RETURN
+
+LABEL IS_NOT_AR
+PUSHS GF@IS_ARITH_RES
+MOVE GF@IS_ARITH_RES bool@false
+RETURN
+
+#-------------------------------
+
 LABEL ARITHMETIC_TYPE_CHECK
 
 POPS GF@CONVERTION1
@@ -282,30 +308,30 @@ LABEL END_BUILT_IN
 
 
 #------------------------------
-JUMP END_main_fc
+JUMP END_numdiv_fc
 
-LABEL main_fc
+LABEL numdiv_fc
 PUSHFRAME
 
-# -- local declaration of variable a_main_depth1_dt1
-DEFVAR LF@a_main_depth1_dt1
-PUSHS int@3
-PUSHS float@0x1.8p+0
+# -- local declaration of variable n_numdiv_depth1_dt1
+DEFVAR LF@n_numdiv_depth1_dt1
+PUSHS int@1
+PUSHS int@2
 CALL ARITHMETIC_TYPE_CHECK
-ADDS
-POPS LF@a_main_depth1_dt1
+DIVS
+POPS LF@n_numdiv_depth1_dt1
 
 # -- call of write_fc
 CREATEFRAME
 DEFVAR TF@%1
-MOVE TF@%1 LF@a_main_depth1_dt1
+MOVE TF@%1 LF@n_numdiv_depth1_dt1
 CALL write_fc
 POPFRAME
 RETURN
 
 #------------------------------
-LABEL END_main_fc
+LABEL END_numdiv_fc
 
-# -- call of main_fc
+# -- call of numdiv_fc
 CREATEFRAME
-CALL main_fc
+CALL numdiv_fc

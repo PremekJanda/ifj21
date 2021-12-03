@@ -1,1 +1,2 @@
-0x1.2p+2
+333.22-26: syntax error, unexpected ID, expecting END
+Syntax error!

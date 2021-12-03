@@ -1,0 +1,4 @@
+require "ifj21"
+
+function main() local a:number=2.3+1E-3 end
+main()

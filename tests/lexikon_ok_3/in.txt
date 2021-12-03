@@ -1,0 +1,7 @@
+require "ifj21"
+global i:string="jejda je"
+function main() 
+write("joo", " ", i)
+local b: number = 1+2E-234
+end
+main()

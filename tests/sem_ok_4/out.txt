@@ -16,6 +16,8 @@ DEFVAR GF@EXPR2
 DEFVAR GF@COMP_RES
 DEFVAR GF@COMP_RES2
 
+# -- result variable for IS_ARITHMETIC
+DEFVAR GF@IS_ARITH_RES
 
 # -- BUILT IN FUNCTIONS
 JUMP END_BUILT_IN
@@ -217,6 +219,30 @@ EXIT int@6
 
 #----------------------------
 
+LABEL IS_ARITHMETIC
+
+POPS GF@IS_ARITH_RES
+
+TYPE GF@TYPE_var_1 GF@IS_ARITH_RES
+
+JUMPIFNEQ LBL_COULD_BE_FLOAT1_AR string@int GF@TYPE_var_1
+JUMP LBL_1OK_AR
+
+LABEL LBL_COULD_BE_FLOAT1_AR
+JUMPIFNEQ IS_NOT_AR string@float GF@TYPE_var_1
+
+LABEL LBL_1OK_AR
+PUSHS GF@IS_ARITH_RES
+MOVE GF@IS_ARITH_RES bool@true
+RETURN
+
+LABEL IS_NOT_AR
+PUSHS GF@IS_ARITH_RES
+MOVE GF@IS_ARITH_RES bool@false
+RETURN
+
+#-------------------------------
+
 LABEL ARITHMETIC_TYPE_CHECK
 
 POPS GF@CONVERTION1
@@ -287,18 +313,71 @@ JUMP END_main_fc
 LABEL main_fc
 PUSHFRAME
 
-# -- local declaration of variable a_main_depth1_dt1
-DEFVAR LF@a_main_depth1_dt1
-PUSHS int@3
-PUSHS float@0x1.8p+0
+# -- local declaration of variable i_main_depth1_dt1
+DEFVAR LF@i_main_depth1_dt1
+PUSHS int@1
+POPS LF@i_main_depth1_dt1
+PUSHS string@a
+POPS GF@EXPR1
+
+PUSHS string@a
+POPS GF@EXPR2
+
+
+# --- CHECK FOR ARITHMETIC COMPARISON
+PUSHS GF@EXPR1
+CALL IS_ARITHMETIC
+MOVE GF@COMP_RES GF@IS_ARITH_RES
+POPS GF@EXPR1
+PUSHS GF@EXPR2
+CALL IS_ARITHMETIC
+MOVE GF@COMP_RES2 GF@IS_ARITH_RES
+POPS GF@EXPR2
+OR GF@COMP_RES GF@COMP_RES GF@COMP_RES2
+JUMPIFNEQ LBL_NOT_ARITH0 GF@COMP_RES bool@true
+
+#---------------IMPLICITE CONVERTION IF NEEDED
+PUSHS GF@EXPR1
+PUSHS GF@EXPR2
 CALL ARITHMETIC_TYPE_CHECK
-ADDS
-POPS LF@a_main_depth1_dt1
+POPS GF@EXPR2
+POPS GF@EXPR1
+
+LABEL LBL_NOT_ARITH0
+
+# -- comparison ==
+EQ GF@COMP_RES GF@EXPR1 GF@EXPR2
+JUMPIFNEQ ELSE0_main_fc GF@COMP_RES bool@true
+
+# -- local declaration of variable i_main_depth2_dt2
+DEFVAR LF@i_main_depth2_dt2
+PUSHS int@2
+POPS LF@i_main_depth2_dt2
 
 # -- call of write_fc
 CREATEFRAME
 DEFVAR TF@%1
-MOVE TF@%1 LF@a_main_depth1_dt1
+MOVE TF@%1 LF@i_main_depth2_dt2
+CALL write_fc
+JUMP ENDIF0_main_fc
+LABEL ELSE0_main_fc
+
+# -- local declaration of variable i_main_depth2_dt3
+DEFVAR LF@i_main_depth2_dt3
+PUSHS int@3
+POPS LF@i_main_depth2_dt3
+
+# -- call of write_fc
+CREATEFRAME
+DEFVAR TF@%1
+MOVE TF@%1 LF@i_main_depth2_dt3
+CALL write_fc
+LABEL ENDIF0_main_fc
+
+# -- call of write_fc
+CREATEFRAME
+DEFVAR TF@%1
+MOVE TF@%1 LF@i_main_depth1_dt1
 CALL write_fc
 POPFRAME
 RETURN
