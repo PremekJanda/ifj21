@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	06. 12. 2021 17:21:10
+ *  Last modified:	06. 12. 2021 23:55:57
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -136,7 +136,13 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
     if (node->next_count == 2) {
         t_node *unary_node = (strcmp(node->next[0]->data[1].data, "#")) ? node->next[0] : node->next[1];
         
-        if (!strcmp(unary_node->data[0].data, "string")) {
+        if ((return_signal = eval_expr_type(unary_node, value, type, symtable))) {
+            free(*value);
+            free(*type);
+            return return_signal;
+        }
+
+        if (!strcmp(*type, "string")) {
             free(*value);
             free(*type);
 
@@ -151,7 +157,7 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
 
             return SEM_OK;
         } 
-
+        fprintf(stderr, "Ajéje");
         return SEM_TYPE;
 
     //binární operátory
@@ -1166,6 +1172,8 @@ int semantic(t_node *root_node) {
 
         // zpracování hlavní části syntaktického stromu stromu
         return_signal = process_main_list(root_node->next[2], symtable, deftable);
+
+        tree_print(*root_node, 0);
 
         // kontrola, zda volané funkce byly řádně definovány
         if (!return_signal)
