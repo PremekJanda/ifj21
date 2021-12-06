@@ -4,7 +4,7 @@
  * @brief Small library of functions, that work with string buffers
  * @version 0.1
  * @date 2021-11-13
- * Last modified:	04. 12. 2021 15:34:17
+ * Last modified:	06. 12. 2021 15:19:05
  *
  * @copyright Copyright (c) 2021
  *
@@ -92,9 +92,16 @@ int replace_all_chars_by_string(buffer_t *buffer, char c, char *string)
         if (*(buffy.data) != '\0')
         {
             *ptr = '\0';
-            strcat_realloc(buffer, string);
+            if (strcat_realloc(buffer, string) == 0)
+            {
+                return 0;
+            }
+
             index = strlen(buffer->data);
-            strcat_realloc(buffer, buffy.data);
+            if (strcat_realloc(buffer, buffy.data) == 0)
+            {
+                return 0;
+            }
             ptr = buffer->data + index;
         }
         else
@@ -105,7 +112,6 @@ int replace_all_chars_by_string(buffer_t *buffer, char c, char *string)
                 return 0;
             }
         }
-        int i = strlen(string);
     }
     buffer_destroy(&buffy);
     return 1;
@@ -215,6 +221,10 @@ int replace_all_strings_by_string(buffer_t *b, char *orig, char *rep)
     char *ptr = b->data;
     int index = 0;
     char *rest_of_str = malloc(strlen(b->data) + 1);
+    if (rest_of_str == NULL)
+    {
+        return 0;
+    }
 
     while ((ptr = strstr(ptr, orig)) != NULL)
     {
@@ -222,13 +232,20 @@ int replace_all_strings_by_string(buffer_t *b, char *orig, char *rep)
         strcpy(rest_of_str, ptr + strlen(orig));
         index = ptr + strlen(rep) - b->data;
 
-        strcat_realloc(b, rep);
-        strcat_realloc(b, rest_of_str);
+        if (strcat_realloc(b, rep) == 0)
+        {
+            return 0;
+        }
+        if (strcat_realloc(b, rest_of_str) == 0)
+        {
+            return 0;
+        }
 
         ptr = b->data + index;
     }
 
     free(rest_of_str);
+    return 1;
 }
 
 int append_file(buffer_t *buffer, char *filename)
