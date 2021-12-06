@@ -2,7 +2,7 @@
  *  Soubor: symtable.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	26. 11. 2021 21:09:48
+ *  Poslední změna:	03. 12. 2021 13:48:21
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -15,36 +15,36 @@
 
 #include "test.h"
 
-// - - - - - - - - - - - - - - - - - - - - //
-// - - - - - - - - M_A_I_N - - - - - - - - //
-// - - - - - - - - - - - - - - - - - - - - //
+// // - - - - - - - - - - - - - - - - - - - - //
+// // - - - - - - - - M_A_I_N - - - - - - - - //
+// // - - - - - - - - - - - - - - - - - - - - //
 
-int symtable() {
+// int symtable() {
     
-    stack_t *stack = symtable_init(STACK_SIZE);
-    if (stack == NULL)
-        return error_exit("Nepovedlo se alokovat zásobník do paměti!\n");
+//     stack_t *stack = symtable_init(STACK_SIZE);
+//     if (stack == NULL)
+//         return NULL;
 
-    // vytvoření hashovacích tabulek
-    CREATE_HTAB(hash_table0)
+//     // vytvoření hashovacích tabulek
+//     CREATE_HTAB(hash_table0)
 
-    symtable_push(&stack, hash_table0);
+//     symtable_push(&stack, hash_table0);
 
-    fce_item_push(&htab_find(hash_table0, "2")->fce, "f_return");
-    fce_item_push(&htab_find(hash_table0, "2")->fce, "f_val_type");
-    fce_item_push(&htab_find(hash_table0, "2")->fce, "f_val");
+//     fce_item_push(&htab_find(hash_table0, "2")->fce, "f_return");
+//     fce_item_push(&htab_find(hash_table0, "2")->fce, "f_val_type");
+//     fce_item_push(&htab_find(hash_table0, "2")->fce, "f_val");
     
-    fce_item_push(&hash_table0->ptr_arr[1]->next_h_item->fce, "f_return");
-    fce_item_push(&hash_table0->ptr_arr[1]->next_h_item->fce, "f_val_type");
-    fce_item_push(&hash_table0->ptr_arr[1]->next_h_item->fce, "f_va");
+//     fce_item_push(&hash_table0->ptr_arr[1]->next_h_item->fce, "f_return");
+//     fce_item_push(&hash_table0->ptr_arr[1]->next_h_item->fce, "f_val_type");
+//     fce_item_push(&hash_table0->ptr_arr[1]->next_h_item->fce, "f_va");
 
-    symtable_print(stack);
+//     symtable_print(stack);
 
-    // uvolnění zásobníku z paměti
-    symtable_free(stack);  
+//     // uvolnění zásobníku z paměti
+//     symtable_free(stack);  
     
-    return 0;
-}
+//     return 0;
+// }
 
 
 
@@ -72,7 +72,7 @@ stack_t * symtable_init(size_t n) {
 
 void symtable_expand(stack_t **s, size_t new_size) {
     if (((*s)->top + 1) > (int)new_size) {
-        warning_msg("Kapacita zásobníku tabulky symbolů nelze snížit z důvodu odstranění dat!\n");
+        fprintf(stderr, "Capacity can not be reduced\n");
         return;
     }
 
@@ -104,7 +104,7 @@ void symtable_free(stack_t *s) {
 void symtable_push(stack_t **s, htab_t *t) {
     // chyba při plné tabulce
     if ((*s)->top == (int)((*s)->size - 1)) {
-        warning_msg("Zásobník rámců tabulky symbolů je plný! Kapacita rozšířena z %ld na %ld.\n", (*s)->size, (*s)->size*2);
+        fprintf(stderr, "Stack id full, expanding capacity from %ld to %ld.\n", (*s)->size, (*s)->size*2);
         // rozšíří zásobník
         symtable_expand(&(*s), (*s)->size*2);
     }
@@ -117,10 +117,8 @@ void symtable_push(stack_t **s, htab_t *t) {
 
 void symtable_pop(stack_t *s) {
     // chyba při prázdné tabulce
-    if (s->top == -1) {
-        warning_msg("Zásobník rámců tabulky symbolů je prázdný!\n");
+    if (s->top == -1) 
         return;
-    }
 
     // vymaže daný rámec na zásobníku
     htab_free(s->stack[s->top]);
@@ -140,6 +138,8 @@ htab_item_t * symtable_lookup_item(stack_t *s, key_t id) {
     // prvek nebyl nalezen
     return NULL;
 }
+
+
 
 // - - - - - - - - - - - - - - - - - - - - - - //
 // - - - - Funkce pro práci s tabulkou - - - - //
@@ -250,9 +250,10 @@ htab_t * htab_resize(size_t n, htab_t *from) {
             // přidá slovo do nové tabulky
             htab_item_t *new_element;
             if ((new_element = htab_lookup_add(new_hash_table, type, key, value, element->local, element->ret_values)) == NULL) {
-                // TODO opravit chybové hlášení
-                error_exit("Chyba při allokaci paměti pro slovo '%s'!\n", key);
-                exit(0);
+                free(type);
+                free(key);
+                free(value);
+                return NULL;
             }
                 
             element = element->next_h_item;
@@ -548,41 +549,4 @@ void def_table_print(def_table_t deftable) {
             (deftable.item[i].state) ? "defined" : "declared", 
             (deftable.item[i].called) ? "called" : "not called"
         );
-}
-
-int error_exit(const char *fmt, ...) {
-    // ukazatel na blok argumentů
-    va_list arguments;
-
-    // začátek práce s argumenty
-    va_start(arguments, fmt);
-
-    // výpis CHYBA: na chybový výstup
-    fprintf(stderr, "CHYBA: ");
-
-    // výpis na chybový výstup
-    vfprintf(stderr, fmt, arguments);
-
-    // ukončení práce s argumenty
-    va_end(arguments);   
-    
-    // ukončení programu
-    return 0; 
-}
-
-void warning_msg(const char *fmt, ...) {
-    // ukazatel na blok argumentů
-    va_list arguments;
-
-    // začátek práce s argumenty
-    va_start(arguments, fmt);
-
-    // výpis CHYBA: na chybový výstup
-    fprintf(stderr, "VAROVÁNÍ: ");
-
-    // výpis na chybový výstup
-    vfprintf(stderr, fmt, arguments);
-
-    // ukončení práce s argumenty
-    va_end(arguments);  
 }

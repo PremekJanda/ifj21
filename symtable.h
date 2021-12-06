@@ -2,7 +2,7 @@
  *  Soubor: symtable.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	28. 11. 2021 16:15:55
+ *  Poslední změna:	03. 12. 2021 13:50:12
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -37,7 +37,6 @@
 // - - - - - - - - - - - - - - - - - - - - //
 // Typy
 typedef char * key_t;               // typ klíče
-// // typedef const char * key_t;         // typ klíče
 typedef int top_t;                  // typ hodnoty
 
 // Prvním prvekem vázaného seznamu je návratová hodnota
@@ -132,7 +131,7 @@ typedef struct def_table {
  */
 #define INIT_FCE(e, k) \
     (e) = (fce_item_t *)malloc(sizeof(fce_item_t)); \
-    if ((e) == NULL) error_exit("Nepovedlo se alokovat položku vázaného seznamu parametrů funkce!\n"); \
+    if ((e) == NULL) fprintf(stderr, "Unable to allocate item of linked list\n"); \
     (e)->key = (k); \
     (e)->next_f_item = NULL;
 
@@ -329,17 +328,5 @@ void fce_print (const fce_item_t *i, size_t return_values);
  * @param deftable Struktura tabulky funkcí
  */
 void def_table_print(def_table_t deftable);
-
-/**
- * @brief Funkce vypíše chybovou hlášku na stderr
- * @param fmt Text chybové hlášky
- */
-int error_exit(const char *fmt, ...);
-
-/**
- * @brief Funkce vypíše upozornění na stderr
- * @param fmt Text zprávy upozornění
- */
-void warning_msg(const char *fmt, ...);
 
 #endif // __SYMTABLE_H__
