@@ -9,9 +9,7 @@
 int bottom_up(t_table precedence_table, t_node *return_node, tToken *token, tToken *token_backup, char *backup, bool bracket)
 {
     if(!strcmp(token->type, ")"))
-    {
         return 2;
-    }
 
     t_stack stack;
     stack_init(&stack);
@@ -44,8 +42,12 @@ int bottom_up(t_table precedence_table, t_node *return_node, tToken *token, tTok
         
         if(!strcmp(token->type, "(") && strcmp(operator, ""))
         {
+            if(!strcmp(stack_top(nonterminals), "#"))
+                handles[handles_count - 1]++;
             t_node *new_node = malloc(sizeof(t_node));
             scanner(token);
+            if(!strcmp(token->attribute, "nil"))
+                strcpy(token->type, "nil");
             if(!strcmp(token->attribute, ")"))
             {
                 free(new_node);
@@ -54,6 +56,8 @@ int bottom_up(t_table precedence_table, t_node *return_node, tToken *token, tTok
             }
             return_code = bottom_up(precedence_table, new_node, token, token_backup, backup, true);
             scanner(token);
+            if(!strcmp(token->attribute, "nil"))
+                strcpy(token->type, "nil");
             if(return_code == 0)
             {
                 node_buffer[node_buffer_count] = new_node;
@@ -85,7 +89,7 @@ int bottom_up(t_table precedence_table, t_node *return_node, tToken *token, tTok
             handles[handles_count] = stack_topindex(stack);
             if(strcmp(stack_top(stack), "id") && strcmp(stack_top(stack), "expr"))
                 handles[handles_count]--;
-
+            
             handles_count++;
             if(strcmp(backup, ""))
             {
@@ -94,7 +98,11 @@ int bottom_up(t_table precedence_table, t_node *return_node, tToken *token, tTok
                 backup = "";
             }
             else
+            {
                 return_code = scanner(token);
+                if(!strcmp(token->attribute, "nil"))
+                    strcpy(token->type, "nil");
+            }
         }
         else if(!strcmp(operator,">"))
         {
@@ -243,7 +251,7 @@ int syntax_analyzer(t_node *tree)
     {
         if(return_code != 0)
             break;
-        if(!strcmp(token->attribute, "nil") && !strcmp(token->type, "keyword") && (!strcmp(stack_top(stack), "<f-or-item-list>") || !strcmp(stack_top(stack), "<f-or-item>") || !strcmp(stack_top(stack), "<cond>") || !strcmp(stack_top(stack), "<item>") || !strcmp(stack_top(stack), "<return-list>") || !strcmp(stack_top(stack), "<param-list>")))
+        if(!strcmp(token->attribute, "nil") && !strcmp(token->type, "keyword") && (!strcmp(stack_top(stack), "<f-or-item-list>") || !strcmp(stack_top(stack), "<f-or-item>") || !strcmp(stack_top(stack), "<cond>") || !strcmp(stack_top(stack), "<item>") || !strcmp(stack_top(stack), "<return-list>") || !strcmp(stack_top(stack), "<f-or-item>") || !strcmp(stack_top(stack), "<cond>") || !strcmp(stack_top(stack), "<item>") || !strcmp(stack_top(stack), "<return-f-or-items>") || !strcmp(stack_top(stack), "<param-list>")))
             strcpy(token->type, "nil");
         if(!strcmp(token->type, "id") || !strcmp(token->type, "integer") || !strcmp(token->type, "nil") || !strcmp(token->type, "string") || !strcmp(token->type, "length") || !strcmp(token->type, "number") || !strcmp(token->type, "("))
         {
@@ -324,7 +332,7 @@ int syntax_analyzer(t_node *tree)
                 }
             }
             stack_pop(&stack);
-            if(!strcmp(stack_top(stack), "<cond-oper>") && !strcmp(token->attribute, "then"))
+            if(!strcmp(stack_top(stack), "<cond-oper>") && (!strcmp(token->attribute, "then")  || !strcmp(token->attribute, "do")))
             {
                 next_count_stack2[next_count_count]++; 
                 next_count_stack2[next_count_count]++; 
@@ -337,10 +345,12 @@ int syntax_analyzer(t_node *tree)
             }
         }
     }
-    if(stack_topindex(stack) != 1)
+    if(stack_topindex(stack) != 1 || tree->next_count == 0)
         return_code = 2;
     if(return_code == 2)
-        fprintf(stderr, "Syntax error\nToken: %s    %s    Line: %d\n", token->attribute, token->type, token->line);
+    {
+        fprintf(stderr, "Syntax error\nToken: %s  %s    Line: %d\n", token->attribute, token->type, token->line);
+    }
     table_delete(&ll_table);
     table_delete(&rules);
     table_delete(&precedence_table);
