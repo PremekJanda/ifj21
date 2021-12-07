@@ -4,7 +4,7 @@
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	07. 12. 2021 15:04:01
+ * Last Modified:	07. 12. 2021 15:55:03
  *
  * @copyright Copyright (c) 2021
  *
@@ -500,6 +500,7 @@ void function_call_gen(code_t *code, t_node *fcall_node, bool createframe)
             strcat_format_realloc(&code->text, "DEFVAR TF@%%%dr\nMOVE TF@%%%dr nil@nil\n", i, i);
             END_IF_FAIL((&code->text));
         }
+        free(function_bare);
     }
 
     // průchod item-listem
@@ -679,6 +680,9 @@ void generate_while(code_t *code, t_node *while_node, char *fc)
     stmt_list_crossroad(code, while_node->next[3], fc);
 
     strcat_format_realloc(&code->text, "\n\nJUMP %s\nLABEL %s\n", while_label.data, end_label.data);
+
+    buffer_destroy(&while_label);
+    buffer_destroy(&end_label);
 }
 
 void predefine_vars_of_stmt_list(code_t *code, t_node *stmt_list)
@@ -1027,6 +1031,8 @@ void define_return_variables(code_t *code, t_node *assignment)
 
         id_list = id_list->next[2];
     }
+
+    free(fc_name);
 }
 
 void eval_condition(code_t *code, t_node *condition)
