@@ -307,8 +307,14 @@ int scanner(tToken *token){
                         token->attribute = realloc(token->attribute, length * sizeof(char));
                     }
                     c = getc(stdin);
-                    if ((c >= '0' && c <= '9' ) || c == 'E' || c == 'e')
+                    if (c < '0' || c > '9')
                     {
+                        ungetc(c, stdin);
+                        fprintf(stderr, "ERROR: Wrong format of a number on line %d!\n", token->line);
+                        return 1;
+                        
+                    }
+                    else{
                         token->attribute[i] = c;
                         i++;
                         if (i > (length - 1))
@@ -316,11 +322,6 @@ int scanner(tToken *token){
                             length += REALL_TOKEN_LEN;
                             token->attribute = realloc(token->attribute, length * sizeof(char));
                         }
-                    }
-                    else{
-                        ungetc(c, stdin);
-                        fprintf(stderr, "ERROR: Wrong format of a number on line %d!\n", token->line);
-                        return 1;
                     }
                     DoubleNumber = true;
                 }
