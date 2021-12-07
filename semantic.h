@@ -2,7 +2,7 @@
  *  Soubor: semantic.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	06. 12. 2021 15:06:15
+ *  Poslední změna:	06. 12. 2021 17:12:52
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -354,9 +354,10 @@ int process_return_f_or_items__(t_node *node, fce_item_t **item, stack_t *symtab
  * @param node Uzel syntaktického stromu stromu
  * @param symtable Tabulka symbolů
  * @param deftable Tabulka definovaných, deklarovaných a volaných funkcí
+ * @param name Identifikátor návratové funkce
  * @return ERROR_CODE @see SEM_ERR
  */
-int process_return_list(t_node *node, stack_t *symtable, def_table_t *deftable);
+int process_return_list(t_node *node, stack_t *symtable, def_table_t *deftable, key_t name);
 
 /**
  * @brief Zpracuje definici lokální proměnné
