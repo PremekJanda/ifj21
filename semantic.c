@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	07. 12. 2021 14:44:40
+ *  Last modified:	07. 12. 2021 15:11:43
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -679,11 +679,11 @@ int process_return_f_or_items(t_node *node, fce_item_t **item, stack_t *symtable
     if (!strcmp(node->next[0]->data[0].data, "expr")) {
         ALLOC_STR(value, "");
         ALLOC_STR(type, "");
-        if (eval_expr_type(node->next[0], &value, &type, symtable)) {
+        if ((return_signal = eval_expr_type(node->next[0], &value, &type, symtable))) {
             fprintf(stderr, "ERROR: Type incompatibility within expression\n");
             free(value);
             free(type);
-            return SEM_TYPE;
+            return return_signal;
         }
         fce_item_push(item, type);
         free(value);
@@ -748,7 +748,7 @@ int process_decl_local(t_node *node, stack_t *symtable) {
         if ((return_signal = eval_expr_type(next->next[4]->next[1]->next[0], &value, &assign_type, symtable))) {
             fprintf(stderr, "ERROR: Type incompatibility within expression\n");
             FREE_VAR_DECL
-            return SEM_ASSIGN;
+            return return_signal;
         }
         
         // provede se typová kontrola nad přiřazením
@@ -805,7 +805,6 @@ int process_assign_or_fcall(t_node *node, stack_t *symtable, def_table_t *deftab
 
         // zpracují se všechny id levého přiřazení
         err_code = process_id_list(node->next[0], &id_list, symtable);
-
         if (err_code) {
             fce_free(id_list);
             return err_code;
@@ -816,7 +815,6 @@ int process_assign_or_fcall(t_node *node, stack_t *symtable, def_table_t *deftab
         assign_list = NULL;
 
         err_code = process_f_or_item_list(node->next[2], &assign_list, symtable, deftable);
-
         if (err_code) {
             fce_free(id_list);
             fce_free(assign_list);
@@ -896,11 +894,11 @@ int process_f_or_item_list(t_node *node, fce_item_t **item, stack_t *symtable, d
             key_t type = NULL;
             key_t value = NULL;
 
-            if (eval_expr_type(node->next[0], &value, &type, symtable)) {
+            if ((return_signal = eval_expr_type(node->next[0], &value, &type, symtable))) {
                 fprintf(stderr, "ERROR: Type incompatibility within expression\n");
                 free(type);
                 free(value);
-                return SEM_TYPE;
+                return return_signal;
             }
 
             fce_item_push(item, type);
@@ -922,11 +920,11 @@ int process_param_list(t_node *node, fce_item_t **item, stack_t *symtable) {
     if (!strcmp(node->next[0]->next[0]->next[0]->data[0].data, "expr")) {
         ALLOC_STR(value, "");
         ALLOC_STR(type, "");
-        if (eval_expr_type(node->next[0]->next[0]->next[0], &value, &type, symtable)) {
+        if ((return_signal = eval_expr_type(node->next[0]->next[0]->next[0], &value, &type, symtable))) {
             fprintf(stderr, "ERROR: Type incompatibility within expression\n");
             free(value);
             free(type);
-            return SEM_TYPE;
+            return return_signal;
         }
         free(value);
         fce_item_push(item, type);
@@ -965,11 +963,11 @@ int process_item_another(t_node *node, fce_item_t **item, stack_t *symtable) {
         } else {
             ALLOC_STR(value, "");
             ALLOC_STR(type, "");
-            if (eval_expr_type(node->next[1]->next[0], &value, &type, symtable)) {
+            if ((return_signal = eval_expr_type(node->next[1]->next[0], &value, &type, symtable))) {
                 fprintf(stderr, "ERROR: Type incompatibility within expression\n");
                 free(type);
                 free(value);
-                return SEM_TYPE;
+                return return_signal;
             }
             fce_item_push(item, type);
             free(value);
