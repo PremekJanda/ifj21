@@ -2,7 +2,7 @@
  *  Soubor: semantic.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	07. 12. 2021 12:51:37
+ *  Poslední změna:	07. 12. 2021 14:45:59
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -187,7 +187,6 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable);
  * @brief Ověří totožnost dvou seznamů parametrů, argumentů nebo návratových hodnot funkce
  * @param dest Lineárně vázaný seznam, dle kterého se porovnává src
  * @param src Lineárně vázaný seznam, který by měl odpovídat dest
- * @param symtable Tabulka symbolů
  * @return ERROR_CODE @see SEM_ERR
  */
 int eval_list_eq(fce_item_t *dest, fce_item_t *src, int err_code);
@@ -220,12 +219,20 @@ int get_f_return_list(key_t name, fce_item_t **dest, stack_t *symtable);
 int get_f_return_count(key_t name, stack_t *symtable, int *count);
 
 /**
- * @brief Vyhodnotí, zda jsou dva seznamy valaidní dle gramatiky návratových hodnot funkce
+ * @brief Vyhodnotí, zda jsou dva seznamy validní dle gramatiky návratových hodnot funkce
  * @param dest Lineárně vázaný seznam, dle kterého se porovnává src
  * @param src Lineárně vázaný seznam, který by měl odpovídat dest
  * @return ERROR_CODE @see SEM_ERR
  */
 int eval_return_eq(fce_item_t *dest, fce_item_t *src);
+
+/**
+ * @brief Vyhodnotí, zda jsou dva seznamy během přiřazení validní
+ * @param dest Lineárně vázaný seznam, dle kterého se porovnává src
+ * @param src Lineárně vázaný seznam, který by měl odpovídat dest
+ * @return ERROR_CODE @see SEM_ERR
+ */
+int eval_assign_eq(fce_item_t *dest, fce_item_t *src);
 
 /**
  * @brief Propojí dve lineárné vázané seznamy

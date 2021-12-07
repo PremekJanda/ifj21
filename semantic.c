@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	07. 12. 2021 13:24:08
+ *  Last modified:	07. 12. 2021 14:44:40
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -396,6 +396,21 @@ int eval_return_eq(fce_item_t *dest, fce_item_t *src) {
     if (dest == NULL && src != NULL) {
         fprintf(stderr, "ERROR: Invalid number of return values\n");    
         return SEM_FCE;
+    }
+
+    return SEM_OK;
+}
+
+int eval_assign_eq(fce_item_t *dest, fce_item_t *src) {
+    while (dest != NULL && src != NULL) {
+        // porovnání typové kompatibility
+        if (strcmp(dest->key, src->key) && !(!strcmp(dest->key, "number") && !strcmp(src->key, "integer"))) {
+            fprintf(stderr, "ERROR: Invalid type \"%s\", expecting \"%s\" during assignment\n", src->key, dest->key);
+            return SEM_ASSIGN;
+        }
+
+        dest = dest->next_f_item;
+        src = src->next_f_item;
     }
 
     return SEM_OK;
@@ -808,7 +823,7 @@ int process_assign_or_fcall(t_node *node, stack_t *symtable, def_table_t *deftab
             return err_code;
         }
 
-        err_code = eval_list_eq(id_list, assign_list, SEM_ASSIGN);
+        err_code = eval_assign_eq(id_list, assign_list);
 
         fce_free(id_list);
         fce_free(assign_list);
