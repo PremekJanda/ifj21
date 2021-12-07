@@ -4,7 +4,7 @@
  * @brief Hlavičkový soubor funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	07. 12. 2021 13:41:46
+ * Last Modified:	07. 12. 2021 20:53:08
  *
  * @copyright Copyright (c) 2021
  *
@@ -36,7 +36,6 @@ typedef struct
 {
     int total_expr_count;
     int total_conditionals_count;
-    int total_label_count;
     buffer_t text;
 } code_t;
 

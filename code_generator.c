@@ -4,7 +4,7 @@
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	07. 12. 2021 15:55:03
+ * Last Modified:	07. 12. 2021 21:50:40
  *
  * @copyright Copyright (c) 2021
  *
@@ -237,12 +237,12 @@ void rename_all_id(t_node *tree, ht_table_t *ht_already_processed, buffer_t *fc,
             free_memory_then_quit(99);
         }
         strcpy(id, tree->data[1].data);
+
+        buffer_t new_id;
+        buffer_init(&new_id);
+        bool param = false;
         if (ht_search(ht_already_processed, id) == NULL)
         {
-            buffer_t new_id;
-            buffer_init(&new_id);
-            bool param = false;
-
             if (strcmp(fc->data, "") == 0)
             { // v globálním prostoru
                 if (strcmp(tree->prev->next[0]->data[1].data, "function") == 0)
@@ -254,7 +254,7 @@ void rename_all_id(t_node *tree, ht_table_t *ht_already_processed, buffer_t *fc,
                 }
                 else if (strcmp(tree->prev->next[0]->data[1].data, "global") == 0)
                 {
-                    if (strcmp(tree->prev->next[3]->data[1].data, "function") == 0)
+                    if (strcmp(tree->prev->next[3]->next[0]->data[1].data, "function") == 0)
                     {
                         strcat_format_realloc(&new_id, "%s_fc", id);
                     }
@@ -319,19 +319,36 @@ void rename_all_id(t_node *tree, ht_table_t *ht_already_processed, buffer_t *fc,
 
             field_of_visibility_id_replacement(id, new_id.data, ref_node);
             ht_insert(ht_already_processed, new_id.data, 1);
-            buffer_destroy(&new_id);
+
+        } // ht_search == NULL, nutná úprava pro případ předchozí deklarace funkce
+        else if (tree->prev != NULL)
+        {
+            if (tree->prev->next[0] != NULL)
+            {
+                if (strcmp(tree->prev->next[0]->data[1].data, "function") == 0)
+                {
+                    strcpy_realloc(fc, tree->prev->next[1]->data[1].data);
+                    (*depth)++;
+                    (*depth_total)++;
+                }
+            }
         }
+
+        buffer_destroy(&new_id);
         free(id);
     }
+    // zanoření do whilu
     else if ((strcmp(tree->data[1].data, "do") == 0) || (strcmp(tree->data[1].data, "then") == 0))
     {
         (*depth)++;
         (*depth_total)++;
     }
+    // zanoření do elsu, přičteme dosavadní počet zanoření
     else if ((strcmp(tree->data[1].data, "else") == 0))
     {
         (*depth_total)++;
     }
+    // vynoření se z oboru platnosti, případné vynoření z funkce do globálního prostoru
     else if (strcmp(tree->data[1].data, "end") == 0)
     {
         (*depth)--;
@@ -565,7 +582,7 @@ void function_gen(code_t *code, t_node *function_node)
         strcat_format_realloc(&code->text, "DEFVAR LF@%s\nMOVE LF@%s LF@%%%d\n", args->next[index]->next[0]->data[1].data, args->next[index]->next[0]->data[1].data, var_id++);
         END_IF_FAIL((&code->text));
     }
-    var_id = 1;
+
     // zpracování příkázů funkce
     stmt_list_crossroad(code, function_node->next[6], function_node->next[1]->data[1].data);
 
@@ -1038,9 +1055,9 @@ void define_return_variables(code_t *code, t_node *assignment)
 void eval_condition(code_t *code, t_node *condition)
 {
     // podmínka na bázi výrazu
-    if (condition->next_count == 1)
+    if (condition->next[1]->next_count == 0)
     {
-        strcat_format_realloc(&code->text, "# --- vyhodnocení nelogického výrazu\n");
+        strcat_format_realloc(&code->text, "\n# --- vyhodnocení nelogického výrazu\n\n");
         END_IF_FAIL((&code->text));
         if (strcmp(condition->next[0]->data[0].data, "id") == 0)
         {
@@ -1057,20 +1074,20 @@ void eval_condition(code_t *code, t_node *condition)
         }
         else
         {
-            eval_expression(code, condition->next[0]);
+            eval_expression(code, condition->next[0]->next[0]);
             strcat_format_realloc(&code->text, "POPS GF@COMP_RES\n");
             END_IF_FAIL((&code->text));
         }
 
         // v COMP_RES je výsledek výrazu, nyní musíme převést nil na false a vše ostatní na true
-        strcat_format_realloc(&code->text, "JUMPIFEQ EXPR_NIL%d nil@nil GF@COMP_RES\n", code->total_label_count);
+        strcat_format_realloc(&code->text, "JUMPIFEQ EXPR_NIL%d nil@nil GF@COMP_RES\n", code->total_conditionals_count);
         END_IF_FAIL((&code->text));
-        strcat_format_realloc(&code->text, "MOVE GF@COMP_RES bool@true\nJUMP EXPR_END%%d\n", code->total_label_count);
+        strcat_format_realloc(&code->text, "MOVE GF@COMP_RES bool@true\nJUMP EXPR_END%%%d\n", code->total_conditionals_count);
         END_IF_FAIL((&code->text));
-        strcat_format_realloc(&code->text, "LABEL EXPR_NIL%d\nMOVE GF@COMP_RES bool@false\nLABEL EXPR_END%%d\n", code->total_label_count, code->total_label_count);
+        strcat_format_realloc(&code->text, "LABEL EXPR_NIL%d\nMOVE GF@COMP_RES bool@false\nLABEL EXPR_END%%%d\n", code->total_conditionals_count, code->total_conditionals_count);
         END_IF_FAIL((&code->text));
 
-        code->total_label_count++;
+        code->total_conditionals_count++;
     }
     // podmínka na bázi logického porovnávání
     else
