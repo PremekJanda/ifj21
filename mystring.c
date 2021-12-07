@@ -4,7 +4,7 @@
  * @brief Small library of functions, that work with string buffers
  * @version 0.1
  * @date 2021-11-13
- * Last modified:	06. 12. 2021 15:19:05
+ * Last modified:	07. 12. 2021 01:01:22
  *
  * @copyright Copyright (c) 2021
  *
@@ -77,43 +77,6 @@ int strcpy_realloc(buffer_t *dst, const char *src)
         return 0;
     }
     strcpy(dst->data, src);
-    return 1;
-}
-int replace_all_chars_by_string(buffer_t *buffer, char c, char *string)
-{
-    char *ptr = NULL;
-    buffer_t buffy;
-    buffer_init(&buffy);
-    ptr = buffer->data;
-    int index;
-    while ((ptr = strchr(ptr, c)) != NULL)
-    {
-        strcpy_realloc(&buffy, ptr + 1);
-        if (*(buffy.data) != '\0')
-        {
-            *ptr = '\0';
-            if (strcat_realloc(buffer, string) == 0)
-            {
-                return 0;
-            }
-
-            index = strlen(buffer->data);
-            if (strcat_realloc(buffer, buffy.data) == 0)
-            {
-                return 0;
-            }
-            ptr = buffer->data + index;
-        }
-        else
-        {
-            if (!strcat_realloc(buffer, string))
-            {
-                buffer_destroy(&buffy);
-                return 0;
-            }
-        }
-    }
-    buffer_destroy(&buffy);
     return 1;
 }
 
