@@ -2,7 +2,7 @@
  *  Soubor: semantic.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	06. 12. 2021 17:12:52
+ *  Poslední změna:	07. 12. 2021 05:20:46
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -16,54 +16,6 @@
 
 #include "symtable.h"
 #include "tree.h"
-
-
-// 3 - sémantická chyba v programu – nedefinovaná funkce/proměnná, pokus o redefinici proměnné, atp.
-//      undefined variable
-//      redefined variable
-//      undefined function
-//      redefined function
-//      undefined reference to function
-//      undefined reference to variable
-//      non-initialized variable
-// 4 - sémantická chyba v příkazu přiřazení (typová nekompatibilita).
-//      type incompatibility
-// 5 - sémantická chyba v programu – špatný počet/typ parametrů či návratových hodnot u volání funkce či návratu z funkce.
-//      invalid parameter type
-//      invalid return type
-//      invalid number of returned values
-//      no return ([type] expected)
-// 6 - sémantická chyba typové kompatibility v aritmetických, řetězcových a relačních výrazech.
-//      incompatible types
-// 7 - ostatní sémantické chyby.
-//      index out of range
-
-// sem_err_1 Všechny proměnné nalevo od = již musí být definovány chyba 3
-// sem_err_2 operátor # očekává string chyba 6
-// sem_err_3 po dělení je výsledek number chyba 4
-// TODO Neobsahuje-li tělo funkce příkaz return, vrací funkce odpovídající počet hodnot nil
-
-// sem_err_4 Každá proměnná musí být definována před jejím použitím, jinak se jedná o sémantickou chybu 3
-// sem_err_5 Definice proměnné stejného jména jako má jiná proměnná ve stejném bloku vede na chybu 3
-// TODO Každá uživatelská funkce s daným identifikátorem je definována nejvýše jednou chyba 3
-// TODO Funkce může být deklarována nejvýše jednou, jinak dochází k chybě 3
-// TODO pokud u deklarace a definice funkce neodpovídají seznamy parametrů nebo seznamy návratových typů, či pokud deklarovaná funkce není nakonec definována err 3
-// TODO deklarace nebo definice nové proměnné
-// TODO V případě, že příkaz volání funkce obsahuje jiný počet nebo typy parametrů, než funkce očekává (tedy než je uvedeno v její hlavičce, a to i u vestavěných funkcí), jedná se o chybu 5
-// TODO Pokud funkce vrací méně hodnot, než je očekáváno dle počtu proměnných id 1 až id n , dojde k chybě 5
-// TODO Typová nekompatibilita mezi návratovou hodnotou a odpovídající proměnnou pro její uložení vede na chybu 5
-// TODO Je-li počet výrazů výsledných hodnot nekompatibilní s návratovými typy dané funkce, jsou chybějící hodnoty doplněny speciální hodnotou nil a přebývající způsobí chybu 5
-
-// TODO Není-li typ inicializačního výrazu staticky (při překladu) kompatibilní s typem inicializované proměnné, jde o chybu 4
-
-// TODO Prázdná funkce chyba 7
-
-// TODO Pokud typy návratových hodnot neodpovídají hlavičce funkce, dojde k chybě 5
-// TODO V případě, že příkaz volání funkce obsahuje jiný počet nebo typy parametrů, než funkce očekává chyba 5
-// TODO Pokud funkce vrací méně hodnot, než je očekáváno dle počtu proměnných id 1 až id n , dojde k chybě 5
-// TODO Typová nekompatibilita mezi návratovou hodnotou a odpovídající proměnnou pro její uložení vede na chybu 5
-// TODO Přebývající návratové hodnoty způsobují chybu 5
-// TODO Pro chybné kombinace datových typů ve výrazech vracejte chybu 6 
 
 // @see SEM_ERR
 #define SEM_OK 0
@@ -83,8 +35,7 @@
 // - - - - - - - - - - - - - - - //
 
 /** @brief Preface návratu z funkce při detekování chyby */
-#define _ERR() \
-    if ((return_signal = 
+#define ERR if ((return_signal = 
 
 /** @brief Postface při chybě spustí detekci řádku a nastaví návratový kód */
 #define ERR_(__node) \
@@ -102,21 +53,28 @@
     sprintf(__var_name, "%s", __src);
 
 /** @brief Vytvoří dočasné proměnné pro práci se stromem */
-#define TEMP_VARS() \
+#define TEMP_VARS \
     t_node *curr = node->next[0]; \
     t_node *next = node->next[0]->next[0]; \
     (void)curr; \
     (void)next;
 
 /** @brief Uvolní paměť po neúspěšné deklaraci proměnné */
-#define FREE_VAR_DECL() \
+#define FREE_VAR_COND \
+    free(value1); \
+    free(value2); \
+    free(type1); \
+    free(type2); \
+
+/** @brief Uvolní paměť po neúspěšné deklaraci proměnné */
+#define FREE_VAR_DECL \
     free(name); \
     free(type); \
     free(assign_type); \
     free(value); \
 
 /** @brief Uvolní paměť alokovaných listů */
-#define FREE_F_DEF() \
+#define FREE_F_DEF \
     fce_free(cmp_list); \
     fce_free(ret_list); \
     free(empty_return_type); 
@@ -486,7 +444,7 @@ int add_var_to_symtable(key_t type, key_t attribute, key_t value, bool local, st
  * @param symtable Tabulka symbolů
  * @return ERROR_CODE @see SEM_ERR
  */
-int add_scope_to_symtable(stack_t *symtable);
+int add_scope_to_symtable(stack_t **symtable);
 
 /**
  * @brief Získá z tabulky symbulů datový typ proměnné

@@ -2,7 +2,7 @@
  *  Soubor: symtable.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	06. 12. 2021 23:56:19
+ *  Poslední změna:	07. 12. 2021 05:25:35
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -23,9 +23,9 @@
 
 
 // Nastavitelné parametry
-#define HASH_TABLE_DIMENSION 5      // počet řádků hashovací tabulky
+#define HASH_TABLE_DIMENSION 49     // počet řádků hashovací tabulky
 #define MAX_WORD_LEN 127            // maximální délka identifikátoru
-#define STACK_SIZE 5                // velikost zásobníku pro tabulky symbolů
+#define STACK_SIZE 20               // velikost zásobníku pro tabulky symbolů
 #define DEFTABLE_SIZE 10            // základní velikost tabulky funkcí
 #define DECLARED 0                  // funkce již byla deklarována
 #define DEFINED 1                   //                 definována
@@ -35,7 +35,7 @@
 // - - - - - - - - - - - - - - - - - - - - //
 // - - - - Datové typy a struktury - - - - //
 // - - - - - - - - - - - - - - - - - - - - //
-// Typy
+
 typedef char * key_t;               // typ klíče
 typedef int top_t;                  // typ hodnoty
 
@@ -153,7 +153,7 @@ stack_t * symtable_init (size_t n);
  * @param n Velikost zásobníku
  * @return Nově rozšířený zásobník
  */
-void symtable_expand (stack_t **s, size_t n);
+void symtable_expand (stack_t **s, htab_t *t, size_t n);
 
 /**
  * @brief Vymaže všechny prvky zásobníku
@@ -218,7 +218,6 @@ htab_t * htab_resize (size_t n, htab_t *from);
  */
 htab_item_t * htab_find (htab_t *t, key_t key);  
 
-// TODO dokumentace
 /**
  * @brief Funkce vyhledá v hashovací tabulce dané slovo a inkrementuje jeho četnost výskytu, pokud nenajde založí nový záznam
  * @param t Struktura hashovací tabulky
@@ -283,13 +282,13 @@ def_table_t * def_table_init();
  * @param name Řetězec, který se vloží do paměti
  * @param data 0 - Deklarovaná fce, 1 - Definovaná fce
  */
-int def_table_add(char *name, def_table_t *deftable, bool data);
+int def_table_add (char *name, def_table_t *deftable, bool data);
 
 /**
  * @brief Destruktor tabulky funkcí
  * @param deftable Struktura tabulky funkcí
  */
-void def_table_free(def_table_t *deftable);
+void def_table_free (def_table_t *deftable);
 
 
 

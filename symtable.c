@@ -2,7 +2,7 @@
  *  Soubor: symtable.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	03. 12. 2021 13:48:21
+ *  Poslední změna:	07. 12. 2021 05:20:13
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -12,39 +12,6 @@
 
 #include "symtable.h"
 #include "tree.h"
-
-#include "test.h"
-
-// // - - - - - - - - - - - - - - - - - - - - //
-// // - - - - - - - - M_A_I_N - - - - - - - - //
-// // - - - - - - - - - - - - - - - - - - - - //
-
-// int symtable() {
-    
-//     stack_t *stack = symtable_init(STACK_SIZE);
-//     if (stack == NULL)
-//         return NULL;
-
-//     // vytvoření hashovacích tabulek
-//     CREATE_HTAB(hash_table0)
-
-//     symtable_push(&stack, hash_table0);
-
-//     fce_item_push(&htab_find(hash_table0, "2")->fce, "f_return");
-//     fce_item_push(&htab_find(hash_table0, "2")->fce, "f_val_type");
-//     fce_item_push(&htab_find(hash_table0, "2")->fce, "f_val");
-    
-//     fce_item_push(&hash_table0->ptr_arr[1]->next_h_item->fce, "f_return");
-//     fce_item_push(&hash_table0->ptr_arr[1]->next_h_item->fce, "f_val_type");
-//     fce_item_push(&hash_table0->ptr_arr[1]->next_h_item->fce, "f_va");
-
-//     symtable_print(stack);
-
-//     // uvolnění zásobníku z paměti
-//     symtable_free(stack);  
-    
-//     return 0;
-// }
 
 
 
@@ -70,21 +37,28 @@ stack_t * symtable_init(size_t n) {
     return stack;
 }
 
-void symtable_expand(stack_t **s, size_t new_size) {
+void symtable_expand(stack_t **s, htab_t *t, size_t new_size) {
     if (((*s)->top + 1) > (int)new_size) {
         fprintf(stderr, "Capacity can not be reduced\n");
         return;
     }
 
     // realokuje se prostor pro přidání dalších hashovacích tabulek
-    *s = realloc(*s, sizeof(stack_t) + (sizeof(htab_t) * new_size));
-
+    stack_t *new_symtable = realloc(*s, sizeof(stack_t) + (sizeof(htab_t) * new_size));
+    *s = new_symtable;
+    new_symtable = NULL;
+    
     // projde celý předešlý zásobník a nakopíruje ho do nového
     for (size_t i = (*s)->size; i < new_size; i++) 
         (*s)->stack[i] = NULL;
-    
+
     // aktualizuje se velikost zásobníku
     (*s)->size = new_size;
+
+    // zvýší ukazetel na vrchol zásobníku
+    (*s)->top++;
+    // přidá hashtabulku do zásobníku rámců
+    (*s)->stack[(*s)->top] = t;
 }
 
 void symtable_clear(stack_t *s) {
@@ -102,17 +76,16 @@ void symtable_free(stack_t *s) {
 }
 
 void symtable_push(stack_t **s, htab_t *t) {
-    // chyba při plné tabulce
+    // rozšíření plné tabulky symbolů
     if ((*s)->top == (int)((*s)->size - 1)) {
-        fprintf(stderr, "Stack id full, expanding capacity from %ld to %ld.\n", (*s)->size, (*s)->size*2);
         // rozšíří zásobník
-        symtable_expand(&(*s), (*s)->size*2);
+        symtable_expand(s, t, (*s)->size*2);
+    } else {
+        // zvýší ukazetel na vrchol zásobníku
+        (*s)->top++;
+        // přidá hashtabulku do zásobníku rámců
+        (*s)->stack[(*s)->top] = t;
     }
-    
-    // zvýší ukazetel na vrchol zásobníku
-    (*s)->top++;
-    // přidá hashtabulku do zásobníku rámců
-    (*s)->stack[(*s)->top] = t;
 }
 
 void symtable_pop(stack_t *s) {
@@ -191,7 +164,6 @@ htab_item_t * htab_find(htab_t *t, key_t key) {
 }
 
 htab_item_t * htab_lookup_add(htab_t *t, key_t type, key_t key, key_t value, bool local, int ret_values) {
-    
     // získání indexu podle klíče v tabulce
     size_t index_in_arr = htab_hash_function(key) % t->arr_size;
     // inicializace dvou ukazaleů: prev_element bude ukazovat na element
@@ -213,7 +185,6 @@ htab_item_t * htab_lookup_add(htab_t *t, key_t type, key_t key, key_t value, boo
         
         // kontrola, jestli se se 'key' vyskytuje v tabulce
         if (strcmp(element->key, key) == 0) {
-            // TODO strcpy možná bude rozšířený buffer value
             element->value = value;
             return element;
         }        
