@@ -4,7 +4,7 @@
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	07. 12. 2021 04:43:54
+ * Last Modified:	07. 12. 2021 15:04:01
  *
  * @copyright Copyright (c) 2021
  *
@@ -18,16 +18,19 @@
 #include <stdio.h>
 #include "hashtable.h"
 #include "test.h"
+#include "symtable.h"
 
 // globální proměnné, slouží k uvolnění paměti a ukončení programu
 t_node *global_tree;
 buffer_t *global_code_buffer;
+stack_t *global_sym_table;
 
-void generate_code(t_node *tree, code_t *code)
+void generate_code(t_node *tree, code_t *code, stack_t *sym_table)
 {
     // nastavení globálních proměnných
     global_tree = tree;
     global_code_buffer = &code->text;
+    global_sym_table = sym_table;
 
     strcpy(code->text.data, ".IFJcode21\n\n");
     strcat_realloc(&code->text, "# -- global variables for type checks\nDEFVAR GF@TYPE_var_1\nDEFVAR GF@TYPE_var_2\n\n");
@@ -482,6 +485,21 @@ void function_call_gen(code_t *code, t_node *fcall_node, bool createframe)
     {
         strcat_realloc(&code->text, "CREATEFRAME\n");
         END_IF_FAIL((&code->text));
+
+        // definice byť nepoužitých, avšak potřebných návratových proměnných
+
+        char *function_bare = malloc(strlen(fcall_node->next[0]->data[1].data) + 1);
+        strcpy(function_bare, fcall_node->next[0]->data[1].data);
+        function_bare[strlen(function_bare) - 3] = '\0';
+
+        int return_values = 0;
+        get_f_return_count(function_bare, global_sym_table, &return_values);
+
+        for (int i = 1; i < return_values + 1; i++)
+        {
+            strcat_format_realloc(&code->text, "DEFVAR TF@%%%dr\nMOVE TF@%%%dr nil@nil\n", i, i);
+            END_IF_FAIL((&code->text));
+        }
     }
 
     // průchod item-listem
@@ -600,10 +618,9 @@ void stmt_list_crossroad(code_t *code, t_node *stmt_list, char *fc_from)
 
 void generate_local_decl(code_t *code, t_node *local_dec)
 {
-
-    strcat_format_realloc(&code->text, "\n# -- local declaration of variable %s\nDEFVAR LF@%s\n", local_dec->next[1]->data[1].data, local_dec->next[1]->data[1].data);
+    char *id = local_dec->next[1]->data[1].data;
+    strcat_format_realloc(&code->text, "\n# -- local declaration of variable %s\nDEFVAR LF@%s\nMOVE LF@%s nil@nil\n\n", id, id, id);
     END_IF_FAIL((&code->text));
-    // char*type = local_dec->next[3]->next[0]->data[1].data; //for the type check later
 
     if (strcmp(local_dec->next[4]->next[0]->data[0].data, "eps") != 0)
     {
@@ -636,6 +653,9 @@ void generate_local_decl(code_t *code, t_node *local_dec)
             strcat_format_realloc(&code->text, "MOVE LF@%s %s@%s\n", local_dec->next[1]->data[1].data, frame, aux_node->next[0]->data[1].data);
             END_IF_FAIL((&code->text));
         }
+    }
+    else
+    {
     }
 }
 
@@ -977,10 +997,10 @@ void define_return_variables(code_t *code, t_node *assignment)
     strcat_format_realloc(&code->text, "DEFVAR TF@%%1r\nMOVE TF@%%1r nil@nil\n");
     END_IF_FAIL((&code->text));
 
+    int retval_count = 2; // 1 už byla nadefinována
+
     if (id_list != NULL)
     {
-        int retval_count = 2; // 1 už byla nadefinována
-
         while (strcmp(id_list->next[0]->data[0].data, "eps") != 0)
         {
             strcat_format_realloc(&code->text, "DEFVAR TF@%%%dr\nMOVE TF@%%%dr nil@nil\n", retval_count, retval_count);
@@ -990,93 +1010,159 @@ void define_return_variables(code_t *code, t_node *assignment)
             id_list = id_list->next[2];
         }
     }
+
+    // doplnění o definici return proměnných, které se nepoužívají
+    int return_counts = 0;
+    char *fc_name = malloc(strlen(assignment->next[1]->next[2]->next[0]->data[1].data) + 1);
+    strcpy(fc_name, assignment->next[1]->next[2]->next[0]->data[1].data);
+    fc_name[strlen(assignment->next[1]->next[2]->next[0]->data[1].data) - 3] = '\0';
+    get_f_return_count(fc_name, global_sym_table, &return_counts);
+
+    // pokud je počet proměnných, které funkce vrací větší než počet již nainicializovaných proměnných
+    while (return_counts > retval_count - 1)
+    {
+        strcat_format_realloc(&code->text, "DEFVAR TF@%%%dr\nMOVE TF@%%%dr nil@nil\n", retval_count, retval_count);
+        END_IF_FAIL((&code->text));
+        retval_count++;
+
+        id_list = id_list->next[2];
+    }
 }
 
 void eval_condition(code_t *code, t_node *condition)
 {
-    int op = 0; // nabyde hodnoty 2 při druhém průchodu cyklu
-    for (int i = 0; i < 2; i++)
+    // podmínka na bázi výrazu
+    if (condition->next_count == 1)
     {
-        if (strcmp(condition->next[op]->next[0]->data[0].data, "id") == 0)
+        strcat_format_realloc(&code->text, "# --- vyhodnocení nelogického výrazu\n");
+        END_IF_FAIL((&code->text));
+        if (strcmp(condition->next[0]->data[0].data, "id") == 0)
         {
-            char frame[3];
-            if (is_global(condition->next[op]->next[0]->data[1].data))
+            if (is_global(condition->next[0]->data[1].data))
             {
-                strcpy(frame, "GF");
+                strcat_format_realloc(&code->text, "MOVE GF@COMP_RES GF@%s\n", condition->next[0]->data[1].data);
+                END_IF_FAIL((&code->text));
             }
             else
             {
-                strcpy(frame, "LF");
+                strcat_format_realloc(&code->text, "MOVE GF@COMP_RES LF@%s\n", condition->next[0]->data[1].data);
+                END_IF_FAIL((&code->text));
             }
-            strcat_format_realloc(&code->text, "MOVE GF@EXPR%d %s@%s\n", i + 1, frame, condition->next[op]->next[0]->data[1].data);
-            END_IF_FAIL((&code->text));
         }
         else
         {
-            eval_expression(code, condition->next[op]->next[0]);
-            strcat_format_realloc(&code->text, "POPS GF@EXPR%d\n\n", i + 1);
+            eval_expression(code, condition->next[0]);
+            strcat_format_realloc(&code->text, "POPS GF@COMP_RES\n");
             END_IF_FAIL((&code->text));
         }
-        op = 2;
-    }
-    strcat_format_realloc(&code->text, "\n# --- CHECK FOR ARITHMETIC COMPARISON\n");
-    END_IF_FAIL((&code->text));
-    strcat_format_realloc(&code->text, "PUSHS GF@EXPR1\nCALL IS_ARITHMETIC\nMOVE GF@COMP_RES GF@IS_ARITH_RES\nPOPS GF@EXPR1\n");
-    END_IF_FAIL((&code->text));
-    strcat_format_realloc(&code->text, "PUSHS GF@EXPR2\nCALL IS_ARITHMETIC\nMOVE GF@COMP_RES2 GF@IS_ARITH_RES\nPOPS GF@EXPR2\n");
-    END_IF_FAIL((&code->text));
-    strcat_format_realloc(&code->text, "OR GF@COMP_RES GF@COMP_RES GF@COMP_RES2\n");
-    END_IF_FAIL((&code->text));
-    strcat_format_realloc(&code->text, "JUMPIFNEQ LBL_NOT_ARITH%d GF@COMP_RES bool@true\n", code->total_conditionals_count);
-    END_IF_FAIL((&code->text));
-    strcat_format_realloc(&code->text, "\n#---------------IMPLICITE CONVERTION IF NEEDED\n");
-    END_IF_FAIL((&code->text));
-    strcat_format_realloc(&code->text, "PUSHS GF@EXPR1\nPUSHS GF@EXPR2\nCALL ARITHMETIC_TYPE_CHECK\nPOPS GF@EXPR2\nPOPS GF@EXPR1\n");
-    END_IF_FAIL((&code->text));
-    strcat_format_realloc(&code->text, "\nLABEL LBL_NOT_ARITH%d\n", code->total_conditionals_count);
-    END_IF_FAIL((&code->text));
-    code->total_conditionals_count++;
 
-    t_node *cond_operator = condition->next[1]->next[0];
-    if (strcmp(cond_operator->data[0].data, "<") == 0)
-    {
-        strcat_format_realloc(&code->text, "\n# -- comparison <\nLT GF@COMP_RES GF@EXPR1 GF@EXPR2\n");
+        // v COMP_RES je výsledek výrazu, nyní musíme převést nil na false a vše ostatní na true
+        strcat_format_realloc(&code->text, "JUMPIFEQ EXPR_NIL%d nil@nil GF@COMP_RES\n", code->total_label_count);
         END_IF_FAIL((&code->text));
+        strcat_format_realloc(&code->text, "MOVE GF@COMP_RES bool@true\nJUMP EXPR_END%%d\n", code->total_label_count);
+        END_IF_FAIL((&code->text));
+        strcat_format_realloc(&code->text, "LABEL EXPR_NIL%d\nMOVE GF@COMP_RES bool@false\nLABEL EXPR_END%%d\n", code->total_label_count, code->total_label_count);
+        END_IF_FAIL((&code->text));
+
+        code->total_label_count++;
     }
-    else if (strcmp(cond_operator->data[0].data, ">") == 0)
+    // podmínka na bázi logického porovnávání
+    else
     {
-        strcat_format_realloc(&code->text, "\n# -- comparison >\nGT GF@COMP_RES GF@EXPR1 GF@EXPR2\n");
+        int op = 0; // nabyde hodnoty 2 při druhém průchodu cyklu
+        for (int i = 0; i < 2; i++)
+        {
+            if (strcmp(condition->next[op]->next[0]->data[0].data, "id") == 0)
+            {
+                char frame[3];
+                if (is_global(condition->next[op]->next[0]->data[1].data))
+                {
+                    strcpy(frame, "GF");
+                }
+                else
+                {
+                    strcpy(frame, "LF");
+                }
+                strcat_format_realloc(&code->text, "MOVE GF@EXPR%d %s@%s\n", i + 1, frame, condition->next[op]->next[0]->data[1].data);
+                END_IF_FAIL((&code->text));
+            }
+            else
+            {
+                eval_expression(code, condition->next[op]->next[0]);
+                strcat_format_realloc(&code->text, "POPS GF@EXPR%d\n\n", i + 1);
+                END_IF_FAIL((&code->text));
+            }
+            op = 2;
+        }
+        strcat_format_realloc(&code->text, "\n# --- CHECK FOR ARITHMETIC COMPARISON\n");
         END_IF_FAIL((&code->text));
-    }
-    else if (strcmp(cond_operator->data[0].data, "==") == 0)
-    {
-        strcat_format_realloc(&code->text, "\n# -- comparison ==\nEQ GF@COMP_RES GF@EXPR1 GF@EXPR2\n");
+        strcat_format_realloc(&code->text, "PUSHS GF@EXPR1\nCALL IS_ARITHMETIC\nMOVE GF@COMP_RES GF@IS_ARITH_RES\nPOPS GF@EXPR1\n");
         END_IF_FAIL((&code->text));
-    }
-    else if (strcmp(cond_operator->data[0].data, "~=") == 0)
-    {
-        strcat_format_realloc(&code->text, "\n# -- comparison =~\nEQ GF@COMP_RES GF@EXPR1 GF@EXPR2\n");
-        END_IF_FAIL((&code->text));
-        strcat_format_realloc(&code->text, "NOT GF@COMP_RES GF@COMP_RES\n");
-        END_IF_FAIL((&code->text));
-    }
-    else if (strcmp(cond_operator->data[0].data, "<=") == 0)
-    {
-        strcat_format_realloc(&code->text, "EQ GF@COMP_RES GF@EXPR1 GF@EXPR2\n");
-        END_IF_FAIL((&code->text));
-        strcat_format_realloc(&code->text, "LT GF@COMP_RES2 GF@EXPR1 GF@EXPR2\n");
+        strcat_format_realloc(&code->text, "PUSHS GF@EXPR2\nCALL IS_ARITHMETIC\nMOVE GF@COMP_RES2 GF@IS_ARITH_RES\nPOPS GF@EXPR2\n");
         END_IF_FAIL((&code->text));
         strcat_format_realloc(&code->text, "OR GF@COMP_RES GF@COMP_RES GF@COMP_RES2\n");
         END_IF_FAIL((&code->text));
-    }
-    else if (strcmp(cond_operator->data[0].data, ">=") == 0)
-    {
-        strcat_format_realloc(&code->text, "EQ GF@COMP_RES GF@EXPR1 GF@EXPR2\n");
+        strcat_format_realloc(&code->text, "JUMPIFNEQ LBL_NOT_ARITH%d GF@COMP_RES bool@true\n", code->total_conditionals_count);
         END_IF_FAIL((&code->text));
-        strcat_format_realloc(&code->text, "GT GF@COMP_RES2 GF@EXPR1 GF@EXPR2\n");
+        strcat_format_realloc(&code->text, "\n#---------------IMPLICITE CONVERTION IF NEEDED\n");
         END_IF_FAIL((&code->text));
-        strcat_format_realloc(&code->text, "OR GF@COMP_RES GF@COMP_RES GF@COMP_RES2\n");
+        strcat_format_realloc(&code->text, "PUSHS GF@EXPR1\nPUSHS GF@EXPR2\nCALL ARITHMETIC_TYPE_CHECK\nPOPS GF@EXPR2\nPOPS GF@EXPR1\n");
         END_IF_FAIL((&code->text));
+        strcat_format_realloc(&code->text, "\nLABEL LBL_NOT_ARITH%d\n", code->total_conditionals_count);
+        END_IF_FAIL((&code->text));
+        code->total_conditionals_count++;
+
+        t_node *cond_operator = condition->next[1]->next[0];
+
+        if (strcmp(cond_operator->data[0].data, "==") == 0)
+        {
+            strcat_format_realloc(&code->text, "\n# -- comparison ==\nEQ GF@COMP_RES GF@EXPR1 GF@EXPR2\n");
+            END_IF_FAIL((&code->text));
+            return; // nemusíme řešit nil
+        }
+        else if (strcmp(cond_operator->data[0].data, "~=") == 0)
+        {
+            strcat_format_realloc(&code->text, "\n# -- comparison =~\nEQ GF@COMP_RES GF@EXPR1 GF@EXPR2\n");
+            END_IF_FAIL((&code->text));
+            strcat_format_realloc(&code->text, "NOT GF@COMP_RES GF@COMP_RES\n");
+            END_IF_FAIL((&code->text));
+            return;
+        }
+
+        // ani jeden z operandů nesmí být nil
+        strcat_realloc(&code->text, "\nJUMPIFEQ ERROR_8 nil@nil GF@EXPR1\n");
+        END_IF_FAIL((&code->text));
+        strcat_realloc(&code->text, "JUMPIFEQ ERROR_8 nil@nil GF@EXPR2\n");
+        END_IF_FAIL((&code->text));
+
+        if (strcmp(cond_operator->data[0].data, "<") == 0)
+        {
+            strcat_format_realloc(&code->text, "\n# -- comparison <\nLT GF@COMP_RES GF@EXPR1 GF@EXPR2\n");
+            END_IF_FAIL((&code->text));
+        }
+        else if (strcmp(cond_operator->data[0].data, ">") == 0)
+        {
+            strcat_format_realloc(&code->text, "\n# -- comparison >\nGT GF@COMP_RES GF@EXPR1 GF@EXPR2\n");
+            END_IF_FAIL((&code->text));
+        }
+        else if (strcmp(cond_operator->data[0].data, "<=") == 0)
+        {
+            strcat_format_realloc(&code->text, "EQ GF@COMP_RES GF@EXPR1 GF@EXPR2\n");
+            END_IF_FAIL((&code->text));
+            strcat_format_realloc(&code->text, "LT GF@COMP_RES2 GF@EXPR1 GF@EXPR2\n");
+            END_IF_FAIL((&code->text));
+            strcat_format_realloc(&code->text, "OR GF@COMP_RES GF@COMP_RES GF@COMP_RES2\n");
+            END_IF_FAIL((&code->text));
+        }
+        else if (strcmp(cond_operator->data[0].data, ">=") == 0)
+        {
+            strcat_format_realloc(&code->text, "EQ GF@COMP_RES GF@EXPR1 GF@EXPR2\n");
+            END_IF_FAIL((&code->text));
+            strcat_format_realloc(&code->text, "GT GF@COMP_RES2 GF@EXPR1 GF@EXPR2\n");
+            END_IF_FAIL((&code->text));
+            strcat_format_realloc(&code->text, "OR GF@COMP_RES GF@COMP_RES GF@COMP_RES2\n");
+            END_IF_FAIL((&code->text));
+        }
     }
 }
 

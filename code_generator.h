@@ -4,7 +4,7 @@
  * @brief Hlavičkový soubor funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	07. 12. 2021 04:19:53
+ * Last Modified:	07. 12. 2021 13:41:46
  *
  * @copyright Copyright (c) 2021
  *
@@ -17,6 +17,7 @@
 #include "mystring.h"
 #include "hashtable.h"
 #include <stdbool.h>
+#include "symtable.h"
 
 typedef enum
 {
@@ -100,7 +101,7 @@ void fix_expr(t_node *tree);
  * @param tree Syntaktický strom
  * @param code Řetězcový buffer
  */
-void generate_code(t_node *tree, code_t *code);
+void generate_code(t_node *tree, code_t *code, stack_t *sym_table);
 
 /**
  * @brief Zkontroluje první uzel syntaktického stromu a posune se dál v analýze
