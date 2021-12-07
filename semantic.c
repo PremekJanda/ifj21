@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	07. 12. 2021 05:31:44
+ *  Last modified:	07. 12. 2021 13:24:08
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -125,6 +125,17 @@ int eval_fcall(def_table_t deftable) {
     return SEM_OK;
 }
 
+int find_f_name(t_node *node, key_t *name) {
+    // posune ukazatel na začátek definice funkce
+    while (strcmp(node->data[0].data, "<def-decl-fcall>"))
+        node = node->prev;
+
+    *name = malloc(strlen(node->next[1]->data[1].data) + 1); 
+    ALLOC_CHECK(*name) 
+    sprintf(*name, "%s", node->next[1]->data[1].data);
+    
+    return SEM_OK;
+}
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
@@ -346,6 +357,23 @@ int get_f_return_list(key_t name, fce_item_t **dest, stack_t *symtable) {
     return SEM_OK;
 }
 
+int get_f_return_count(key_t name, stack_t *symtable, int *count) {
+    // nalezne položku v tabulce
+    htab_item_t *item = symtable_lookup_item(symtable, name);
+    if (item == NULL)
+        return SEM_DEFINE;
+    
+    fce_item_t *params = item->fce;
+    
+    // vytvoří nový list návratových typů
+    while ((*count) != item->ret_values && params != NULL) {
+        params = params->next_f_item;
+        (*count)++;
+    }
+    
+    return SEM_OK;
+}
+
 int eval_return_eq(fce_item_t *dest, fce_item_t *src) {
     // chyba, pokud je větší počet návratových hodnot
     if (dest == NULL && src != NULL) {
@@ -386,6 +414,7 @@ int append_list(fce_item_t **dest, fce_item_t *src) {
 
     return SEM_OK;
 }
+
 
 
 // - - - - - - - - - - - - - - - - - - - //
@@ -496,22 +525,23 @@ int process_stmt_list(t_node *node, stack_t *symtable, def_table_t *deftable) {
         TEMP_VARS
         
         if (!strcmp(next->data[0].data, "<decl-local>")) {
-            ERR is_id_used_locally(next->next[1]->data[1].data, symtable, *deftable)         ERR_(node)
+            ERR is_id_used_locally(next->next[1]->data[1].data, symtable, *deftable)            ERR_(node)
 
             // přidání proměnné do rámce
-            ERR process_decl_local(node, symtable)                                           ERR_(node)
+            ERR process_decl_local(node, symtable)                                              ERR_(node)
 
         } else if (!strcmp(next->data[0].data, "<while>")) {
-            ERR process_cond(curr->next[0]->next[1], symtable)                               ERR_(node)
-            ERR process_while(curr->next[0], symtable, deftable)                             ERR_(node)
+            ERR process_cond(curr->next[0]->next[1], symtable)                                  ERR_(node)
+            ERR process_while(curr->next[0], symtable, deftable)                                ERR_(node)
             
         } else if (!strcmp(next->data[0].data, "<if>")) {
-            ERR process_cond(curr->next[0]->next[1], symtable)                               ERR_(node)
-            ERR process_if(curr->next[0], symtable, deftable)                                ERR_(node)
+            ERR process_cond(curr->next[0]->next[1], symtable)                                  ERR_(node)
+            ERR process_if(curr->next[0], symtable, deftable)                                   ERR_(node)
 
         } else if (!strcmp(next->data[0].data, "<return>")) {
-            key_t name = (key_t)node->prev->next[1]->data[1].data;
-            ERR process_return_list(curr->next[0]->next[1], symtable, deftable, name)        ERR_(node)
+            key_t name;
+            find_f_name(node, &name);
+            ERR process_return_list(curr->next[0]->next[1], symtable, deftable, name)           ERR_(node)
 
         } else {
             ERR process_assign_or_fcall(curr->next[1], symtable, deftable, curr->next[0]->data[1].data) ERR_(node)
@@ -670,7 +700,9 @@ int process_return_list(t_node *node, stack_t *symtable, def_table_t *deftable, 
 
     fce_item_t *f_return_list = NULL;
     if ((return_signal = get_f_return_list(name, &f_return_list, symtable))) {
+        fprintf(stderr, "ERROR: Type incompatibility after return\n");
         fce_free(return_list);
+        free(name);
         return return_signal;
     }
     
@@ -678,6 +710,7 @@ int process_return_list(t_node *node, stack_t *symtable, def_table_t *deftable, 
 
     fce_free(return_list);
     fce_free(f_return_list);
+    free(name);
 
     return return_signal;
 }
@@ -1192,7 +1225,7 @@ key_t get_var_type(key_t name, stack_t *symtable) {
 // - - - -   Hlavní funkce - - - - //
 // - - - - - - - - - - - - - - - - //
 
-int semantic(t_node *root_node) {
+int semantic(t_node *root_node, stack_t *symtable) {
     // pokud je soubor prázdný, není třeba provádět sémantickou analýzu
     if (root_node->next_count == 3) {
         // pokud je dán pouze výraz require
@@ -1201,7 +1234,6 @@ int semantic(t_node *root_node) {
 
         // inicializace 
         def_table_t *deftable = def_table_init();
-        stack_t *symtable = symtable_init(STACK_SIZE);
 
         // zpracování hlavní části syntaktického stromu stromu
         return_signal = process_main_list(root_node->next[2], symtable, deftable);
@@ -1210,7 +1242,6 @@ int semantic(t_node *root_node) {
         if (!return_signal)
             return_signal = eval_fcall(*deftable);
 
-        symtable_free(symtable);
         def_table_free(deftable);
     }
 

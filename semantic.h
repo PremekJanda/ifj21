@@ -2,7 +2,7 @@
  *  Soubor: semantic.h
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Poslední změna:	07. 12. 2021 05:20:46
+ *  Poslední změna:	07. 12. 2021 12:51:37
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -102,9 +102,10 @@
 /**
  * @brief Hlavní funkce zajišťující sémantickou kontrolu
  * @param root_node Ukazatel na kořenový uzel syntaktického stromu
+ * @param symtable Tabulka symbolů
  * @return ERROR_CODE @see SEM_ERR
  */
-int semantic(t_node *root_node);
+int semantic(t_node *root_node, stack_t *symtable);
 
 /**
  * @brief Počínaje uzlem v argumentu projde strom a hledá řádek nejbližšího terminálu
@@ -208,6 +209,15 @@ int eval_param_list(key_t name, fce_item_t *dest, stack_t *symtable, def_table_t
  * @return ERROR_CODE @see SEM_ERR
  */
 int get_f_return_list(key_t name, fce_item_t **dest, stack_t *symtable);
+
+/**
+ * @brief Získá počet návratových hodnot funkce a uloží ho do count
+ * @param name Identifikátor funkce
+ * @param symtable Tabulka symbolů
+ * @param count Počet návratových hodnot
+ * @return ERROR_CODE @see SEM_ERR
+ */
+int get_f_return_count(key_t name, stack_t *symtable, int *count);
 
 /**
  * @brief Vyhodnotí, zda jsou dva seznamy valaidní dle gramatiky návratových hodnot funkce

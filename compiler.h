@@ -2,7 +2,7 @@
  *  Soubor: compiler.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	25. 11. 2021 23:45:47
+ *  Last modified:	07. 12. 2021 13:03:59
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -38,7 +38,13 @@
         tree_delete(ast_root_node); \
         return SYNTAX_ERROR; \
     } else if (error_code != 0) { \
+        symtable_free(sym_table); \
         tree_delete(ast_root_node); \
         return error_code; \
     }
+
+#define FREE_MEMORY \
+    buffer_destroy(&code.text); \
+    symtable_free(sym_table); \
+    tree_delete(ast_root_node);
     
