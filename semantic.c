@@ -2,7 +2,7 @@
  *  Soubor: semantic.c
  * 
  *  Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
- *  Last modified:	07. 12. 2021 15:11:43
+ *  Last modified:	07. 12. 2021 19:29:45
  *  Autoři: David Kocman  - xkocma08, VUT FIT
  *          Radomír Bábek - xbabek02, VUT FIT
  *          Martin Ohnút  - xohnut01, VUT FIT
@@ -167,7 +167,11 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
             *value = v;
 
             return SEM_OK;
-        }
+        } 
+        // else {
+        //     free(*value);
+        //     free(*type);
+        // }
         
         fprintf(stderr, "ERROR: Unary operator # recieved incompatible type\n");
         return SEM_TYPE;
@@ -178,8 +182,8 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
 
         // levý operand
         if ((sem_type = eval_expr_type(node->next[0], value, type, symtable))) {
-            free(*value);
-            free(*type);
+            if (*value == NULL) free(*value);
+            if (*type == NULL) free(*type);
             return sem_type;
         }
 
@@ -188,8 +192,8 @@ int eval_expr_type(t_node *node, key_t *value, key_t *type, stack_t *symtable) {
         
         // pravý operand
         if ((sem_type = eval_expr_type(node->next[2], value, type, symtable))) {
-            free(*value); free(*type);
-            free(type1);  free(val1);
+            free(*type);
+            free(val1);
             return sem_type;
         }
 
@@ -284,7 +288,7 @@ int eval_list_eq(fce_item_t *dest, fce_item_t *src, int err_code) {
 
     while (dest != NULL && src != NULL) {
         // porovnání typové kompatibility
-        if (strcmp(dest->key, src->key) && !(!strcmp(dest->key, "number") && !strcmp(src->key, "integer"))) {
+        if (strcmp(dest->key, src->key) && !(!strcmp(dest->key, "number") && !strcmp(src->key, "integer")) && strcmp(src->key, "nil")) {
             fprintf(stderr, "ERROR: Invalid types, given \"%s\", expected \"%s\"\n", src->key, dest->key);
             return err_code;
         }
@@ -383,7 +387,7 @@ int eval_return_eq(fce_item_t *dest, fce_item_t *src) {
 
     while (dest != NULL && src != NULL) {
         // porovnání typové kompatibility
-        if (strcmp(dest->key, src->key) && !(!strcmp(dest->key, "number") && !strcmp(src->key, "integer"))) {
+        if (strcmp(dest->key, src->key) && !(!strcmp(dest->key, "number") && !strcmp(src->key, "integer")) && strcmp(src->key, "nil")) {
             fprintf(stderr, "ERROR: Invalid return type \"%s\", expecting \"%s\"\n", src->key, dest->key);
             return SEM_FCE;
         }
@@ -404,7 +408,7 @@ int eval_return_eq(fce_item_t *dest, fce_item_t *src) {
 int eval_assign_eq(fce_item_t *dest, fce_item_t *src) {
     while (dest != NULL && src != NULL) {
         // porovnání typové kompatibility
-        if (strcmp(dest->key, src->key) && !(!strcmp(dest->key, "number") && !strcmp(src->key, "integer"))) {
+        if (strcmp(dest->key, src->key) && !(!strcmp(dest->key, "number") && !strcmp(src->key, "integer")) && strcmp(src->key, "nil")) {
             fprintf(stderr, "ERROR: Invalid type \"%s\", expecting \"%s\" during assignment\n", src->key, dest->key);
             return SEM_ASSIGN;
         }
@@ -595,7 +599,7 @@ int process_cond(t_node *node, stack_t *symtable) {
     ALLOC_STR(value2, ""); ALLOC_STR(type2, "");
     
     // jednosložková podmínka
-    if (node->next[0]->next_count == 0) {
+    if (node->next[1]->next_count == 0) {
         if (eval_expr_type(node->next[0]->next[0], &value1, &type1, symtable)) {
             fprintf(stderr, "ERROR: Left side operand type incompatibility in comparison\n");
             FREE_VAR_COND
@@ -1258,7 +1262,7 @@ int semantic(t_node *root_node, stack_t *symtable) {
         def_table_free(deftable);
     }
 
-    return return_signal;
+    return (return_signal == -1) ? SEM_TYPE : return_signal;
 }
 
 int search_line(t_node *node) {
