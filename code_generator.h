@@ -4,7 +4,7 @@
  * @brief Hlavičkový soubor funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	07. 12. 2021 20:53:08
+ * Last Modified:	08. 12. 2021 01:01:35
  *
  * @copyright Copyright (c) 2021
  *
@@ -32,6 +32,7 @@ typedef enum
         free_memory_then_quit(99); \
     }
 
+// struktura obsahující string buffer a užitečné countery pro generování kódu
 typedef struct
 {
     int total_expr_count;
@@ -39,17 +40,41 @@ typedef struct
     buffer_t text;
 } code_t;
 
+/**
+ * @brief Zinicializuje code proměnnou
+ *
+ * @param code proměnná označující IFJ21Code
+ */
 void init_code(code_t *code);
 
+/**
+ * @brief Překonvertuje všechny řetězce tak, aby obsahovaly
+ *  validní escape sekvence čitelné pro IFJ21Code
+ *
+ * @param tree Syntaktický strom
+ */
 void convert_strings(t_node *tree);
 
+/**
+ * @brief Vyčíslí výraz skládající se z proměnných, literálů a (nelogických) operátorů.
+ * Výsledek bude k nalezení na vrcholu zásobníku.
+ *
+ * @param code IFJ21Code
+ * @param expr Expression strom
+ */
 void eval_expression(code_t *code, t_node *expr);
 
+/**
+ * @brief Opraví syntaktický strom tak, aby identifikátory nebyly pod expr
+ *
+ * @param tree Syntaktický strom
+ */
 void fix_expr(t_node *tree);
 
+// počet uzlů pro vytvoření validního příkazu přiřazení
 #define NEW_NODES_FOR_ASSIGNMENT 6
 
-// macro to create new write function call with one argument item, item will be blank and at index 9
+// Makro, které vytvoří simulaci volání funkce write s prázdným parametrem, je veden pod indexem 9
 #define CREATE_NEW_WRITE_CALL(new_nodes)                \
     node_setdata(new_nodes[0], "<stmt-list>", 0);       \
     node_setdata(new_nodes[0], "", 1);                  \
@@ -124,7 +149,9 @@ void def_declare_fcall_crossroad(code_t *code, t_node *main_node);
  *
  * @param code Buffer, do kterého funkce zapíše mezikód
  * @param fcall_node Uzel syntaktického stromu, obsahující volání funkce
- * @param createframe Pokud je true, vytvoří se na počátku volání nový rámec, jinak byl již vytvořen
+ *
+ * @param createframe Pokud je true, vytvoří se na počátku
+ * volání nový rámec s návratovými proměnnými, jinak byl již vytvořen
  *  */
 void function_call_gen(code_t *code, t_node *fcall_node, bool createframe);
 
@@ -205,24 +232,92 @@ int is_local(code_t *code, char *id);
  */
 bool is_global(char *id);
 
+/**
+ * @brief Transformuje funkci první funkci write s nekonečným počtem parametrů na sekvenci funkcí write s jedním parametrem
+ *
+ * @param tree syntaktický strom
+ * @return Vrací 1, pokud najde funkci write a překonvertuje ji, 0 pokud nenajde žádnou funkci write
+ */
 int convert_write(t_node *tree);
 
+/**
+ * @brief Nadefinuje návratové hodnoty uvnitř IFJ21Code kódu
+ * při přiřazování návratových hodnot funkce identifikátorům
+ *
+ * @param code IFJ21Code proměnná
+ * @param assignment Syntaktický strom výrazu přiřazení
+ */
 void define_return_variables(code_t *code, t_node *assignment);
 
+/**
+ * @brief Vygeneruje kód přiřazení
+ *
+ * @param code Ifj21Code proměnná
+ * @param assignment <stmt> strom značící přiřazení
+ */
 void generate_assignment(code_t *code, t_node *assignment);
 
+/**
+ * @brief Vygeneruje kód podmíněného výrazu
+ *
+ * @param code IFJ21Code proměnná
+ * @param if_node <stmt> strom podmíněného výrazu
+ * @param fc funkce, ze které je if volán, slouží k unikátnosti návěští
+ */
 void generate_if(code_t *code, t_node *if_node, char *fc);
 
+/**
+ * @brief Vygeneruje kód while cyklu
+ *
+ * @param code IFJ21Code proměnná
+ * @param while_node <stmt> strom while cyklu
+ * @param fc funkce, ze které je if volán, slouží k unikátnosti návěští
+ */
 void generate_while(code_t *code, t_node *while_node, char *fc);
 
+/**
+ * @brief Vygeneruje kód lokální deklarace
+ *
+ * @param code IFJ21Code proměnná
+ * @param local_dec Syntaktický strom přiřazení
+ */
 void generate_local_decl(code_t *code, t_node *local_dec);
 
+/**
+ * @brief Vygeneruje kód návratu pomocí příkazu return
+ *
+ * @param code IFJ21Code proměnná
+ * @param return_node Syntaktický strom obsahující return <stmt>
+ */
 void generate_return(code_t *code, t_node *return_node);
 
+/**
+ * @brief Používá se při generování kódu příkazu while
+ * Předsune veškeré definice proměnných před <stmt> volání whilu,
+ * na jejich místě nechá výraz přiřazení hodnoty
+ *
+ * @param code IFJ21Code proměnná
+ * @param stmt_list Statement před který budou vloženy deklarace proměnných v něm deklarovaných
+ */
 void predefine_vars_of_stmt_list(code_t *code, t_node *stmt_list);
 
+/**
+ * @brief Vygeneruje kód, který vyčíslí logický výraz, výsledek vyčíslení
+ * bude v globální proměnné GF@COMP_RES
+ *
+ * @param code IFJ21Code proměnná
+ * @param condition Výraz obsahující 2 položky a logický operátor, nebo 1 položku,
+ * položka může být výraz nebo identifikátor
+ */
 void eval_condition(code_t *code, t_node *condition);
 
+/**
+ * @brief Rozcestí pro generování kódu statementů funkce
+ *
+ * @param code IFJ21Code proměnná
+ * @param stmt_list List přikazů uvnitř těla funkce
+ * @param fc_from Právě generovaná funkce
+ */
 void stmt_list_crossroad(code_t *code, t_node *stmt_list, char *fc_from);
 
 #endif
