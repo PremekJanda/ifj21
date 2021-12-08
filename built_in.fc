@@ -1,3 +1,8 @@
+# built_in.fc - IFJ - Formální jazyky a překladače
+# soubor obsahující built-in funkce jazyka Ifj21
+# vypracoval: xbabek02 - Radomír Bábek
+# FIT VUT - 2021
+
 JUMP END_BUILT_IN
 
 #------------------------------

@@ -4,7 +4,7 @@
  * @brief Definice funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	07. 12. 2021 15:55:03
+ * Last Modified:	08. 12. 2021 01:15:26
  *
  * @copyright Copyright (c) 2021
  *
@@ -27,6 +27,9 @@ stack_t *global_sym_table;
 
 void generate_code(t_node *tree, code_t *code, stack_t *sym_table)
 {
+
+    // FÁZE PŘÍPRAV
+
     // nastavení globálních proměnných
     global_tree = tree;
     global_code_buffer = &code->text;
@@ -47,18 +50,17 @@ void generate_code(t_node *tree, code_t *code, stack_t *sym_table)
         free_memory_then_quit(99);
     }
 
-    // změna názvů identifikátorů ve stromě na unikátní identifikátory
-    ht_table_t ht_already_processed;
-    ht_init(&ht_already_processed);
-
     // nahrazení expr -> id za id
     fix_expr(tree);
 
     // překonvertování escape sekvencí na
     convert_strings(tree);
 
-    // aby byla funkce write ignorována zpracováním identifikátorů
-    ht_insert(&ht_already_processed, "write", 1);
+    // hashovací tabulka použita při přejmenovávání identifikátorů
+    // díky ní rozeznám, které identifikátory již byly přejmenované
+    ht_table_t ht_already_processed;
+    ht_init(&ht_already_processed);
+    ht_insert(&ht_already_processed, "write", 1); // aby byla funkce write ignorována zpracováním identifikátorů
 
     int depth = 0;
     int depth_total = 0;
@@ -66,11 +68,12 @@ void generate_code(t_node *tree, code_t *code, stack_t *sym_table)
     buffer_t fc;
     buffer_init(&fc);
 
+    // změna názvů identifikátorů ve stromě na unikátní identifikátory
     rename_all_id(tree, &ht_already_processed, &fc, &depth, &depth_total);
     buffer_destroy(&fc);
-
     ht_delete_all(&ht_already_processed);
 
+    // překonverování write funkcí
     int convert_result = 0;
     do
     {
@@ -92,6 +95,8 @@ void generate_code(t_node *tree, code_t *code, stack_t *sym_table)
     {
         free_memory_then_quit(2);
     }
+
+    // FÁZE GENEROVÁNÍ
 
     // current_node = <def-declare-fcall> || eps, cyklus projde přes všechny prvky v rekurzivním listu
     for (; current_node->next[0] != NULL; current_node = current_node->next[1])
@@ -182,6 +187,7 @@ int convert_write(t_node *tree)
     }
     for (int i = 0; i < tree->next_count; i++)
     {
+        // ukončení rekurzivního volání, pokud již byla nalezena a přetransformována write funkce
         if (convert_write(tree->next[i]) == 1)
         {
             return 1;
@@ -237,12 +243,12 @@ void rename_all_id(t_node *tree, ht_table_t *ht_already_processed, buffer_t *fc,
             free_memory_then_quit(99);
         }
         strcpy(id, tree->data[1].data);
+
+        buffer_t new_id;
+        buffer_init(&new_id);
+        bool param = false;
         if (ht_search(ht_already_processed, id) == NULL)
         {
-            buffer_t new_id;
-            buffer_init(&new_id);
-            bool param = false;
-
             if (strcmp(fc->data, "") == 0)
             { // v globálním prostoru
                 if (strcmp(tree->prev->next[0]->data[1].data, "function") == 0)
@@ -254,7 +260,7 @@ void rename_all_id(t_node *tree, ht_table_t *ht_already_processed, buffer_t *fc,
                 }
                 else if (strcmp(tree->prev->next[0]->data[1].data, "global") == 0)
                 {
-                    if (strcmp(tree->prev->next[3]->data[1].data, "function") == 0)
+                    if (strcmp(tree->prev->next[3]->next[0]->data[1].data, "function") == 0)
                     {
                         strcat_format_realloc(&new_id, "%s_fc", id);
                     }
@@ -319,19 +325,36 @@ void rename_all_id(t_node *tree, ht_table_t *ht_already_processed, buffer_t *fc,
 
             field_of_visibility_id_replacement(id, new_id.data, ref_node);
             ht_insert(ht_already_processed, new_id.data, 1);
-            buffer_destroy(&new_id);
+
+        } // ht_search == NULL, nutná úprava pro případ předchozí deklarace funkce
+        else if (tree->prev != NULL)
+        {
+            if (tree->prev->next[0] != NULL)
+            {
+                if (strcmp(tree->prev->next[0]->data[1].data, "function") == 0)
+                {
+                    strcpy_realloc(fc, tree->prev->next[1]->data[1].data);
+                    (*depth)++;
+                    (*depth_total)++;
+                }
+            }
         }
+
+        buffer_destroy(&new_id);
         free(id);
     }
+    // zanoření do whilu
     else if ((strcmp(tree->data[1].data, "do") == 0) || (strcmp(tree->data[1].data, "then") == 0))
     {
         (*depth)++;
         (*depth_total)++;
     }
+    // zanoření do elsu, přičteme dosavadní počet zanoření
     else if ((strcmp(tree->data[1].data, "else") == 0))
     {
         (*depth_total)++;
     }
+    // vynoření se z oboru platnosti, případné vynoření z funkce do globálního prostoru
     else if (strcmp(tree->data[1].data, "end") == 0)
     {
         (*depth)--;
@@ -476,11 +499,11 @@ void def_declare_fcall_crossroad(code_t *code, t_node *main_node)
 
 void function_call_gen(code_t *code, t_node *fcall_node, bool createframe)
 {
-
-    // funkce která byla překonvertovaná se nevolá
     strcat_format_realloc(&code->text, "\n# -- call of %s\n", fcall_node->next[0]->data[1].data);
     END_IF_FAIL((&code->text));
 
+    // má funkce vyvářet dočasný rámec a definovat návratové proměnné?
+    // přiřazní to totiž dělá samo podle počtu identifikátorů
     if (createframe)
     {
         strcat_realloc(&code->text, "CREATEFRAME\n");
@@ -538,6 +561,7 @@ void function_call_gen(code_t *code, t_node *fcall_node, bool createframe)
         }
     }
 
+    // volání funkce
     strcat_format_realloc(&code->text, "CALL %s\n", fcall_node->next[0]->data[1].data);
     buffer_destroy(&temp);
 }
@@ -565,7 +589,7 @@ void function_gen(code_t *code, t_node *function_node)
         strcat_format_realloc(&code->text, "DEFVAR LF@%s\nMOVE LF@%s LF@%%%d\n", args->next[index]->next[0]->data[1].data, args->next[index]->next[0]->data[1].data, var_id++);
         END_IF_FAIL((&code->text));
     }
-    var_id = 1;
+
     // zpracování příkázů funkce
     stmt_list_crossroad(code, function_node->next[6], function_node->next[1]->data[1].data);
 
@@ -575,7 +599,7 @@ void function_gen(code_t *code, t_node *function_node)
 
 void stmt_list_crossroad(code_t *code, t_node *stmt_list, char *fc_from)
 {
-    // rekurzivní podmínka
+    // rekurzivní podmínky pro ukončení průchodu statement listem
     if (stmt_list->next[0] == NULL)
     {
         return;
@@ -584,6 +608,8 @@ void stmt_list_crossroad(code_t *code, t_node *stmt_list, char *fc_from)
     {
         return;
     }
+
+    // identifikace typu statementu a následná generace konkrétního typu kódu
     t_node *stmt = stmt_list->next[0];
     if (strcmp(stmt->next[0]->data[0].data, "id") == 0)
     {
@@ -628,12 +654,14 @@ void generate_local_decl(code_t *code, t_node *local_dec)
         t_node *aux_node = local_dec->next[4]->next[1]; //<f_or_item>
         if (strcmp(aux_node->next[0]->data[0].data, "expr") == 0)
         {
+            // vyčíslení expressionu a přesunutí do proměnné
             eval_expression(code, aux_node->next[0]);
             strcat_format_realloc(&code->text, "POPS LF@%s\n", local_dec->next[1]->data[1].data);
             END_IF_FAIL((&code->text));
         }
         else if (aux_node->next[1] != NULL)
         {
+            // volání funkce a vložení návratové hodnoty do proměnné
             strcat_format_realloc(&code->text, "CREATEFRAME\n DEFVAR TF@%%1r\nMOVE TF@%%1r nil@nil");
             END_IF_FAIL((&code->text));
             function_call_gen(code, aux_node, false);
@@ -641,7 +669,7 @@ void generate_local_decl(code_t *code, t_node *local_dec)
             END_IF_FAIL((&code->text));
         }
         else
-        { // id copy
+        { // vložení hodnoty identifikátoru do proměnné
             char frame[3];
             if (is_global(aux_node[0].data[1].data))
             {
@@ -655,9 +683,6 @@ void generate_local_decl(code_t *code, t_node *local_dec)
             END_IF_FAIL((&code->text));
         }
     }
-    else
-    {
-    }
 }
 
 void generate_while(code_t *code, t_node *while_node, char *fc)
@@ -667,16 +692,21 @@ void generate_while(code_t *code, t_node *while_node, char *fc)
     buffer_t end_label;
     buffer_init(&end_label);
 
+    // generace názvů návěští
     strcat_format_realloc(&while_label, "WHILE%d_%s", code->total_conditionals_count, fc);
     strcat_format_realloc(&end_label, "END_WHILE%d_%s", code->total_conditionals_count, fc);
 
     code->total_conditionals_count++;
 
+    // předsunutí deklarací proměnných uvnitř whilu
     predefine_vars_of_stmt_list(code, while_node->next[3]);
 
+    // vyčíslení podmínky
     strcat_format_realloc(&code->text, "\n # --- while start\nLABEL %s\n", while_label.data);
     eval_condition(code, while_node->next[1]);
     strcat_format_realloc(&code->text, "JUMPIFNEQ %s GF@COMP_RES bool@true\n", end_label.data);
+
+    // generování těla whilu
     stmt_list_crossroad(code, while_node->next[3], fc);
 
     strcat_format_realloc(&code->text, "\n\nJUMP %s\nLABEL %s\n", while_label.data, end_label.data);
@@ -687,7 +717,6 @@ void generate_while(code_t *code, t_node *while_node, char *fc)
 
 void predefine_vars_of_stmt_list(code_t *code, t_node *stmt_list)
 {
-
     t_node *new_nodes[NEW_NODES_FOR_ASSIGNMENT];
     bool already_shifted = false; // někdy je potřeba se posunout ve statement listu ještě před začátkem nového cyklu
 
@@ -732,6 +761,9 @@ void predefine_vars_of_stmt_list(code_t *code, t_node *stmt_list)
                     }
                     node_init(new_nodes[k]);
                 }
+
+                // vytvořění simulace stromu přiřazení na místě lokální deklarace
+                // po dosažení f-or-item-list se větví na více případů podle typu přiřazení
                 node_setdata(new_nodes[0], stmt_list->next[0]->next[0]->next[1]->data[0].data, 0);
                 node_setdata(new_nodes[0], stmt_list->next[0]->next[0]->next[1]->data[1].data, 1);
 
@@ -1038,9 +1070,9 @@ void define_return_variables(code_t *code, t_node *assignment)
 void eval_condition(code_t *code, t_node *condition)
 {
     // podmínka na bázi výrazu
-    if (condition->next_count == 1)
+    if (condition->next[1]->next_count == 0)
     {
-        strcat_format_realloc(&code->text, "# --- vyhodnocení nelogického výrazu\n");
+        strcat_format_realloc(&code->text, "\n# --- vyhodnocení nelogického výrazu\n\n");
         END_IF_FAIL((&code->text));
         if (strcmp(condition->next[0]->data[0].data, "id") == 0)
         {
@@ -1057,20 +1089,20 @@ void eval_condition(code_t *code, t_node *condition)
         }
         else
         {
-            eval_expression(code, condition->next[0]);
+            eval_expression(code, condition->next[0]->next[0]);
             strcat_format_realloc(&code->text, "POPS GF@COMP_RES\n");
             END_IF_FAIL((&code->text));
         }
 
         // v COMP_RES je výsledek výrazu, nyní musíme převést nil na false a vše ostatní na true
-        strcat_format_realloc(&code->text, "JUMPIFEQ EXPR_NIL%d nil@nil GF@COMP_RES\n", code->total_label_count);
+        strcat_format_realloc(&code->text, "JUMPIFEQ EXPR_NIL%d nil@nil GF@COMP_RES\n", code->total_conditionals_count);
         END_IF_FAIL((&code->text));
-        strcat_format_realloc(&code->text, "MOVE GF@COMP_RES bool@true\nJUMP EXPR_END%%d\n", code->total_label_count);
+        strcat_format_realloc(&code->text, "MOVE GF@COMP_RES bool@true\nJUMP EXPR_END%%%d\n", code->total_conditionals_count);
         END_IF_FAIL((&code->text));
-        strcat_format_realloc(&code->text, "LABEL EXPR_NIL%d\nMOVE GF@COMP_RES bool@false\nLABEL EXPR_END%%d\n", code->total_label_count, code->total_label_count);
+        strcat_format_realloc(&code->text, "LABEL EXPR_NIL%d\nMOVE GF@COMP_RES bool@false\nLABEL EXPR_END%%%d\n", code->total_conditionals_count, code->total_conditionals_count);
         END_IF_FAIL((&code->text));
 
-        code->total_label_count++;
+        code->total_conditionals_count++;
     }
     // podmínka na bázi logického porovnávání
     else
@@ -1100,6 +1132,7 @@ void eval_condition(code_t *code, t_node *condition)
             }
             op = 2;
         }
+        // kód pro případnou implicitní konverzi
         strcat_format_realloc(&code->text, "\n# --- CHECK FOR ARITHMETIC COMPARISON\n");
         END_IF_FAIL((&code->text));
         strcat_format_realloc(&code->text, "PUSHS GF@EXPR1\nCALL IS_ARITHMETIC\nMOVE GF@COMP_RES GF@IS_ARITH_RES\nPOPS GF@EXPR1\n");
@@ -1242,7 +1275,7 @@ void generate_return(code_t *code, t_node *return_node)
 
 void move_item_to_var(code_t *code, char *dest_frame, const char *dest_id, t_node *item)
 {
-
+    // pokud je uvnitř itemu identifikátor
     if (strcmp(item->next[0]->data[0].data, "id") == 0)
     {
         if (is_global(item->next[0]->data[1].data))
@@ -1256,7 +1289,7 @@ void move_item_to_var(code_t *code, char *dest_frame, const char *dest_id, t_nod
             END_IF_FAIL((&code->text));
         }
     }
-    else
+    else // uvnitř je expr
     {
         eval_expression(code, item->next[0]);
         strcat_format_realloc(&code->text, "POPS %s@%s\n", dest_frame, dest_id);
@@ -1384,7 +1417,8 @@ void eval_expression(code_t *code, t_node *expr)
                 }
             }
             else
-            { // is ..
+            { // týká se operátoru ..
+              // oddělený, jelikož potřebuje zkontrolovat, zda pracuje se stringy
                 strcat_format_realloc(&code->text, "CALL IS_STRING\nPOPS GF@CONVERTION2\n");
                 END_IF_FAIL((&code->text));
                 strcat_format_realloc(&code->text, "CALL IS_STRING\nPOPS GF@CONVERTION1\n");
@@ -1451,7 +1485,6 @@ void eval_expression(code_t *code, t_node *expr)
 
 void free_memory_then_quit(int return_code)
 {
-
     tree_delete(global_tree);
     buffer_destroy(global_code_buffer);
     exit(return_code);

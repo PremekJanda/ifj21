@@ -1,3 +1,15 @@
+/**
+ * @file hashtable.h
+ * @authors Radomír Bábek - xbabek02, VUT FIT
+ * @brief Mé osobní vypracování implementace funkcí hashovací tabulky z IAL úlohy
+ * @version 0.1
+ * @date 2021-11-13
+ * Last Modified:	08. 12. 2021 01:08:22
+ *
+ * @copyright Copyright (c) 2021
+ *
+ */
+
 #ifndef IAL_HASHTABLE_H
 #define IAL_HASHTABLE_H
 
@@ -5,18 +17,14 @@
 
 #define MAX_HT_SIZE 101
 
-/*
- * Veľkosť tabuľky s ktorou pracujú implementované funkcie.
- * Pre účely testovania je vhodné mať možnosť meniť veľkosť tabuľky.
- * Pre správne fungovanie musí byť veľkosť prvočíslom.
- */
+// Velikost tabulky
 extern int HT_SIZE;
 
-
 // Prvek tabulky
-typedef struct ht_item {
+typedef struct ht_item
+{
   char *key;            // klíč prvku
-  int value;          // hodnota prvku
+  int value;            // hodnota prvku
   struct ht_item *next; // ukazatel na další synonymum
 } ht_item_t;
 
@@ -27,8 +35,6 @@ int get_hash(char *key);
 void ht_init(ht_table_t *table);
 ht_item_t *ht_search(ht_table_t *table, char *key);
 void ht_insert(ht_table_t *table, char *key, int data);
-int *ht_get(ht_table_t *table, char *key);
-void ht_delete(ht_table_t *table, char *key);
 void ht_delete_all(ht_table_t *table);
 
 #endif
