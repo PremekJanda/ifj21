@@ -5,7 +5,6 @@
 #include <ctype.h>
 #include "table.h"
 
-
 //creates empty cell
 void cell_init(t_cell *cell)
 {
@@ -28,17 +27,17 @@ int cell_addchar(t_cell *cell, char character)
     {
         cell->capacity = 10;
         cell->value = malloc(sizeof(char) * cell->capacity);
+        if(cell->value == NULL)
+            return 99;
     }
     else if(cell->capacity < cell->count)
     {
         cell->capacity = cell->capacity * 2;
         char *new_value = realloc(cell->value, sizeof(char) * cell->capacity);
         if(new_value == NULL)
-            return 1;
+            return 99;
         cell->value = new_value;
     }
-    if(cell->value == NULL)
-        return 1;
     cell->value[cell->count-1] = character;
     return 0;
 }
@@ -49,7 +48,8 @@ int cell_copy(t_cell *cell1, t_cell *cell2)
     cell1->count = 0;
     for(int i = 0; i < cell2->count; i++)
     {
-        cell_addchar(cell1, cell2->value[i]);
+        if(cell_addchar(cell1, cell2->value[i]) == 99)
+            return 99;
     }
     if(cell1->value==NULL)
         return 1;
@@ -82,17 +82,17 @@ int row_addcell(t_row *row, t_cell cell)
     {
         row->capacity = 10;
         row->cells = malloc(sizeof(t_cell) * row->capacity);
+        if(row->cells == NULL)
+            return 99;
     }
     else if(row->capacity < row->count)
     {
         row->capacity = row->capacity * 2;
         t_cell *new_cells = realloc(row->cells, sizeof(t_cell) * row->capacity);
         if(new_cells == NULL)
-            return 1;
+            return 99;
         row->cells = new_cells;
     }
-    if(row->cells == NULL)
-        return 0;
     cell_init(&row->cells[row->count-1]);
     if(cell_copy(&row->cells[row->count-1], &cell))
         return 1;
@@ -154,13 +154,15 @@ int table_addrow(t_table *table, t_row row)
     {
         table->capacity = 10;
         table->rows = malloc(sizeof(t_row) * table->capacity);
+        if(table->rows == NULL)
+            return 99;
     }
     else if(table->capacity < table->count)
     {
         table->capacity = table->capacity * 2;
         t_row *new_rows = realloc(table->rows, sizeof(t_row) * table->capacity);
         if(new_rows == NULL)
-            return 1;
+            return 99;
         table->rows = new_rows;
     }
     if(table->rows == NULL)
@@ -193,6 +195,7 @@ void table_print(t_table table, char delim)
     }
 }
 
+//finds a cell in the table
 char *table_find(t_table table,char *nonterminal, char *terminal)
 {
     int line = 0;
@@ -235,11 +238,13 @@ char *table_find(t_table table,char *nonterminal, char *terminal)
         return table.rows[line].cells[column].value;
 }
 
+//gets line length
 int table_linelength(t_table table, int line)
 {
     return table.rows[line].count;
 }
 
+//finds data in the table
 char *table_getdata(t_table table, int line, int column)
 {
     return table.rows[line].cells[column].value;
@@ -262,9 +267,9 @@ int table_readfile(t_table *table, char filename[], char delim)
         if(character == delim)
         {
             if(cell_addchar(&cell, '\0'))
-                return 1;
+                return 99;
             if(row_addcell(&row, cell))
-                return 1;
+                return 99;
             cell_delete(&cell);
             cell_init(&cell);
             continue;
@@ -273,11 +278,11 @@ int table_readfile(t_table *table, char filename[], char delim)
         if(character == '\n')
         {
             if(cell_addchar(&cell, '\0'))
-                return 1;
+                return 99;
             if(row_addcell(&row, cell))
-                return 1;
+                return 99;
             if(table_addrow(table, row))
-                return 1;
+                return 99;
 
             cell_delete(&cell);
             row_delete(&row);
@@ -289,43 +294,15 @@ int table_readfile(t_table *table, char filename[], char delim)
             continue;
         //adds character to the cell
         if(cell_addchar(&cell, character))
-            return 1;
+            return 99;
     }
     fclose(file);
     //adds last line to the table
     cell_addchar(&cell, '\0');
     row_addcell(&row, cell);
-    table_addrow(table, row);
+    if(table_addrow(table, row))
+        return 99;
     cell_delete(&cell);
     row_delete(&row);
     return 0;
 }
-/*
-int main(int argc, char **argv)
-{
-    //check whether arguments were entered
-    if(argc == 1)
-        return 1;
-
-    char delim = ':';
-
-    //creates new table
-    t_table table;
-    table_init(&table);
-
-    //loads selected file to the table
-    if(table_readfile(&table, argv[1], delim))
-    {
-        table_delete(&table);
-        return 1;
-    }
-    //prints table
-    table_print(table, delim);
-    printf("\n");
-
-    printf("%d\n", table_find(&table, "<prog>", "id"));
-
-    //deletes table
-    table_delete(&table);
-    return 0;
-}*/

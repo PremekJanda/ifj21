@@ -3,16 +3,18 @@
 #include "stack.h"
 #include "string.h"
 
+//inits new stack item
 int item_init(t_item *item)
 {
     item->capacity = 10;
     item->length = 0;
     item->data = malloc(item->capacity);
     if(item->data == NULL)
-        return 1;
+        return 99;
     return 0;
 }
 
+//adds char to the stack item
 int item_addchar(t_item *item, char c)
 {
     item->data[item->length] = c;
@@ -22,12 +24,13 @@ int item_addchar(t_item *item, char c)
         item->capacity = item->capacity * 2;
         char *newdata = realloc(item->data, sizeof(char) * item->capacity);
         if(newdata == NULL)
-            return 1;
+            return 99;
         item->data = newdata;
     }
     return 0;
 }
 
+//copies data to the stack item
 int item_copy(t_item *item1, char *data)
 {
     for(size_t i = 0; i < strlen(data); i++)
@@ -40,27 +43,31 @@ int item_copy(t_item *item1, char *data)
     return 0;
 }
 
+//deletes item
 void item_delete(t_item *item)
 {
     free(item->data);
 }
 
+//prints item
 void print_item(t_item item)
 {
     for(int i = 0; i < item.length; i++)
         printf("%c", item.data[i]);
 }
 
+//inits stack
 int stack_init(t_stack *stack)
 {
     stack->capacity = 10;
     stack->top = -1;
     stack->data = malloc(sizeof(t_item) * stack->capacity);
     if(stack->data == NULL)
-        return 1;
+        return 99;
     return 0;
 }
 
+//pushes value into the stack
 int stack_push(t_stack *stack, char *data)
 {
     stack->top++;
@@ -73,12 +80,13 @@ int stack_push(t_stack *stack, char *data)
         stack->capacity = stack->capacity * 2;
         t_item *newdata = realloc(stack->data, sizeof(t_item) * stack->capacity);
         if(newdata == NULL)
-            return 1;
+            return 99;
         stack->data = newdata;
     }
     return 0;
 }
 
+//pops top item from the stack
 void stack_pop(t_stack *stack)
 {
     if(stack->top != -1)
@@ -88,11 +96,13 @@ void stack_pop(t_stack *stack)
     }
 }
 
+//returns top item in the stack
 char *stack_top(t_stack stack)
 {
     return stack.data[stack.top].data;
 }
 
+//deletes the stack
 void stack_delete(t_stack *stack)
 {
     for(int i = 0; i <= stack->top; i++)
@@ -100,6 +110,7 @@ void stack_delete(t_stack *stack)
     free(stack->data);
 }
 
+//prints the stack
 void stack_print(t_stack stack)
 {
     for(int i = 0; i <= stack.top; i++)
@@ -109,49 +120,8 @@ void stack_print(t_stack stack)
     }
 }
 
+//returns index of the top stack item
 int stack_topindex(t_stack stack)
 {
     return stack.top;
 }
-/*
-int main()
-{
-    t_item item;
-    item_init(&item);
-    item_addchar(&item, 'c');
-    item_addchar(&item, 'c');
-    item_addchar(&item, 'c');
-    item_addchar(&item, '\0');
-
-    t_stack stack;
-    stack_init(&stack);
-    stack_push(&stack, item);
-    item.data[1] = 'a';
-    stack_push(&stack, item);
-    stack_push(&stack, item);
-    stack_push(&stack, item);
-    item.data[1] = 'l';
-    stack_push(&stack, item);
-    stack_push(&stack, item);
-    stack_push(&stack, item);
-
-    print_stack(&stack);
-
-    stack_pop(&stack);
-    stack_pop(&stack);
-    stack_pop(&stack);
-    printf("\n\n");
-    print_stack(&stack);
-
-    printf("\n\n");
-    char *top = stack_top(&stack);
-    top[1] = 'p';
-    printf("%s\n", top);
-    print_stack(&stack);
-
-    stack_delete(&stack);
-    item_delete(&item);
-
-
-    return 0;
-}*/
