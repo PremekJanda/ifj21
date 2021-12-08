@@ -4,7 +4,7 @@
  * @brief Hlavičkový soubor funkcí pro generování kódu
  * @version 0.1
  * @date 2021-11-13
- * Last Modified:	08. 12. 2021 01:01:35
+ * Last Modified:	08. 12. 2021 01:35:50
  *
  * @copyright Copyright (c) 2021
  *
@@ -43,13 +43,13 @@ typedef struct
 /**
  * @brief Zinicializuje code proměnnou
  *
- * @param code proměnná označující IFJ21Code
+ * @param code proměnná označující IFJCode21
  */
 void init_code(code_t *code);
 
 /**
  * @brief Překonvertuje všechny řetězce tak, aby obsahovaly
- *  validní escape sekvence čitelné pro IFJ21Code
+ *  validní escape sekvence čitelné pro IFJCode21
  *
  * @param tree Syntaktický strom
  */
@@ -59,7 +59,7 @@ void convert_strings(t_node *tree);
  * @brief Vyčíslí výraz skládající se z proměnných, literálů a (nelogických) operátorů.
  * Výsledek bude k nalezení na vrcholu zásobníku.
  *
- * @param code IFJ21Code
+ * @param code IFJCode21
  * @param expr Expression strom
  */
 void eval_expression(code_t *code, t_node *expr);
@@ -120,7 +120,7 @@ void fix_expr(t_node *tree);
     node_addnext(new_nodes[9], new_nodes[10]);
 
 /**
- * @brief Vygeneruje kód jazyka IFJ21Code ze syntaktického stromu podrobenému syntaktické a sémantické analýze
+ * @brief Vygeneruje kód jazyka IFJCode21 ze syntaktického stromu podrobenému syntaktické a sémantické analýze
  *
  * @param tree Syntaktický strom
  * @param code Řetězcový buffer
@@ -156,7 +156,7 @@ void def_declare_fcall_crossroad(code_t *code, t_node *main_node);
 void function_call_gen(code_t *code, t_node *fcall_node, bool createframe);
 
 /**
- * @brief Překopíruje obsah uzlu item do proměnné uvnitř IFJ21Code
+ * @brief Překopíruje obsah uzlu item do proměnné uvnitř IFJCode21
  *
  * @param code Code buffer
  * @param dest_frame Rámec proměnné, do které budeme zapisovat
@@ -217,7 +217,7 @@ int field_of_visibility_id_replacement(char *id, char *new_id, t_node *tree);
 /**
  * @brief Zkontroluje, jestli je identifikátor k nalezení v lokální rámci LF
  *
- * @param code Ifj21Code kód
+ * @param code IFJCode21 kód
  * @param id Identifikátor proměnné
  * @return Vrací 1, pokud je k nalezení v LF, jinak 0
  */
@@ -226,7 +226,7 @@ int is_local(code_t *code, char *id);
 /**
  * @brief Zjistí, jestli je proměnná globální, funguje pouze na názvy proměnných ze syntaktického stromu
  *
- * @param code Ifj21Code kód
+ * @param code IFJCode21 kód
  * @param id Identifikátor proměnné
  * @return booleovskou hodnotu
  */
@@ -241,10 +241,10 @@ bool is_global(char *id);
 int convert_write(t_node *tree);
 
 /**
- * @brief Nadefinuje návratové hodnoty uvnitř IFJ21Code kódu
+ * @brief Nadefinuje návratové hodnoty uvnitř IFJCode21 kódu
  * při přiřazování návratových hodnot funkce identifikátorům
  *
- * @param code IFJ21Code proměnná
+ * @param code IFJCode21 proměnná
  * @param assignment Syntaktický strom výrazu přiřazení
  */
 void define_return_variables(code_t *code, t_node *assignment);
@@ -252,7 +252,7 @@ void define_return_variables(code_t *code, t_node *assignment);
 /**
  * @brief Vygeneruje kód přiřazení
  *
- * @param code Ifj21Code proměnná
+ * @param code IFJCode21 proměnná
  * @param assignment <stmt> strom značící přiřazení
  */
 void generate_assignment(code_t *code, t_node *assignment);
@@ -260,7 +260,7 @@ void generate_assignment(code_t *code, t_node *assignment);
 /**
  * @brief Vygeneruje kód podmíněného výrazu
  *
- * @param code IFJ21Code proměnná
+ * @param code IFJCode21 proměnná
  * @param if_node <stmt> strom podmíněného výrazu
  * @param fc funkce, ze které je if volán, slouží k unikátnosti návěští
  */
@@ -269,7 +269,7 @@ void generate_if(code_t *code, t_node *if_node, char *fc);
 /**
  * @brief Vygeneruje kód while cyklu
  *
- * @param code IFJ21Code proměnná
+ * @param code IFJCode21 proměnná
  * @param while_node <stmt> strom while cyklu
  * @param fc funkce, ze které je if volán, slouží k unikátnosti návěští
  */
@@ -278,7 +278,7 @@ void generate_while(code_t *code, t_node *while_node, char *fc);
 /**
  * @brief Vygeneruje kód lokální deklarace
  *
- * @param code IFJ21Code proměnná
+ * @param code IFJCode21 proměnná
  * @param local_dec Syntaktický strom přiřazení
  */
 void generate_local_decl(code_t *code, t_node *local_dec);
@@ -286,7 +286,7 @@ void generate_local_decl(code_t *code, t_node *local_dec);
 /**
  * @brief Vygeneruje kód návratu pomocí příkazu return
  *
- * @param code IFJ21Code proměnná
+ * @param code IFJCode21 proměnná
  * @param return_node Syntaktický strom obsahující return <stmt>
  */
 void generate_return(code_t *code, t_node *return_node);
@@ -296,7 +296,7 @@ void generate_return(code_t *code, t_node *return_node);
  * Předsune veškeré definice proměnných před <stmt> volání whilu,
  * na jejich místě nechá výraz přiřazení hodnoty
  *
- * @param code IFJ21Code proměnná
+ * @param code IFJCode21 proměnná
  * @param stmt_list Statement před který budou vloženy deklarace proměnných v něm deklarovaných
  */
 void predefine_vars_of_stmt_list(code_t *code, t_node *stmt_list);
@@ -305,7 +305,7 @@ void predefine_vars_of_stmt_list(code_t *code, t_node *stmt_list);
  * @brief Vygeneruje kód, který vyčíslí logický výraz, výsledek vyčíslení
  * bude v globální proměnné GF@COMP_RES
  *
- * @param code IFJ21Code proměnná
+ * @param code IFJCode21 proměnná
  * @param condition Výraz obsahující 2 položky a logický operátor, nebo 1 položku,
  * položka může být výraz nebo identifikátor
  */
@@ -314,7 +314,7 @@ void eval_condition(code_t *code, t_node *condition);
 /**
  * @brief Rozcestí pro generování kódu statementů funkce
  *
- * @param code IFJ21Code proměnná
+ * @param code IFJCode21 proměnná
  * @param stmt_list List přikazů uvnitř těla funkce
  * @param fc_from Právě generovaná funkce
  */
