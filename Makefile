@@ -1,7 +1,7 @@
 # Soubor: Makefile
 #
 # Předmět: IFJ - Implementace překladače imperativního jazyka IFJ21
-# Datum poslední změny:	28. 11. 2021 18:43:09
+# Datum poslední změny:	08. 12. 2021 17:46:34
 # Autor: Přemek Janda - xjanda28, VUT FIT
 # Popis: Program MAKEFILE pro překlad všech potřebných souborů
 
@@ -35,7 +35,7 @@ test:
 	@ echo "Make test done"
 	
 zip:
-	zip xkocma08.zip *.c *.h precedence.txt rules.txt tabulka.txt Makefile built_in.fc
+	zip xkocma08.zip *.c *.h precedence.txt rules.txt tabulka.txt Makefile built_in.fc rozdeleni
 	
 zip_test:
 	@ $(MAKE) clean --no-print-directory
